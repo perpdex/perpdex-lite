@@ -1,9 +1,18 @@
 import React from "react"
-import { VStack, Stack, Button, Flex, Box, Spacer } from "@chakra-ui/react"
+import { VStack, Stack, Button, Flex, Box, Spacer, ButtonGroup, LinkBox } from "@chakra-ui/react"
 
 import ConnectBtn from "./ConnectBtn"
 
 function SideBar() {
+    const pairs = [
+        {
+            name: "BTC",
+        },
+        {
+            name: "ETH",
+        },
+    ]
+
     return (
         <VStack width={280}>
             <Stack width="100%" p="2">
@@ -20,10 +29,19 @@ function SideBar() {
             <Box width="100%" p="2">
                 <Button width="100%">Wecome</Button>
             </Box>
-            <VStack p="2">
-                <div id="router-handler">Trade, Pools</div>
-                <div id="market-pairs">Market Pairs</div>
-            </VStack>
+            <Box>
+                <VStack width="100%">
+                    <ButtonGroup width="100%" p="0">
+                        <Button width="100%">svg Trade</Button>
+                        <Button width="100%">svg Pools</Button>
+                    </ButtonGroup>
+                    <VStack p="2">
+                        {pairs.map(pair => (
+                            <LinkBox>{pair.name}</LinkBox>
+                        ))}
+                    </VStack>
+                </VStack>
+            </Box>
             <Box width="100%" p="2">
                 <Button width="100%">History</Button>
             </Box>
