@@ -9,7 +9,9 @@ import TradeComponent from "./component/Trade"
 const Home = () => {
     // NOTE: Focus the trade tab once wallet is connected.
     const [tabIndex, setTabIndex] = useState(0)
-    const { account } = Connection.useContainer()
+    const { account, chainId, active } = Connection.useContainer()
+
+    console.log("@@@@@ Home", account, chainId, active)
     useEffect(() => {
         if (account) {
             setTabIndex(1)
