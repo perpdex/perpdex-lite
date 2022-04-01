@@ -1,18 +1,21 @@
 import {
     FormControl,
-    FormHelperText,
-    NumberDecrementStepper,
-    NumberIncrementStepper,
     NumberInput,
     NumberInputField,
-    NumberInputStepper,
     InputRightElement,
     Text,
+    Popover,
+    PopoverTrigger,
+    PopoverContent,
+    PopoverBody,
+    HStack,
+    Button,
 } from "@chakra-ui/react"
 import React, { useCallback, useMemo } from "react"
 
 import SmallFormLabel from "component/SmallFormLabel"
 import { Trade } from "container/trade"
+import { QuestionOutlineIcon } from "@chakra-ui/icons"
 
 function Slippage() {
     const { slippage, setSlippage } = Trade.useContainer()
@@ -25,45 +28,69 @@ function Slippage() {
         },
         [setSlippage],
     )
+    const handleOnClick = useCallback(
+        value => {
+            setSlippage(value)
+        },
+        [setSlippage],
+    )
     return useMemo(
         () => (
-            <FormControl id="slippage">
-                <SmallFormLabel>Slippage (%)</SmallFormLabel>
-                <NumberInput
-                    allowMouseWheel
-                    min={0}
-                    step={0.1}
-                    max={100}
-                    clampValueOnBlur={false}
-                    onChange={handleOnChange}
-                    value={slippage}
-                    focusInputOnChange={true}
-                >
-                    <NumberInputField />
-                    <NumberInputStepper>
-                        <NumberIncrementStepper />
-                        <NumberDecrementStepper />
-                    </NumberInputStepper>
-                    <InputRightElement w="54px" mr={4}>
-                        <Text
-                            w="100%"
-                            textAlign="center"
-                            fontWeight="bold"
-                            fontSize="xs"
-                            color="gray.500"
-                            textTransform="uppercase"
-                        >
-                            %
-                        </Text>
-                    </InputRightElement>
-                </NumberInput>
-                <FormHelperText>
-                    To use custom slippage, please input manually. It also applies to closing position and margin
-                    adjustment.
-                </FormHelperText>
+            <FormControl id="slippage" mb="4">
+                <SmallFormLabel>
+                    Slippage Tolerance{" "}
+                    <Popover trigger="hover">
+                        <PopoverTrigger>
+                            <QuestionOutlineIcon></QuestionOutlineIcon>
+                        </PopoverTrigger>
+                        <PopoverContent>
+                            <PopoverBody>
+                                Your transaction will revert if the price changes unfavorably by more than this
+                                percentage
+                            </PopoverBody>
+                        </PopoverContent>
+                    </Popover>
+                </SmallFormLabel>
+                <HStack justifyContent="left">
+                    <NumberInput
+                        allowMouseWheel
+                        min={0}
+                        step={0.1}
+                        max={100}
+                        clampValueOnBlur={false}
+                        onChange={handleOnChange}
+                        value={slippage}
+                        focusInputOnChange={true}
+                    >
+                        <NumberInputField />
+                        <InputRightElement w="54px">
+                            <Text
+                                w="100%"
+                                textAlign="center"
+                                fontWeight="bold"
+                                fontSize="xs"
+                                color="gray.500"
+                                textTransform="uppercase"
+                            >
+                                %
+                            </Text>
+                        </InputRightElement>
+                    </NumberInput>
+                    <HStack>
+                        <Button size="xs" onClick={() => handleOnClick(1)}>
+                            1%
+                        </Button>
+                        <Button size="xs" onClick={() => handleOnClick(1.5)}>
+                            1.5%
+                        </Button>
+                        <Button size="xs" onClick={() => handleOnClick(2)}>
+                            2%
+                        </Button>
+                    </HStack>
+                </HStack>
             </FormControl>
         ),
-        [handleOnChange, slippage],
+        [handleOnChange, slippage, handleOnClick],
     )
 }
 
