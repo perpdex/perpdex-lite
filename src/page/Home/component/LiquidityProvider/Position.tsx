@@ -1,33 +1,19 @@
-import { FormControl, Input, InputGroup, InputRightElement, Text } from "@chakra-ui/react"
-
-import { Amm } from "container/amm"
-import SmallFormLabel from "component/SmallFormLabel"
-import { usePositionSize } from "./usePositionSize"
+import { AddIcon } from "@chakra-ui/icons"
+import { Box, Button, Heading, HStack } from "@chakra-ui/react"
 
 function Position() {
-    const { selectedAmm } = Amm.useContainer()
-    const { positionSize, isCalculating } = usePositionSize()
-    const baseAssetSymbol = selectedAmm?.baseAssetSymbol || ""
-
     return (
-        <FormControl id="position">
-            <SmallFormLabel>Position</SmallFormLabel>
-            <InputGroup>
-                <Input variant="filled" isReadOnly value={isCalculating ? "⃜⏳" : positionSize} />
-                <InputRightElement w="54px">
-                    <Text
-                        w="100%"
-                        textAlign="center"
-                        fontWeight="bold"
-                        fontSize="xs"
-                        color="gray.500"
-                        textTransform="uppercase"
-                    >
-                        {baseAssetSymbol}
-                    </Text>
-                </InputRightElement>
-            </InputGroup>
-        </FormControl>
+        <>
+            <HStack>
+                <Heading size="sm">Liquidity Positions</Heading>
+                <Button leftIcon={<AddIcon />} colorScheme="pink" variant="solid" size="xs">
+                    Add Liquidity
+                </Button>
+            </HStack>
+            <Box width="100%" borderStyle="solid" borderWidth="1px" borderColor="gray.200" borderRadius="12px">
+                aa
+            </Box>
+        </>
     )
 }
 
