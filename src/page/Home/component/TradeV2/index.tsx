@@ -1,7 +1,7 @@
 import { Box, VStack } from "@chakra-ui/react"
 
 import Collateral from "./Collateral"
-import Leverage from "./Leverage"
+import BuyingPower from "./BuyingPower"
 import MarketSelector from "./MarketSelector"
 import Position from "./Position"
 import React from "react"
@@ -18,7 +18,7 @@ function Trade() {
                     <MarketSelector />
                     <Collateral />
                     <Position />
-                    <Leverage />
+                    <BuyingPower />
                     <Slippage />
                     <Summary />
                 </VStack>
