@@ -1,13 +1,17 @@
 import {
     Box,
     FormControl,
-    FormHelperText,
+    Popover,
+    PopoverBody,
+    PopoverContent,
+    PopoverTrigger,
     Slider,
     SliderFilledTrack,
     SliderThumb,
     SliderTrack,
     Text,
 } from "@chakra-ui/react"
+import { QuestionOutlineIcon } from "@chakra-ui/icons"
 import SmallFormLabel from "component/SmallFormLabel"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { Trade } from "container/trade"
@@ -36,7 +40,18 @@ function Leverage() {
     return useMemo(
         () => (
             <FormControl id="leverages">
-                <SmallFormLabel>Leverage</SmallFormLabel>
+                <SmallFormLabel>
+                    Buying Power{" "}
+                    <Popover trigger="hover">
+                        <PopoverTrigger>
+                            <QuestionOutlineIcon></QuestionOutlineIcon>
+                        </PopoverTrigger>
+                        <PopoverContent>
+                            <PopoverBody>Max buying power = Free Collateral × 10</PopoverBody>
+                        </PopoverContent>
+                    </Popover>
+                </SmallFormLabel>
+
                 <Box px={10} pt={4} pb={8} bg="blackAlpha.50" borderRadius="xl">
                     <Slider
                         onChange={handleOnChange}
@@ -75,7 +90,6 @@ function Leverage() {
                         </SliderThumb>
                     </Slider>
                 </Box>
-                <FormHelperText>Up to 10×</FormHelperText>
             </FormControl>
         ),
         [handleOnChange, side, _leverage],
