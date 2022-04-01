@@ -11,7 +11,7 @@ function LiquidityProvider() {
     return (
         <>
             <TitleBar />
-            <SimpleGrid columns={2} spacing={8}>
+            <SimpleGrid columns={2} spacing={8} mt="6">
                 <Box borderStyle="solid" borderWidth="1px" borderRadius="12px" p="4">
                     <HStack>
                         <VStack spacing={6} p={0}>
