@@ -8,7 +8,7 @@ interface Props {
 function SmallFormLabel(props: Props) {
     return (
         <FormLabel>
-            <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+            <Text fontSize="xs" color="gray.500">
                 {props.children}
             </Text>
         </FormLabel>
