@@ -19,13 +19,12 @@ function SideSwitcher() {
     }, [setSide, side])
 
     return (
-        <ButtonGroup w="100%" isAttached variant="solid">
+        <ButtonGroup variant="solid" p="4">
             <Button
                 size="sm"
                 isFullWidth
                 onClick={handleLongOnClick}
                 colorScheme={side === 1 ? "green" : "gray"}
-                mr="-px"
                 variant="solid"
             >
                 Long
