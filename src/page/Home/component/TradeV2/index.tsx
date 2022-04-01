@@ -1,4 +1,4 @@
-import { SimpleGrid, VStack } from "@chakra-ui/react"
+import { Box, VStack } from "@chakra-ui/react"
 
 import Collateral from "./Collateral"
 import Leverage from "./Leverage"
@@ -11,19 +11,19 @@ import Summary from "./Summary"
 
 function Trade() {
     return (
-        <SimpleGrid columns={[1, null, 2]} spacing={16}>
-            <VStack spacing={6} p={0}>
+        <>
+            <Box width="100%" borderStyle="solid" borderWidth="1px" borderRadius="12px">
                 <SideSwitcher />
-                <MarketSelector />
-                <Collateral />
-                <Position />
-                <Leverage />
-                <Slippage />
-            </VStack>
-            <VStack p={0} spacing={6}>
-                <Summary />
-            </VStack>
-        </SimpleGrid>
+                <VStack width="100%" p="4">
+                    <MarketSelector />
+                    <Collateral />
+                    <Position />
+                    <Leverage />
+                    <Slippage />
+                    <Summary />
+                </VStack>
+            </Box>
+        </>
     )
 }
 
