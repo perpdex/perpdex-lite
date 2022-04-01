@@ -5,6 +5,7 @@ import { Connection } from "container/connection"
 import GetStarted from "./component/GetStarted"
 import Position from "./component/Position"
 import TradeComponent from "./component/Trade"
+import TradeComponentV2 from "./component/TradeV2"
 
 const Home = () => {
     // NOTE: Focus the trade tab once wallet is connected.
@@ -26,6 +27,7 @@ const Home = () => {
                     <Tab>Get Started</Tab>
                     <Tab>Trade</Tab>
                     <Tab>Positions</Tab>
+                    <Tab>TradeV2</Tab>
                 </TabList>
                 <TabPanels>
                     <TabPanel py={8} px={3}>
@@ -36,6 +38,9 @@ const Home = () => {
                     </TabPanel>
                     <TabPanel py={8} px={3}>
                         <Position />
+                    </TabPanel>
+                    <TabPanel py={8} px={3}>
+                        <TradeComponentV2 />
                     </TabPanel>
                 </TabPanels>
             </Tabs>
