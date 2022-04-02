@@ -1,4 +1,4 @@
-import { HStack, SimpleGrid, VStack, Box } from "@chakra-ui/react"
+import { SimpleGrid, VStack, Box } from "@chakra-ui/react"
 
 import React from "react"
 import TitleBar from "./TitleBar"
@@ -13,20 +13,16 @@ function LiquidityProvider() {
             <TitleBar />
             <SimpleGrid columns={2} spacing={8} mt="6">
                 <Box borderStyle="solid" borderWidth="1px" borderRadius="12px" p="4">
-                    <HStack>
-                        <VStack spacing={6} p={0}>
-                            <Mining />
-                            <PoolInfo />
-                        </VStack>
-                    </HStack>
+                    <VStack spacing={6} p={0}>
+                        <Mining />
+                        <PoolInfo />
+                    </VStack>
                 </Box>
                 <Box borderStyle="solid" borderWidth="1px" borderRadius="12px" p="4">
-                    <HStack>
-                        <VStack spacing={6} p={0}>
-                            <ProvidedInfo />
-                            <Position />
-                        </VStack>
-                    </HStack>
+                    <VStack spacing={6} p={0}>
+                        <ProvidedInfo />
+                        <Position />
+                    </VStack>
                 </Box>
             </SimpleGrid>
         </>
