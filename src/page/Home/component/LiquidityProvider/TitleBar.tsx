@@ -4,8 +4,8 @@ import React from "react"
 
 function TitleBar() {
     return (
-        <HStack justifyContent="space-between" alignItems="start">
-            <VStack spacing={-2}>
+        <HStack justifyContent="start">
+            <VStack spacing={-2} alignItems="start">
                 <Text fontSize="lg" fontWeight="bold">
                     ASTR
                 </Text>
