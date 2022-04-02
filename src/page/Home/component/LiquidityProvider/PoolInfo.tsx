@@ -1,4 +1,5 @@
-import { Table, Tbody, Td, Tr, Heading } from "@chakra-ui/react"
+import { QuestionOutlineIcon } from "@chakra-ui/icons"
+import { Box, Heading, Popover, PopoverBody, PopoverContent, PopoverTrigger, SimpleGrid, Text } from "@chakra-ui/react"
 
 function PoolInfoTable() {
     return (
@@ -6,34 +7,72 @@ function PoolInfoTable() {
             <Heading w="full" size="sm">
                 Pool Info
             </Heading>
-            <Table size="sm" borderRadius="12px" overflow="hidden" w="100%" variant="simple">
-                <Tbody>
-                    <Tr fontWeight="bold">
-                        <Td>Pool Base APR</Td>
-                        <Td isNumeric>{1}</Td>
-                    </Tr>
-                    <Tr fontWeight="bold">
-                        <Td>Pool Rewards APR</Td>
-                        <Td isNumeric>{1}%</Td>
-                    </Tr>
-                    <Tr fontWeight="bold">
-                        <Td>Mark Price</Td>
-                        <Td isNumeric>{1}</Td>
-                    </Tr>
-                    <Tr fontWeight="bold">
-                        <Td>TVL</Td>
-                        <Td isNumeric>{1}</Td>
-                    </Tr>
-                    <Tr fontWeight="bold">
-                        <Td>Volume (24h)</Td>
-                        <Td isNumeric>{1}</Td>
-                    </Tr>
-                    <Tr fontWeight="bold">
-                        <Td>24h Fees</Td>
-                        <Td isNumeric>{1}</Td>
-                    </Tr>
-                </Tbody>
-            </Table>
+            <SimpleGrid width="100%" columns={2} spacing={6}>
+                <Box>
+                    <Text fontSize="xs" color="gray.500">
+                        Pool Base APR{" "}
+                        <Popover trigger="hover">
+                            <PopoverTrigger>
+                                <QuestionOutlineIcon></QuestionOutlineIcon>
+                            </PopoverTrigger>
+                            <PopoverContent>
+                                <PopoverBody>The est. APR from trading fees</PopoverBody>
+                            </PopoverContent>
+                        </Popover>
+                    </Text>
+                    <Text fontSize="xl" color="green.400" fontWeight="bold" lineHeight="1.4">
+                        0.4% - 49.6%
+                    </Text>
+                </Box>
+                <Box>
+                    <Text fontSize="xs" color="gray.500">
+                        Pool Rewards APR{" "}
+                        <Popover trigger="hover">
+                            <PopoverTrigger>
+                                <QuestionOutlineIcon></QuestionOutlineIcon>
+                            </PopoverTrigger>
+                            <PopoverContent>
+                                <PopoverBody>The est. APR from liquidity mining rewards</PopoverBody>
+                            </PopoverContent>
+                        </Popover>
+                    </Text>
+                    <Text fontSize="xl" color="green.400" fontWeight="bold" lineHeight="1.4">
+                        0.2% - 27.8%
+                    </Text>
+                </Box>
+                <Box>
+                    <Text fontSize="xs" color="gray.500">
+                        Mark Price
+                    </Text>
+                    <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
+                        $46,446.1
+                    </Text>
+                </Box>
+                <Box>
+                    <Text fontSize="xs" color="gray.500">
+                        TVL
+                    </Text>
+                    <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
+                        $-,---
+                    </Text>
+                </Box>
+                <Box>
+                    <Text fontSize="xs" color="gray.500">
+                        Volume (24h)
+                    </Text>
+                    <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
+                        $2.2M
+                    </Text>
+                </Box>
+                <Box>
+                    <Text fontSize="xs" color="gray.500">
+                        24h Fees
+                    </Text>
+                    <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
+                        $-,---
+                    </Text>
+                </Box>
+            </SimpleGrid>
         </>
     )
 }
