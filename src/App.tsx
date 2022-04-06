@@ -8,6 +8,7 @@ import ClosePositionModal from "component/ClosePositionModal"
 import AdjustMarginModal from "component/AdjustMarginModal"
 import BlockedRegionModal from "component/BlockedRegionModal"
 import UserAgreementModal from "component/UserAgreementModal"
+import LiquidityProviderModal from "component/LiquidityProviderModal"
 
 export const App = () => (
     <Container maxW="container.lg" pb={20} px={6}>
@@ -18,6 +19,7 @@ export const App = () => (
                 <Home />
             </Route>
         </Switch>
+        <LiquidityProviderModal />
         <WalletListModal />
         <ClosePositionModal />
         <AdjustMarginModal />
