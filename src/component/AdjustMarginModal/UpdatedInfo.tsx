@@ -1,7 +1,7 @@
 import { Heading, Box, Table, Tbody, Tr, Td } from "@chakra-ui/react"
 import { Contract as MulticallContract } from "ethers-multicall"
 import { Connection } from "container/connection"
-import { Contract } from "container/contract"
+import { OldContract } from "container/oldContract"
 import { Position } from "container/position"
 import { useInterval } from "hook/useInterval"
 import { useCallback, useEffect, useMemo, useState } from "react"
@@ -22,7 +22,7 @@ function UpdatedInfo() {
         state: { address, quoteAssetSymbol },
     } = Position.useContainer()
     const { account, multicallNetworkProvider } = Connection.useContainer()
-    const { addressMap } = Contract.useContainer()
+    const { addressMap } = OldContract.useContainer()
     const { marginDir: adjustMarginDir, margin: adjustMargin } = Margin.useContainer()
     const [marginInfo, setMarginInfo] = useState<MarginInfo | null>(null)
 

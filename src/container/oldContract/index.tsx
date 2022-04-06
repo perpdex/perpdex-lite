@@ -1,6 +1,6 @@
 import { getStage, Stage } from "constant/stage"
 import { Connection } from "container/connection"
-import { MetaData } from "container/metadata"
+import { OldMetaData } from "container/metadata"
 import { constants } from "ethers"
 import { useMemo } from "react"
 import {
@@ -15,7 +15,7 @@ import {
 import { createContainer } from "unstated-next"
 import { Amm } from "types/contracts/Amm"
 
-export const Contract = createContainer(useContract)
+export const OldContract = createContainer(useContract)
 
 // TODO: Should grab contract address info from metadata config.
 // production: https://metadata.perp.exchange/production.json
@@ -71,7 +71,7 @@ const defaultContractInstance = {
 }
 
 function useContract() {
-    const { config } = MetaData.useContainer()
+    const { config } = OldMetaData.useContainer()
     const { baseNetworkProvider } = Connection.useContainer()
 
     return useMemo(() => {

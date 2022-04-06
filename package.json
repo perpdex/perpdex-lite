@@ -34,6 +34,7 @@
         "@web3-react/injected-connector": "^6.0.7",
         "@web3-react/network-connector": "^6.1.9",
         "@web3-react/walletconnect-connector": "^6.1.9",
+        "axios": "^0.26.1",
         "big.js": "^6.0.3",
         "ethers": "^5.0.32",
         "ethers-eip712": "^0.2.0",

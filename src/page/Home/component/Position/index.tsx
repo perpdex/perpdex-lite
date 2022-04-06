@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react"
 import { Amm } from "container/amm"
 import ClearingHouseViewerArtifact from "@perp/contract/build/contracts/src/ClearingHouseViewer.sol/ClearingHouseViewer.json"
 import { Connection } from "container/connection"
-import { Contract } from "container/contract"
+import { OldContract } from "container/oldContract"
 import NoPosition from "./NoPosition"
 import NoWallet from "./NoWallet"
 import PositionUnit from "./PositionUnit"
@@ -15,7 +15,7 @@ import { useInterval } from "@chakra-ui/hooks"
 
 function Position() {
     const { account, multicallNetworkProvider } = Connection.useContainer()
-    const { addressMap } = Contract.useContainer()
+    const { addressMap } = OldContract.useContainer()
     const { ammMap } = Amm.useContainer()
     const [positionInfo, setPositionInfo] = useState<PositionInfo[]>([])
 

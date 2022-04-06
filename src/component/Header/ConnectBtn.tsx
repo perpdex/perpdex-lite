@@ -4,11 +4,16 @@ import WalletFill from "../Icon/WalletFill"
 import { Global } from "container/global"
 import { getShortenAccount } from "util/getShortenAddress"
 import { User } from "container/user"
+import { NewContract } from "container/newContract"
 
 function ConnectBtn() {
     const {
         state: { address },
     } = User.useContainer()
+
+    const { clearingHouse } = NewContract.useContainer()
+
+    console.log(clearingHouse)
 
     const {
         actions: { toggleWalletModal },

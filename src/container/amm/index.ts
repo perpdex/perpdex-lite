@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import AmmReaderArtifact from "@perp/contract/build/contracts/src/AmmReader.sol/AmmReader.json"
 import { Amm as AmmType } from "constant/amm"
 import { Connection } from "container/connection"
-import { Contract } from "container/contract"
+import { OldContract } from "container/oldContract"
 import { Contract as MulticallContract } from "ethers-multicall"
 import { bigNum2Big } from "util/format"
 import { createContainer } from "unstated-next"
@@ -12,7 +12,7 @@ import { isAddress } from "@ethersproject/address"
 export const Amm = createContainer(useAmm)
 
 function useAmm() {
-    const { insuranceFund, amm, addressMap } = Contract.useContainer()
+    const { insuranceFund, amm, addressMap } = OldContract.useContainer()
     const { multicallNetworkProvider } = Connection.useContainer()
     const [ammMap, setAmmMap] = useState<Record<string, AmmType> | null>(null)
     const [selectedAmm, setSelectedAmm] = useState<AmmType | null>(null)

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { AmmError } from "util/error"
 import Big from "big.js"
 import { Connection } from "container/connection"
-import { Contract } from "container/contract"
+import { OldContract } from "container/oldContract"
 import { Dir } from "constant"
 import { Contract as MulticallContract } from "ethers-multicall"
 import { isAddress } from "@ethersproject/address"
@@ -12,7 +12,7 @@ import { useContractEvent } from "./useContractEvent"
 
 export function useRealtimeAmm(address: string, name: string) {
     const { multicallNetworkProvider } = Connection.useContainer()
-    const { amm } = Contract.useContainer()
+    const { amm } = OldContract.useContainer()
     const [baseAssetReserve, setBaseAssetReserve] = useState<Big | null>(null)
     const [quoteAssetReserve, setQuoteAssetReserve] = useState<Big | null>(null)
 

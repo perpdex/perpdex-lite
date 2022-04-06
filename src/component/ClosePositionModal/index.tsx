@@ -23,7 +23,7 @@ import { ClearingHouse } from "container/clearingHouse"
 import { Trade } from "container/trade"
 import { Transaction } from "container/transaction"
 import { Connection } from "container/connection"
-import { Contract } from "container/contract"
+import { OldContract } from "container/oldContract"
 import { decimal2Big, big2Decimal, numberWithCommasUsdc, bigNum2Big } from "util/format"
 import AmmArtifact from "@perp/contract/build/contracts/src/Amm.sol/Amm.json"
 import ClearingHouseViewerArtifact from "@perp/contract/build/contracts/src/ClearingHouseViewer.sol/ClearingHouseViewer.json"
@@ -46,7 +46,7 @@ function ClosePositionModal() {
         closeClosePositionModal,
     } = Position.useContainer()
     const { account, multicallNetworkProvider } = Connection.useContainer()
-    const { addressMap } = Contract.useContainer()
+    const { addressMap } = OldContract.useContainer()
     const { closePosition } = ClearingHouse.useContainer()
     const { isLoading: isTxLoading } = Transaction.useContainer()
 

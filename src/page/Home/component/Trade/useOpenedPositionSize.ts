@@ -2,7 +2,7 @@ import { isAddress } from "@ethersproject/address"
 import Big from "big.js"
 import { BIG_ZERO, Dir, PnlCalcOption } from "constant"
 import { Connection } from "container/connection"
-import { Contract } from "container/contract"
+import { OldContract } from "container/oldContract"
 import { useCallback, useEffect, useState } from "react"
 import { decimal2Big } from "util/format"
 import { Contract as MulticallContract } from "ethers-multicall"
@@ -10,7 +10,7 @@ import { big2Decimal } from "util/format"
 import ClearingHouseViewerArtifact from "@perp/contract/build/contracts/src/ClearingHouseViewer.sol/ClearingHouseViewer.json"
 
 export function useOpenedPositionSize(address: string) {
-    const { addressMap, amm } = Contract.useContainer()
+    const { addressMap, amm } = OldContract.useContainer()
     const { account, multicallNetworkProvider } = Connection.useContainer()
 
     const [size, setSize] = useState<Big | null>(null)
