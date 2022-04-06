@@ -45,7 +45,7 @@ function ClosePositionModal() {
         state: { baseAssetSymbol, quoteAssetSymbol, address, isClosePositionModalOpen },
         closeClosePositionModal,
     } = Position.useContainer()
-    const { account, xDaiMulticallProvider } = Connection.useContainer()
+    const { account, multicallNetworkProvider } = Connection.useContainer()
     const { addressMap } = Contract.useContainer()
     const { closePosition } = ClearingHouse.useContainer()
     const { isLoading: isTxLoading } = Transaction.useContainer()
@@ -64,13 +64,13 @@ function ClosePositionModal() {
     }, [address, closePosition, closePositionInfo, slippage])
 
     const getClosePositionInfo = useCallback(async () => {
-        if (account && addressMap && address && xDaiMulticallProvider) {
+        if (account && addressMap && address && multicallNetworkProvider) {
             /* get { size, margin, unrealizedPnl } from clearingHouseViewerContract */
             const clearingHouseViewerContract = new MulticallContract(
                 addressMap.ClearingHouseViewer,
                 ClearingHouseViewerArtifact.abi,
             )
-            const rawClearingHouseViewerData = await xDaiMulticallProvider.all([
+            const rawClearingHouseViewerData = await multicallNetworkProvider.all([
                 clearingHouseViewerContract.getPersonalPositionWithFundingPayment(address, account),
                 clearingHouseViewerContract.getUnrealizedPnl(address, account, PnlCalcOption.SpotPrice),
             ])
@@ -81,7 +81,7 @@ function ClosePositionModal() {
             /* get { notional, tollRatio, spreadRatio } */
             const ammContract = new MulticallContract(address, AmmArtifact.abi)
             const dir: Dir = size.gt(0) ? Dir.AddToAmm : Dir.RemoveFromAmm
-            const rawAmmData = await xDaiMulticallProvider.all([
+            const rawAmmData = await multicallNetworkProvider.all([
                 ammContract.getOutputPrice(dir, big2Decimal(size.abs())),
                 ammContract.tollRatio(),
                 ammContract.spreadRatio(),
@@ -108,7 +108,7 @@ function ClosePositionModal() {
         } else {
             setClosePositionInfo(null)
         }
-    }, [account, address, addressMap, xDaiMulticallProvider])
+    }, [account, address, addressMap, multicallNetworkProvider])
 
     useEffect(() => {
         getClosePositionInfo()

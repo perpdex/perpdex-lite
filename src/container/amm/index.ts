@@ -13,7 +13,7 @@ export const Amm = createContainer(useAmm)
 
 function useAmm() {
     const { insuranceFund, amm, addressMap } = Contract.useContainer()
-    const { xDaiMulticallProvider } = Connection.useContainer()
+    const { multicallNetworkProvider } = Connection.useContainer()
     const [ammMap, setAmmMap] = useState<Record<string, AmmType> | null>(null)
     const [selectedAmm, setSelectedAmm] = useState<AmmType | null>(null)
     const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -22,7 +22,7 @@ function useAmm() {
         async function getRawAmmList() {
             if (
                 insuranceFund === null ||
-                xDaiMulticallProvider === null ||
+                multicallNetworkProvider === null ||
                 amm === null ||
                 addressMap === null ||
                 !isAddress(addressMap.AmmReader)
@@ -45,7 +45,9 @@ function useAmm() {
             if (rawAmmContractList.length === 0) {
                 return
             }
-            const ammOpenList: boolean[] = await xDaiMulticallProvider!.all(rawAmmContractList.map(amm => amm!.open()))
+            const ammOpenList: boolean[] = await multicallNetworkProvider!.all(
+                rawAmmContractList.map(amm => amm!.open()),
+            )
             const ammAddressList = rawAmmAddressList.filter((_, index) => ammOpenList[index])
 
             if (ammAddressList.length === 0) {
@@ -56,7 +58,7 @@ function useAmm() {
             const ammContractList = ammAddressList.map(
                 ammAddress => new MulticallContract(ammAddress, amm.interface.fragments),
             )
-            const ammRatioData = await xDaiMulticallProvider.all([
+            const ammRatioData = await multicallNetworkProvider.all([
                 ...ammContractList.map(ammContract => ammContract.tollRatio()),
                 ...ammContractList.map(ammContract => ammContract.spreadRatio()),
             ])
@@ -65,7 +67,7 @@ function useAmm() {
 
             /* ammReaderContract section */
             const ammReaderContract = new MulticallContract(addressMap.AmmReader, AmmReaderArtifact.abi)
-            const ammRawData = await xDaiMulticallProvider.all(
+            const ammRawData = await multicallNetworkProvider.all(
                 ammAddressList.map(ammAddress => ammReaderContract.getAmmStates(ammAddress)),
             )
             const _ammMap: Record<string, AmmType> = {}
@@ -86,7 +88,7 @@ function useAmm() {
         }
 
         getRawAmmList()
-    }, [addressMap, amm, insuranceFund, xDaiMulticallProvider])
+    }, [addressMap, amm, insuranceFund, multicallNetworkProvider])
 
     return {
         isLoading,

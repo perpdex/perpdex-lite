@@ -1,35 +1,38 @@
 import { useState, useEffect } from "react"
 import { createContainer } from "unstated-next"
 import { useWeb3React } from "@web3-react/core"
+import { Web3Provider } from "@ethersproject/providers"
 import { Provider as MulticallProvider } from "ethers-multicall"
-import { getNetworkLibrary, getXDaiNetworkLibrary } from "connector"
+import { getEthereumNetworkLibrary, getBaseNetworkLibrary } from "connector"
 
 export const Connection = createContainer(useConnection)
 
-const ethReadOnlyProvider = getNetworkLibrary()
-const xDaiReadOnlyProvider = getXDaiNetworkLibrary()
+// The ethereum provider is needed all the time
+const ethProvider = getEthereumNetworkLibrary()
 
 function useConnection() {
     const { account, library, active, chainId } = useWeb3React()
-    const [ethMulticallProvider, setMulticallProvider] = useState<MulticallProvider | null>(null)
-    const [xDaiMulticallProvider, setXDaiMulticallProvider] = useState<MulticallProvider | null>(null)
+    const [baseNetworkProvider, setBaseNetworkProvider] = useState<Web3Provider | null>(null)
+    const [multicallNetworkProvider, setMulticallNetworkProvider] = useState<MulticallProvider | null>(null)
 
-    // create read only multicall provider
     useEffect(() => {
-        const _ethMulticallProvider = new MulticallProvider(ethReadOnlyProvider)
-        const _xDaiMulticallProvider = new MulticallProvider(xDaiReadOnlyProvider)
+        if (!chainId) return
 
-        Promise.all([_ethMulticallProvider.init(), _xDaiMulticallProvider.init()]).then(() => {
-            setMulticallProvider(_ethMulticallProvider)
-            setXDaiMulticallProvider(_xDaiMulticallProvider)
-        })
-    }, [])
+        const baseReadOnlyProvider = getBaseNetworkLibrary(chainId)
+        if (baseReadOnlyProvider) {
+            setBaseNetworkProvider(baseReadOnlyProvider)
+
+            const _multipleNetworkProvider = new MulticallProvider(baseReadOnlyProvider)
+            _multipleNetworkProvider.init().then(() => {
+                setMulticallNetworkProvider(_multipleNetworkProvider)
+            })
+        }
+    }, [chainId])
 
     return {
-        ethMulticallProvider,
-        xDaiMulticallProvider,
-        ethProvider: ethReadOnlyProvider,
-        xDaiProvider: xDaiReadOnlyProvider,
+        ethProvider,
+        baseNetworkProvider,
+        multicallNetworkProvider,
         signer: library?.getSigner() || null,
         active,
         account: account || null,

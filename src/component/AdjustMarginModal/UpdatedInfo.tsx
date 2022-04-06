@@ -21,19 +21,19 @@ function UpdatedInfo() {
     const {
         state: { address, quoteAssetSymbol },
     } = Position.useContainer()
-    const { account, xDaiMulticallProvider } = Connection.useContainer()
+    const { account, multicallNetworkProvider } = Connection.useContainer()
     const { addressMap } = Contract.useContainer()
     const { marginDir: adjustMarginDir, margin: adjustMargin } = Margin.useContainer()
     const [marginInfo, setMarginInfo] = useState<MarginInfo | null>(null)
 
     const getMarginInfo = useCallback(async () => {
-        if (account && addressMap && address && xDaiMulticallProvider) {
+        if (account && addressMap && address && multicallNetworkProvider) {
             /* get { margin, openNotional } from clearingHouseViewerContract */
             const clearingHouseViewerContract = new MulticallContract(
                 addressMap.ClearingHouseViewer,
                 ClearingHouseViewerArtifact.abi,
             )
-            const rawData = await xDaiMulticallProvider.all([
+            const rawData = await multicallNetworkProvider.all([
                 clearingHouseViewerContract.getPersonalPositionWithFundingPayment(address, account),
                 clearingHouseViewerContract.getMarginRatio(address, account),
             ])
@@ -49,7 +49,7 @@ function UpdatedInfo() {
         } else {
             setMarginInfo(null)
         }
-    }, [account, address, addressMap, xDaiMulticallProvider])
+    }, [account, address, addressMap, multicallNetworkProvider])
 
     useEffect(() => {
         getMarginInfo()

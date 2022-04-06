@@ -11,7 +11,7 @@ import { isAddress } from "@ethersproject/address"
 import { useContractEvent } from "./useContractEvent"
 
 export function useRealtimeAmm(address: string, name: string) {
-    const { xDaiMulticallProvider } = Connection.useContainer()
+    const { multicallNetworkProvider } = Connection.useContainer()
     const { amm } = Contract.useContainer()
     const [baseAssetReserve, setBaseAssetReserve] = useState<Big | null>(null)
     const [quoteAssetReserve, setQuoteAssetReserve] = useState<Big | null>(null)
@@ -51,9 +51,9 @@ export function useRealtimeAmm(address: string, name: string) {
 
     useEffect(() => {
         async function getAssetReserve() {
-            if (xDaiMulticallProvider !== null && amm !== null && isAddress(address)) {
+            if (multicallNetworkProvider !== null && amm !== null && isAddress(address)) {
                 const multiContract = new MulticallContract(address, amm.interface.fragments)
-                const [quoteAssetReserve, baseAssetReserve] = await xDaiMulticallProvider.all([
+                const [quoteAssetReserve, baseAssetReserve] = await multicallNetworkProvider.all([
                     multiContract.quoteAssetReserve(),
                     multiContract.baseAssetReserve(),
                 ])
@@ -62,7 +62,7 @@ export function useRealtimeAmm(address: string, name: string) {
             }
         }
         getAssetReserve()
-    }, [address, amm, xDaiMulticallProvider])
+    }, [address, amm, multicallNetworkProvider])
 
     /* will receive [quoteAssetReserve, baseAssetReserve, timestamp] */
     useContractEvent(contract, "ReserveSnapshotted", (quoteAssetReserve, baseAssetReserve, _) => {

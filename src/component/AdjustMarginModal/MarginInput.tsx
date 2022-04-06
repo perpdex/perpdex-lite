@@ -15,7 +15,7 @@ import { formatInput, numberWithCommasUsdc } from "util/format"
 import { useCallback, useEffect, useMemo, useState } from "react"
 
 import Big from "big.js"
-import { CHAIN_ID } from "connector"
+import { supportedChains } from "connector"
 import { Contract } from "container/contract"
 import { Margin } from "./container/margin"
 import { Position } from "container/position"
@@ -29,7 +29,7 @@ function MarginInput() {
     } = Position.useContainer()
     const { addressMap } = Contract.useContainer()
     const { margin, setMargin, marginDir } = Margin.useContainer()
-    const { balance } = useToken(addressMap ? addressMap.XDaiUsdc : "", USDC_DECIMAL_DIGITS, CHAIN_ID.XDai)
+    const { balance } = useToken(addressMap ? addressMap.XDaiUsdc : "", USDC_DECIMAL_DIGITS, supportedChains.XDai)
     const [_margin, _setMargin] = useState<string>("")
     const debouncedMargin = useDebounce({ value: _margin, delay: 500 })
 
