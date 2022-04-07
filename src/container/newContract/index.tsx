@@ -30,14 +30,11 @@ interface AddressMap {
     insuranceFund: string
     vault: string
     clearingHouse: string
-    tether: string
-    usdc: string
 }
 
 function getAddressFromChainId(chainId: number): AddressMap | undefined {
     const layer2 = metadata.staging.layers.layer2 // TODO handle stag for both prod and staging
     const networks = layer2.networks
-    const externalContracts = layer2.externalContracts
 
     const contracts = networks.find(n => n.chainId === chainId)?.contracts
 
@@ -56,8 +53,6 @@ function getAddressFromChainId(chainId: number): AddressMap | undefined {
         insuranceFund: contracts.insuranceFund,
         vault: contracts.vault,
         clearingHouse: contracts.clearingHouse,
-        tether: externalContracts.tether,
-        usdc: externalContracts.usdc,
     }
 }
 

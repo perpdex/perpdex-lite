@@ -34,10 +34,6 @@ export const metadata = {
                         },
                     },
                 ],
-                externalContracts: {
-                    tether: "0xe0B887D54e71329318a036CF50f30Dbe4444563c",
-                    usdc: "0xe0B887D54e71329318a036CF50f30Dbe4444563c",
-                },
             },
         },
     },
