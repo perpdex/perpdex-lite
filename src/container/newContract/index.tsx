@@ -1,37 +1,27 @@
-import { getStage, Stage } from "constant/stage"
 import { Connection } from "container/connection"
-import { NewMetaData } from "container/metadata"
-// import { constants } from "ethers"
+import { metadata } from "constant"
+import { constants } from "ethers"
 import { useMemo } from "react"
-// import {
-//     ClearingHouseViewer__factory as ClearingHouseViewerFactory,
-//     ERC20__factory as Erc20Factory,
-//     Amm__factory as AmmFactory,
-//     AmmReader__factory as AmmReaderFactory,
-//     ClearingHouse__factory as ClearingHouseFactory,
-//     InsuranceFund__factory as InsuranceFundFactory,
-//     MetaTxGateway__factory as MetaTxGatewayFactory,
-// } from "types/contracts"
+import {
+    UniswapV2ERC20__factory as UniswapV2ERC20Factory,
+    ERC20__factory as Erc20Factory,
+    ClearingHouseConfig__factory as ClearingHouseConfigFactory,
+    MarketRegistry__factory as MarketRegistryFactory,
+    OrderBook__factory as OrderBookFactory,
+    AccountBalance__factory as AccountBalanceFactory,
+    Exchange__factory as ExchangeFactory,
+    InsuranceFund__factory as InsuranceFundFactory,
+    Vault__factory as VaultFactory,
+    ClearingHouseCallee__factory as ClearingHouseFactory,
+} from "types/newContracts"
 // import { Amm } from "types/contracts/Amm"
 import { createContainer } from "unstated-next"
+import { useWeb3React } from "@web3-react/core"
 
 export const NewContract = createContainer(useContract)
 
-// TODO: Should grab contract address info from metadata config.
-// production: https://metadata.perp.exchange/production.json
-// staging: https://metadata.perp.exchange/staging.json
-const PRODUCTION_CONTRACTS = {}
-const STAGING_CONTRACTS = {}
-
-export const CONTRACT_ADDRESS = ((stage: Stage) =>
-    ({
-        [Stage.Production]: PRODUCTION_CONTRACTS,
-        [Stage.Staging]: STAGING_CONTRACTS,
-        [Stage.Development]: STAGING_CONTRACTS,
-    }[stage]))(getStage())
-
 interface AddressMap {
-    uniV2Factory: string
+    uniswapV2ERC20Factory: string
     clearingHouseConfig: string
     marketRegistry: string
     orderBook: string
@@ -44,89 +34,77 @@ interface AddressMap {
     usdc: string
 }
 
-function getAddressFromConfig(config: any): AddressMap {
-    const {
-        layers: {
-            layer2: {
-                contracts: {
-                    uniV2Factory,
-                    clearingHouseConfig,
-                    marketRegistry,
-                    orderBook,
-                    accountBalance,
-                    exchange,
-                    insuranceFund,
-                    vault,
-                    clearingHouse,
-                },
-                externalContracts: { tether, usdc },
-            },
-        },
-    } = config
+function getAddressFromChainId(chainId: number): AddressMap | undefined {
+    const layer2 = metadata.staging.layers.layer2 // TODO handle stag for both prod and staging
+    const networks = layer2.networks
+    const externalContracts = layer2.externalContracts
+
+    const contracts = networks.find(n => n.chainId === chainId)?.contracts
+
+    if (!contracts) {
+        console.log("This nework is not supported")
+        return
+    }
+
     return {
-        uniV2Factory,
-        clearingHouseConfig,
-        marketRegistry,
-        orderBook,
-        accountBalance,
-        exchange,
-        insuranceFund,
-        vault,
-        clearingHouse,
-        // uniV2Factory: uniV2Factory.address,
-        // clearingHouseConfig: clearingHouseConfig.address,
-        // marketRegistry: marketRegistry.address,
-        // orderBook: orderBook.address,
-        // accountBalance: accountBalance.address,
-        // exchange: exchange.address,
-        // insuranceFund: insuranceFund.address,
-        // vault: vault.address,
-        // clearingHouse: clearingHouse.address,
-        tether,
-        usdc,
+        uniswapV2ERC20Factory: contracts.uniswapV2ERC20Factory,
+        clearingHouseConfig: contracts.clearingHouseConfig,
+        marketRegistry: contracts.marketRegistry,
+        orderBook: contracts.orderBook,
+        accountBalance: contracts.accountBalance,
+        exchange: contracts.exchange,
+        insuranceFund: contracts.insuranceFund,
+        vault: contracts.vault,
+        clearingHouse: contracts.clearingHouse,
+        tether: externalContracts.tether,
+        usdc: externalContracts.usdc,
     }
 }
 
 const defaultContractInstance = {
     isInitialized: false,
     erc20: null,
-    clearingHouseViewer: null,
-    clearingHouse: null,
+    uniswap: null,
+    clearingHouseConfig: null,
+    marketRegistry: null,
+    orderBook: null,
+    accountBalance: null,
+    exchange: null,
     insuranceFund: null,
-    metaTxGateway: null,
-    amm: null,
+    vault: null,
+    clearingHouse: null,
     addressMap: null,
 }
 
 function useContract() {
-    const { config } = NewMetaData.useContainer()
     const { baseNetworkProvider } = Connection.useContainer()
+    const { chainId } = useWeb3React()
 
     return useMemo(() => {
-        if (!config || !baseNetworkProvider) {
+        if (!chainId || !baseNetworkProvider) {
             return defaultContractInstance
         }
 
-        const contractAddress = getAddressFromConfig(config)
+        const contractAddress = getAddressFromChainId(chainId)
 
-        return contractAddress
+        if (!contractAddress) return
 
-        // TODO prepare factory class for each contract
-
-        // const contractAddress = getAddressFromConfig(config)
-        // return {
-        //     isInitialized: true,
-        //     erc20: Erc20Factory.connect(constants.AddressZero, baseNetworkProvider),
-        //     insuranceFund: InsuranceFundFactory.connect(contractAddress.InsuranceFund, baseNetworkProvider),
-        //     ammReader: AmmReaderFactory.connect(contractAddress.AmmReader, baseNetworkProvider),
-        //     amm: AmmFactory.connect(constants.AddressZero, baseNetworkProvider) as Amm,
-        //     addressMap: contractAddress,
-        //     clearingHouseViewer: ClearingHouseViewerFactory.connect(
-        //         contractAddress.ClearingHouseViewer,
-        //         baseNetworkProvider,
-        //     ),
-        //     clearingHouse: ClearingHouseFactory.connect(contractAddress.ClearingHouse, baseNetworkProvider),
-        //     metaTxGateway: MetaTxGatewayFactory.connect(contractAddress.MetaTxGateway, baseNetworkProvider),
-        // }
-    }, [config, baseNetworkProvider])
+        return {
+            isInitialized: true,
+            erc20: Erc20Factory.connect(constants.AddressZero, baseNetworkProvider),
+            uniswap: UniswapV2ERC20Factory.connect(contractAddress.uniswapV2ERC20Factory, baseNetworkProvider),
+            clearingHouseConfig: ClearingHouseConfigFactory.connect(
+                contractAddress.clearingHouseConfig,
+                baseNetworkProvider,
+            ),
+            marketRegistry: MarketRegistryFactory.connect(contractAddress.marketRegistry, baseNetworkProvider),
+            orderBook: OrderBookFactory.connect(contractAddress.orderBook, baseNetworkProvider),
+            accountBalance: AccountBalanceFactory.connect(contractAddress.accountBalance, baseNetworkProvider),
+            exchange: ExchangeFactory.connect(contractAddress.exchange, baseNetworkProvider),
+            insuranceFund: InsuranceFundFactory.connect(contractAddress.insuranceFund, baseNetworkProvider),
+            vault: VaultFactory.connect(contractAddress.vault, baseNetworkProvider),
+            clearingHouse: ClearingHouseFactory.connect(contractAddress.clearingHouse, baseNetworkProvider),
+            addressMap: contractAddress,
+        }
+    }, [chainId, baseNetworkProvider])
 }

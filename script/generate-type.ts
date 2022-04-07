@@ -10,7 +10,7 @@ async function main() {
             cwd,
             rawConfig: {
                 files: `${__dirname}/../deps/perpdex-contract/artifacts/contracts/**/+([a-zA-Z0-9_]).json`,
-                outDir: "src/types/contracts",
+                outDir: "src/types/newContracts",
                 target: "ethers-v5",
             },
         }),

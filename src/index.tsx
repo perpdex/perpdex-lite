@@ -13,7 +13,7 @@ import { OldContract } from "./container/oldContract"
 import { NewContract } from "./container/newContract"
 import { Fonts } from "component/Font"
 import { Global } from "container/global"
-import { OldMetaData, NewMetaData } from "./container/metadata"
+import { OldMetaData } from "./container/metadata"
 import { Position } from "container/position"
 import ReactDOM from "react-dom"
 import { Trade } from "container/trade"
@@ -43,7 +43,6 @@ const Providers = ((...providers: any[]) => ({ children }: { children: React.Rea
     }, children)
 })(
     OldMetaData.Provider,
-    NewMetaData.Provider,
     { component: ChakraProvider, props: { theme } },
     Web3Provider,
     BrowserRouter,
