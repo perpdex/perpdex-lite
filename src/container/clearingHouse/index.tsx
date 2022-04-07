@@ -1,59 +1,59 @@
-import { Dir, Network } from "../../constant"
+import { Decimal, Dir, Network, Side } from "../../constant"
 import { big2Decimal, bigNum2Decimal } from "util/format"
 import { useCallback, useMemo } from "react"
 
 import { Big } from "big.js"
 import { BigNumber } from "ethers"
-import { ClearingHouseActions } from "./type"
+import { ClearingHousePerpdexActions } from "./type"
 import { Connection } from "../connection"
-import { OldContract } from "../oldContract"
-import { ContractExecutor } from "./ContractExecutor"
+import { NewContract } from "../newContract"
+import { ContractExecutorPerpdex } from "./ContractExecutorPerpdex"
 import { Transaction } from "../transaction"
 import { createContainer } from "unstated-next"
 
 export const ClearingHouse = createContainer(useClearingHouse)
 
 export interface Executors {
-    [Network.Xdai]: ClearingHouseActions
+    [Network.Mumbai]: ClearingHousePerpdexActions
+    // [Network.Xdai]: ClearingHousePerpdexActions,
 }
 
 function useClearingHouse() {
     const { signer } = Connection.useContainer()
-    const { clearingHouse, metaTxGateway } = OldContract.useContainer()
+    const { clearingHouse } = NewContract.useContainer()
     const { execute } = Transaction.useContainer()
 
     const executors: Executors | null = useMemo(() => {
-        if (!clearingHouse || !metaTxGateway || !signer) {
+        if (!clearingHouse || !signer) {
             return null
         }
         return {
-            [Network.Xdai]: new ContractExecutor(clearingHouse, signer),
+            [Network.Mumbai]: new ContractExecutorPerpdex(clearingHouse, signer),
         }
-    }, [clearingHouse, metaTxGateway, signer])
+    }, [clearingHouse, void 0, signer])
 
     const currentExecutor = useMemo(() => {
-        return executors ? executors[Network.Xdai] : null
+        return executors ? executors[Network.Mumbai] : null
     }, [executors])
 
     const closePosition = useCallback(
-        (ammAddress: string, quoteAssetAmountLimit: Big) => {
+        (baseToken: string, quoteAmountBound: Big) => {
             if (currentExecutor) {
-                execute(currentExecutor.closePosition(ammAddress, big2Decimal(quoteAssetAmountLimit)))
+                execute(currentExecutor.closePosition(baseToken, big2Decimal(quoteAmountBound)))
             }
         },
         [currentExecutor, execute],
     )
 
     const openPosition = useCallback(
-        (dir: Dir, ammAddress: string, quoteAssetAmount: Big, leverage: Big, minBaseAssetAmount: Big) => {
+        (baseToken: string, side: Side, baseAmount: Big, quoteAmountBound: Big) => {
             if (currentExecutor) {
                 execute(
                     currentExecutor.openPosition(
-                        ammAddress,
-                        dir,
-                        big2Decimal(quoteAssetAmount),
-                        big2Decimal(leverage),
-                        big2Decimal(minBaseAssetAmount),
+                        baseToken,
+                        side,
+                        big2Decimal(baseAmount),
+                        big2Decimal(quoteAmountBound),
                     ),
                 )
             }
@@ -61,21 +61,34 @@ function useClearingHouse() {
         [currentExecutor, execute],
     )
 
-    const addMargin = useCallback(
-        (ammAddress: string, increaseMargin: BigNumber) => {
+    const addLiquidity = useCallback(
+        (baseToken: string, base: Big, quote: Big, minBase: Big, minQuote: Big) => {
             if (currentExecutor) {
-                const d_increaseMargin = bigNum2Decimal(increaseMargin)
-                execute(currentExecutor.addMargin(ammAddress, d_increaseMargin))
+                execute(
+                    currentExecutor.addLiquidity(
+                        baseToken,
+                        big2Decimal(base),
+                        big2Decimal(quote),
+                        big2Decimal(minBase),
+                        big2Decimal(minQuote),
+                    ),
+                )
             }
         },
         [currentExecutor, execute],
     )
 
-    const removeMargin = useCallback(
-        (ammAddress: string, reduceMargin: BigNumber) => {
+    const removeLiquidity = useCallback(
+        (baseToken: string, liquidity: Big, minBase: Big, minQuote: Big) => {
             if (currentExecutor) {
-                const d_reduceMargin = bigNum2Decimal(reduceMargin)
-                execute(currentExecutor.removeMargin(ammAddress, d_reduceMargin))
+                execute(
+                    currentExecutor.removeLiquidity(
+                        baseToken,
+                        big2Decimal(liquidity),
+                        big2Decimal(minBase),
+                        big2Decimal(minQuote),
+                    ),
+                )
             }
         },
         [currentExecutor, execute],
@@ -84,7 +97,7 @@ function useClearingHouse() {
     return {
         openPosition,
         closePosition,
-        addMargin,
-        removeMargin,
+        addLiquidity,
+        removeLiquidity,
     }
 }
