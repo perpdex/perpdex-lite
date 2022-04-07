@@ -9,10 +9,11 @@ import { BrowserRouter } from "react-router-dom"
 import { ChakraProvider } from "@chakra-ui/react"
 import { ClearingHouse } from "container/clearingHouse"
 import { Connection } from "./container/connection"
-import { Contract } from "./container/contract"
+import { OldContract } from "./container/oldContract"
+import { NewContract } from "./container/newContract"
 import { Fonts } from "component/Font"
 import { Global } from "container/global"
-import { MetaData } from "./container/metadata"
+import { OldMetaData } from "./container/metadata"
 import { Position } from "container/position"
 import ReactDOM from "react-dom"
 import { Trade } from "container/trade"
@@ -41,7 +42,7 @@ const Providers = ((...providers: any[]) => ({ children }: { children: React.Rea
         return <Provider {...props}>{providers}</Provider>
     }, children)
 })(
-    MetaData.Provider,
+    OldMetaData.Provider,
     { component: ChakraProvider, props: { theme } },
     Web3Provider,
     BrowserRouter,
@@ -49,7 +50,8 @@ const Providers = ((...providers: any[]) => ({ children }: { children: React.Rea
     User.Provider,
     Connection.Provider,
     Transaction.Provider,
-    Contract.Provider,
+    OldContract.Provider,
+    NewContract.Provider,
     Amm.Provider,
     ClearingHouse.Provider,
     Trade.Provider,

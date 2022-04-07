@@ -6,7 +6,7 @@ import { Big } from "big.js"
 import { BigNumber } from "ethers"
 import { ClearingHouseActions } from "./type"
 import { Connection } from "../connection"
-import { Contract } from "../contract"
+import { OldContract } from "../oldContract"
 import { ContractExecutor } from "./ContractExecutor"
 import { Transaction } from "../transaction"
 import { createContainer } from "unstated-next"
@@ -19,7 +19,7 @@ export interface Executors {
 
 function useClearingHouse() {
     const { signer } = Connection.useContainer()
-    const { clearingHouse, metaTxGateway } = Contract.useContainer()
+    const { clearingHouse, metaTxGateway } = OldContract.useContainer()
     const { execute } = Transaction.useContainer()
 
     const executors: Executors | null = useMemo(() => {

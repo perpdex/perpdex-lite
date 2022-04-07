@@ -2,7 +2,7 @@ import { isAddress } from "@ethersproject/address"
 import Big from "big.js"
 import { BIG_ZERO, Dir, PnlCalcOption } from "constant"
 import { Connection } from "container/connection"
-import { Contract } from "container/contract"
+import { OldContract } from "container/oldContract"
 import { useCallback, useEffect, useState } from "react"
 import { decimal2Big } from "util/format"
 import { Contract as MulticallContract } from "ethers-multicall"
@@ -10,8 +10,8 @@ import { big2Decimal } from "util/format"
 import ClearingHouseViewerArtifact from "@perp/contract/build/contracts/src/ClearingHouseViewer.sol/ClearingHouseViewer.json"
 
 export function useOpenedPositionSize(address: string) {
-    const { addressMap, amm } = Contract.useContainer()
-    const { account, xDaiMulticallProvider } = Connection.useContainer()
+    const { addressMap, amm } = OldContract.useContainer()
+    const { account, multicallNetworkProvider } = Connection.useContainer()
 
     const [size, setSize] = useState<Big | null>(null)
     const [margin, setMargin] = useState<Big | null>(null)
@@ -20,7 +20,7 @@ export function useOpenedPositionSize(address: string) {
 
     const updatePositionSize = useCallback(async () => {
         if (
-            xDaiMulticallProvider !== null &&
+            multicallNetworkProvider !== null &&
             amm !== null &&
             addressMap !== null &&
             isAddress(addressMap.ClearingHouseViewer) &&
@@ -32,7 +32,7 @@ export function useOpenedPositionSize(address: string) {
                 addressMap.ClearingHouseViewer,
                 ClearingHouseViewerArtifact.abi,
             )
-            const data = await xDaiMulticallProvider.all([
+            const data = await multicallNetworkProvider.all([
                 clearingHouseViewerContract.getPersonalPositionWithFundingPayment(address, account),
                 clearingHouseViewerContract.getUnrealizedPnl(address, account, PnlCalcOption.SpotPrice),
             ])
@@ -55,7 +55,7 @@ export function useOpenedPositionSize(address: string) {
             setUnrealizedPnl(decimal2Big(unrealizedPnl))
             setOutputPrice(_outputPrice)
         }
-    }, [xDaiMulticallProvider, amm, addressMap, account, address])
+    }, [multicallNetworkProvider, amm, addressMap, account, address])
 
     useEffect(() => {
         updatePositionSize()

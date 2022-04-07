@@ -3,7 +3,6 @@ import React, { useEffect } from "react"
 import { useCallback, useState } from "react"
 
 import { BigNumber } from "ethers"
-import { CHAIN_ID } from "connector"
 import { Connection } from "container/connection"
 import { ContractTransaction } from "@ethersproject/contracts"
 import { ExternalLink } from "component/ExternalLink"
@@ -66,8 +65,7 @@ function useTransaction() {
         state: { address },
     } = User.useContainer()
 
-    const { xDaiProvider, ethProvider, chainId } = Connection.useContainer()
-    const provider = chainId === CHAIN_ID.XDai ? xDaiProvider : ethProvider
+    const { baseNetworkProvider } = Connection.useContainer()
 
     const resetTxStatus = useCallback(() => {
         setIsLoading(false)
@@ -78,9 +76,11 @@ function useTransaction() {
     // monitor latestTx
     useEffect(() => {
         async function checkReceipt(triedTimes: number) {
+            if (!baseNetworkProvider) return
+
             const { txHash, successTitle, successDesc } = JSON.parse(latestTxData)
             try {
-                const receipt = await provider.getTransactionReceipt(txHash)
+                const receipt = await baseNetworkProvider.getTransactionReceipt(txHash)
                 if (receipt) {
                     resetTxStatus()
                     notifySuccess({
@@ -111,7 +111,7 @@ function useTransaction() {
                 checkReceipt(0)
             }
         }
-    }, [resetTxStatus, isInitialized, latestTxData, notifyError, notifySuccess, provider, setLatestTxData])
+    }, [resetTxStatus, isInitialized, latestTxData, notifyError, notifySuccess, baseNetworkProvider, setLatestTxData])
 
     const preExecute = useCallback((option?: LatestTx) => {
         const infoTitle = option?.infoMsg?.title || defaultOption.infoMsg.title

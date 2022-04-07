@@ -1,7 +1,7 @@
 import { Heading, Box, Table, Tbody, Tr, Td } from "@chakra-ui/react"
 import { Contract as MulticallContract } from "ethers-multicall"
 import { Connection } from "container/connection"
-import { Contract } from "container/contract"
+import { OldContract } from "container/oldContract"
 import { Position } from "container/position"
 import { useInterval } from "hook/useInterval"
 import { useCallback, useEffect, useMemo, useState } from "react"
@@ -21,19 +21,19 @@ function UpdatedInfo() {
     const {
         state: { address, quoteAssetSymbol },
     } = Position.useContainer()
-    const { account, xDaiMulticallProvider } = Connection.useContainer()
-    const { addressMap } = Contract.useContainer()
+    const { account, multicallNetworkProvider } = Connection.useContainer()
+    const { addressMap } = OldContract.useContainer()
     const { marginDir: adjustMarginDir, margin: adjustMargin } = Margin.useContainer()
     const [marginInfo, setMarginInfo] = useState<MarginInfo | null>(null)
 
     const getMarginInfo = useCallback(async () => {
-        if (account && addressMap && address && xDaiMulticallProvider) {
+        if (account && addressMap && address && multicallNetworkProvider) {
             /* get { margin, openNotional } from clearingHouseViewerContract */
             const clearingHouseViewerContract = new MulticallContract(
                 addressMap.ClearingHouseViewer,
                 ClearingHouseViewerArtifact.abi,
             )
-            const rawData = await xDaiMulticallProvider.all([
+            const rawData = await multicallNetworkProvider.all([
                 clearingHouseViewerContract.getPersonalPositionWithFundingPayment(address, account),
                 clearingHouseViewerContract.getMarginRatio(address, account),
             ])
@@ -49,7 +49,7 @@ function UpdatedInfo() {
         } else {
             setMarginInfo(null)
         }
-    }, [account, address, addressMap, xDaiMulticallProvider])
+    }, [account, address, addressMap, multicallNetworkProvider])
 
     useEffect(() => {
         getMarginInfo()

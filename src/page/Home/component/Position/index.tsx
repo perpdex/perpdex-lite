@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react"
 import { Amm } from "container/amm"
 import ClearingHouseViewerArtifact from "@perp/contract/build/contracts/src/ClearingHouseViewer.sol/ClearingHouseViewer.json"
 import { Connection } from "container/connection"
-import { Contract } from "container/contract"
+import { OldContract } from "container/oldContract"
 import NoPosition from "./NoPosition"
 import NoWallet from "./NoWallet"
 import PositionUnit from "./PositionUnit"
@@ -14,13 +14,13 @@ import { decimal2Big } from "util/format"
 import { useInterval } from "@chakra-ui/hooks"
 
 function Position() {
-    const { account, xDaiMulticallProvider } = Connection.useContainer()
-    const { addressMap } = Contract.useContainer()
+    const { account, multicallNetworkProvider } = Connection.useContainer()
+    const { addressMap } = OldContract.useContainer()
     const { ammMap } = Amm.useContainer()
     const [positionInfo, setPositionInfo] = useState<PositionInfo[]>([])
 
     const getTraderPositionInfo = useCallback(async () => {
-        if (addressMap !== null && addressMap.ClearingHouseViewer && ammMap && account && xDaiMulticallProvider) {
+        if (addressMap !== null && addressMap.ClearingHouseViewer && ammMap && account && multicallNetworkProvider) {
             try {
                 /* get address list from clearing house contract */
                 const clearingHouseViewerContract = new MulticallContract(
@@ -39,7 +39,7 @@ function Position() {
                  * think about slicing the one big multicall request,
                  * and change the processedPositionInfo structure below.
                  */
-                const rawPositionInfo = await xDaiMulticallProvider.all([
+                const rawPositionInfo = await multicallNetworkProvider.all([
                     /* dataGroup1: { size, margin, openNotional } = clearingHouseViewerContract.getPersonalPositionWithFundingPayment */
                     ...((sortedAmmList.map(amm =>
                         clearingHouseViewerContract.getPersonalPositionWithFundingPayment(amm.address, account),
@@ -74,7 +74,7 @@ function Position() {
                  * so far we separate "getMarginRatio" until the following issue is fixed
                  * https://github.com/perpetual-protocol/perp-contract/issues/475
                  */
-                const marginRatioList = await xDaiMulticallProvider.all(
+                const marginRatioList = await multicallNetworkProvider.all(
                     (_positionInfo.map(position =>
                         clearingHouseViewerContract.getMarginRatio(position.address, account),
                     ) as unknown) as ContractCall[],
@@ -90,7 +90,7 @@ function Position() {
         } else if (positionInfo.length !== 0) {
             setPositionInfo([])
         }
-    }, [account, addressMap, ammMap, positionInfo.length, xDaiMulticallProvider])
+    }, [account, addressMap, ammMap, positionInfo.length, multicallNetworkProvider])
 
     useEffect(() => {
         getTraderPositionInfo()

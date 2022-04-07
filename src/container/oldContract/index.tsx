@@ -1,6 +1,6 @@
 import { getStage, Stage } from "constant/stage"
 import { Connection } from "container/connection"
-import { MetaData } from "container/metadata"
+import { OldMetaData } from "container/metadata"
 import { constants } from "ethers"
 import { useMemo } from "react"
 import {
@@ -15,7 +15,7 @@ import {
 import { createContainer } from "unstated-next"
 import { Amm } from "types/contracts/Amm"
 
-export const Contract = createContainer(useContract)
+export const OldContract = createContainer(useContract)
 
 // TODO: Should grab contract address info from metadata config.
 // production: https://metadata.perp.exchange/production.json
@@ -71,27 +71,27 @@ const defaultContractInstance = {
 }
 
 function useContract() {
-    const { config } = MetaData.useContainer()
-    const { ethProvider, xDaiProvider } = Connection.useContainer()
+    const { config } = OldMetaData.useContainer()
+    const { baseNetworkProvider } = Connection.useContainer()
 
     return useMemo(() => {
-        if (!config) {
+        if (!config || !baseNetworkProvider) {
             return defaultContractInstance
         }
         const contractAddress = getAddressFromConfig(config)
         return {
             isInitialized: true,
-            erc20: {
-                Eth: Erc20Factory.connect(constants.AddressZero, ethProvider),
-                XDai: Erc20Factory.connect(constants.AddressZero, xDaiProvider),
-            },
-            insuranceFund: InsuranceFundFactory.connect(contractAddress.InsuranceFund, xDaiProvider),
-            ammReader: AmmReaderFactory.connect(contractAddress.AmmReader, xDaiProvider),
-            amm: AmmFactory.connect(constants.AddressZero, xDaiProvider) as Amm,
+            erc20: Erc20Factory.connect(constants.AddressZero, baseNetworkProvider),
+            insuranceFund: InsuranceFundFactory.connect(contractAddress.InsuranceFund, baseNetworkProvider),
+            ammReader: AmmReaderFactory.connect(contractAddress.AmmReader, baseNetworkProvider),
+            amm: AmmFactory.connect(constants.AddressZero, baseNetworkProvider) as Amm,
             addressMap: contractAddress,
-            clearingHouseViewer: ClearingHouseViewerFactory.connect(contractAddress.ClearingHouseViewer, xDaiProvider),
-            clearingHouse: ClearingHouseFactory.connect(contractAddress.ClearingHouse, xDaiProvider),
-            metaTxGateway: MetaTxGatewayFactory.connect(contractAddress.MetaTxGateway, xDaiProvider),
+            clearingHouseViewer: ClearingHouseViewerFactory.connect(
+                contractAddress.ClearingHouseViewer,
+                baseNetworkProvider,
+            ),
+            clearingHouse: ClearingHouseFactory.connect(contractAddress.ClearingHouse, baseNetworkProvider),
+            metaTxGateway: MetaTxGatewayFactory.connect(contractAddress.MetaTxGateway, baseNetworkProvider),
         }
-    }, [config, ethProvider, xDaiProvider])
+    }, [config, baseNetworkProvider])
 }

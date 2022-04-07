@@ -2,7 +2,7 @@ import { identify, reset } from "../../lib/segment/base"
 import { useCallback, useEffect, useReducer, useRef, useState } from "react"
 
 import { AbstractConnector } from "@web3-react/abstract-connector"
-import { CHAIN_ID } from "../../connector"
+import { validateSupportedChainId } from "../../connector"
 import { STORAGE_KEY } from "../../constant"
 import { SUPPORTED_WALLETS } from "constant/wallet"
 import { createContainer } from "unstated-next"
@@ -88,8 +88,9 @@ function useUser() {
         if (active && account && chainId) {
             dispatch({ type: ACTIONS.LOGIN_SUCCESS, payload: { address: account } })
             identify(account)
-            const isWrongNetwork = chainId !== CHAIN_ID.XDai
-            if (isWrongNetwork) {
+
+            const networkValidated = validateSupportedChainId(chainId)
+            if (!networkValidated) {
                 // @ts-ignore
                 wrongNetworkRef.current = notifyError({
                     title: "Wrong network",

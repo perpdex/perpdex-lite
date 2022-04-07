@@ -4,15 +4,15 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { AmmError } from "util/error"
 import Big from "big.js"
 import { Connection } from "container/connection"
-import { Contract } from "container/contract"
+import { OldContract } from "container/oldContract"
 import { Dir } from "constant"
 import { Contract as MulticallContract } from "ethers-multicall"
 import { isAddress } from "@ethersproject/address"
 import { useContractEvent } from "./useContractEvent"
 
 export function useRealtimeAmm(address: string, name: string) {
-    const { xDaiMulticallProvider } = Connection.useContainer()
-    const { amm } = Contract.useContainer()
+    const { multicallNetworkProvider } = Connection.useContainer()
+    const { amm } = OldContract.useContainer()
     const [baseAssetReserve, setBaseAssetReserve] = useState<Big | null>(null)
     const [quoteAssetReserve, setQuoteAssetReserve] = useState<Big | null>(null)
 
@@ -51,9 +51,9 @@ export function useRealtimeAmm(address: string, name: string) {
 
     useEffect(() => {
         async function getAssetReserve() {
-            if (xDaiMulticallProvider !== null && amm !== null && isAddress(address)) {
+            if (multicallNetworkProvider !== null && amm !== null && isAddress(address)) {
                 const multiContract = new MulticallContract(address, amm.interface.fragments)
-                const [quoteAssetReserve, baseAssetReserve] = await xDaiMulticallProvider.all([
+                const [quoteAssetReserve, baseAssetReserve] = await multicallNetworkProvider.all([
                     multiContract.quoteAssetReserve(),
                     multiContract.baseAssetReserve(),
                 ])
@@ -62,7 +62,7 @@ export function useRealtimeAmm(address: string, name: string) {
             }
         }
         getAssetReserve()
-    }, [address, amm, xDaiMulticallProvider])
+    }, [address, amm, multicallNetworkProvider])
 
     /* will receive [quoteAssetReserve, baseAssetReserve, timestamp] */
     useContractEvent(contract, "ReserveSnapshotted", (quoteAssetReserve, baseAssetReserve, _) => {
