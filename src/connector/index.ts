@@ -24,7 +24,7 @@ export const supportedChains = {
 }
 
 // the app cannot connect to network where contracts are not deployed
-const deployedChains = [supportedChains.XDai]
+const deployedChains = [supportedChains.XDai, supportedChains.Mumbai, supportedChains.Rinkeby]
 
 export const supportedChainIds = Object.values(supportedChains)
 
@@ -33,8 +33,6 @@ const {
     REACT_APP_RINKEBY_RPC_URL,
     REACT_APP_XDAI_RPC_URL,
     REACT_APP_MUMBAI_RPC_URL,
-    REACT_APP_JSONBIN_TMP_CONFIG_URL,
-    REACT_APP_JSONBIN_TMP_X_MASTER_KEY,
 } = process.env
 
 const RPC_URLS = {
@@ -42,13 +40,6 @@ const RPC_URLS = {
     [supportedChains.Rinkeby]: REACT_APP_RINKEBY_RPC_URL!,
     [supportedChains.XDai]: REACT_APP_XDAI_RPC_URL!,
     [supportedChains.Mumbai]: REACT_APP_MUMBAI_RPC_URL!,
-}
-
-console.log("@@@@ ", REACT_APP_MAINNET_RPC_URL, REACT_APP_JSONBIN_TMP_CONFIG_URL, REACT_APP_JSONBIN_TMP_X_MASTER_KEY)
-
-export const JSONBIN = {
-    url: REACT_APP_JSONBIN_TMP_CONFIG_URL,
-    key: REACT_APP_JSONBIN_TMP_X_MASTER_KEY,
 }
 
 export const network = new NetworkConnector({
