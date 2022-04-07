@@ -7,7 +7,7 @@ export const metadata = {
                         name: "rinkeby",
                         chainId: 4,
                         contracts: {
-                            uniswapV2ERC20Factory: "0x134148f060b77CFCBe1d56DF3f2d25795F7C1B2F",
+                            uniswapV2Factory: "0x134148f060b77CFCBe1d56DF3f2d25795F7C1B2F",
                             clearingHouseConfig: "0x0d7c2c0c563d3d38F6BE467829431ea1EA0E8509",
                             marketRegistry: "0x4D1AE9c1A640416921DF7d8C2E81cb4ecAAdeA79",
                             orderBook: "0x1Ca8Aa3A8E12602f2b4c7AbD9ea6D0596ff51a2d",
@@ -22,7 +22,7 @@ export const metadata = {
                         name: "mumbai",
                         chainId: 80001,
                         contracts: {
-                            uniswapV2ERC20Factory: "0x17E97c09D858BE1e7C57fec1ED12447D05ec94F4",
+                            uniswapV2Factory: "0x17E97c09D858BE1e7C57fec1ED12447D05ec94F4",
                             clearingHouseConfig: "0x06cf9eEC832f65cfbfe88AE5595beaF97bf011a7",
                             marketRegistry: "0x28AB973Ff53fcBfc39Ef7b3a62deFa31C1ae5C77",
                             orderBook: "0xb7b1cbBf913D60C6BB9E5839C68B2ff632CD9FC9",

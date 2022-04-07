@@ -3,7 +3,7 @@ import { metadata } from "constant"
 import { constants } from "ethers"
 import { useMemo } from "react"
 import {
-    UniswapV2ERC20__factory as UniswapV2ERC20Factory,
+    UniswapV2Factory__factory as UniswapV2FactoryFactory,
     ERC20__factory as Erc20Factory,
     ClearingHouseConfig__factory as ClearingHouseConfigFactory,
     MarketRegistry__factory as MarketRegistryFactory,
@@ -21,7 +21,7 @@ import { useWeb3React } from "@web3-react/core"
 export const NewContract = createContainer(useContract)
 
 interface AddressMap {
-    uniswapV2ERC20Factory: string
+    uniswapV2Factory: string
     clearingHouseConfig: string
     marketRegistry: string
     orderBook: string
@@ -47,7 +47,7 @@ function getAddressFromChainId(chainId: number): AddressMap | undefined {
     }
 
     return {
-        uniswapV2ERC20Factory: contracts.uniswapV2ERC20Factory,
+        uniswapV2Factory: contracts.uniswapV2Factory,
         clearingHouseConfig: contracts.clearingHouseConfig,
         marketRegistry: contracts.marketRegistry,
         orderBook: contracts.orderBook,
@@ -89,7 +89,7 @@ function useContract() {
         return {
             isInitialized: true,
             erc20: Erc20Factory.connect(constants.AddressZero, baseNetworkProvider),
-            uniswap: UniswapV2ERC20Factory.connect(contractAddress.uniswapV2ERC20Factory, baseNetworkProvider),
+            uniswapV2Factory: UniswapV2FactoryFactory.connect(contractAddress.uniswapV2Factory, baseNetworkProvider),
             clearingHouseConfig: ClearingHouseConfigFactory.connect(
                 contractAddress.clearingHouseConfig,
                 baseNetworkProvider,
