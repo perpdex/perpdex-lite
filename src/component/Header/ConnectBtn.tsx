@@ -11,9 +11,9 @@ function ConnectBtn() {
         state: { address },
     } = User.useContainer()
 
-    const { clearingHouse } = NewContract.useContainer()
+    const { isInitialized, clearingHouseConfig } = NewContract.useContainer()
 
-    console.log(clearingHouse)
+    console.log("This is the test of the existence of contracts", isInitialized, clearingHouseConfig)
 
     const {
         actions: { toggleWalletModal },

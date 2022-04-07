@@ -24,7 +24,7 @@ export const supportedChains = {
 }
 
 // the app cannot connect to network where contracts are not deployed
-const deployedChains = [supportedChains.XDai, supportedChains.Mumbai, supportedChains.Rinkeby]
+const deployedChains = [supportedChains.XDai, supportedChains.Mumbai] // failed for Rinkeby with network related errors somehow and investigation is needed
 
 export const supportedChainIds = Object.values(supportedChains)
 

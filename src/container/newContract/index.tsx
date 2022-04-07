@@ -81,13 +81,10 @@ function useContract() {
     const { chainId } = useWeb3React()
 
     return useMemo(() => {
-        if (!chainId || !baseNetworkProvider) {
-            return defaultContractInstance
-        }
+        if (!chainId || !baseNetworkProvider) return defaultContractInstance
 
         const contractAddress = getAddressFromChainId(chainId)
-
-        if (!contractAddress) return
+        if (!contractAddress) return defaultContractInstance
 
         return {
             isInitialized: true,

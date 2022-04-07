@@ -31,7 +31,11 @@ function useAmm() {
             }
 
             /* amm address list */
-            const rawAmmAddressList = await insuranceFund.getAllAmms()
+            let rawAmmAddressList
+            try {
+                rawAmmAddressList = await insuranceFund.getAllAmms()
+            } catch {}
+
             if (!rawAmmAddressList || rawAmmAddressList.length === 0) {
                 return
             }
