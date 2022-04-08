@@ -8,6 +8,7 @@ import ClosePositionModal from "component/ClosePositionModal"
 import AdjustMarginModal from "component/AdjustMarginModal"
 import BlockedRegionModal from "component/BlockedRegionModal"
 import UserAgreementModal from "component/UserAgreementModal"
+import AccountPerpdexModal from "component/AccountPerpdexModal"
 
 export const App = () => (
     <Container maxW="container.md" pb={20} px={6}>
@@ -24,5 +25,6 @@ export const App = () => (
         <UserAgreementModal />
         {/* NOTE: BlockedRegionModal should be in the last one */}
         <BlockedRegionModal />
+        <AccountPerpdexModal />
     </Container>
 )

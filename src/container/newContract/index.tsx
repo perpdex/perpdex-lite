@@ -1,10 +1,9 @@
 import { Connection } from "container/connection"
 import { metadata } from "constant"
-import { constants } from "ethers"
 import { useMemo } from "react"
 import {
-    UniswapV2Factory__factory as UniswapV2FactoryFactory,
     ERC20__factory as Erc20Factory,
+    UniswapV2Factory__factory as UniswapV2FactoryFactory,
     ClearingHouseConfig__factory as ClearingHouseConfigFactory,
     MarketRegistry__factory as MarketRegistryFactory,
     OrderBook__factory as OrderBookFactory,
@@ -20,6 +19,14 @@ import { useWeb3React } from "@web3-react/core"
 
 export const NewContract = createContainer(useContract)
 
+interface ERC20Map {
+    weth: string
+    usdc: string
+    chainlinkDataFeed: {
+        ethUsd: string
+    }
+}
+
 interface AddressMap {
     uniswapV2Factory: string
     clearingHouseConfig: string
@@ -30,15 +37,19 @@ interface AddressMap {
     insuranceFund: string
     vault: string
     clearingHouse: string
+    erc20: ERC20Map
 }
 
 function getAddressFromChainId(chainId: number): AddressMap | undefined {
     const layer2 = metadata.staging.layers.layer2 // TODO handle stag for both prod and staging
     const networks = layer2.networks
 
-    const contracts = networks.find(n => n.chainId === chainId)?.contracts
+    const network = networks.find(n => n.chainId === chainId)
 
-    if (!contracts) {
+    const contracts = network?.contracts
+    const erc20 = network?.erc20
+
+    if (!contracts || !erc20) {
         console.log("This nework is not supported")
         return
     }
@@ -53,12 +64,19 @@ function getAddressFromChainId(chainId: number): AddressMap | undefined {
         insuranceFund: contracts.insuranceFund,
         vault: contracts.vault,
         clearingHouse: contracts.clearingHouse,
+        erc20,
     }
 }
 
 const defaultContractInstance = {
     isInitialized: false,
-    erc20: null,
+    erc20: {
+        weth: null,
+        usdc: null,
+        chainlinkDataFeed: {
+            ethUsd: null,
+        },
+    },
     uniswap: null,
     clearingHouseConfig: null,
     marketRegistry: null,
@@ -83,7 +101,6 @@ function useContract() {
 
         return {
             isInitialized: true,
-            erc20: Erc20Factory.connect(constants.AddressZero, baseNetworkProvider),
             uniswapV2Factory: UniswapV2FactoryFactory.connect(contractAddress.uniswapV2Factory, baseNetworkProvider),
             clearingHouseConfig: ClearingHouseConfigFactory.connect(
                 contractAddress.clearingHouseConfig,
@@ -97,6 +114,13 @@ function useContract() {
             vault: VaultFactory.connect(contractAddress.vault, baseNetworkProvider),
             clearingHouse: ClearingHouseFactory.connect(contractAddress.clearingHouse, baseNetworkProvider),
             addressMap: contractAddress,
+            erc20: {
+                weth: Erc20Factory.connect(contractAddress.erc20.weth, baseNetworkProvider),
+                usdc: Erc20Factory.connect(contractAddress.erc20.usdc, baseNetworkProvider),
+                chainlinkDataFeed: {
+                    ethUsd: Erc20Factory.connect(contractAddress.erc20.chainlinkDataFeed.ethUsd, baseNetworkProvider),
+                },
+            },
         }
     }, [chainId, baseNetworkProvider])
 }

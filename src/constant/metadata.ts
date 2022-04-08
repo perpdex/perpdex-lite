@@ -7,7 +7,9 @@ export const metadata = {
                         name: "rinkeby",
                         chainId: 4,
                         contracts: {
+                            uniswapV2ERC20: "",
                             uniswapV2Factory: "0x134148f060b77CFCBe1d56DF3f2d25795F7C1B2F",
+                            uniswapV2Pair: "",
                             clearingHouseConfig: "0x0d7c2c0c563d3d38F6BE467829431ea1EA0E8509",
                             marketRegistry: "0x4D1AE9c1A640416921DF7d8C2E81cb4ecAAdeA79",
                             orderBook: "0x1Ca8Aa3A8E12602f2b4c7AbD9ea6D0596ff51a2d",
@@ -16,6 +18,13 @@ export const metadata = {
                             insuranceFund: "0x209Ad0924DB73c31B74eF9Eb966eb9633472befE",
                             vault: "0xA61B4A13C62A52915f601A2679529A7D73D5A8A9",
                             clearingHouse: "0x41D608C9bE7c751217BDc671BC7327D7DB366896",
+                        },
+                        erc20: {
+                            weth: "",
+                            usdc: "",
+                            chainlinkDataFeed: {
+                                ethUsd: "",
+                            },
                         },
                     },
                     {
@@ -31,6 +40,13 @@ export const metadata = {
                             insuranceFund: "0x23337067A0C3116947c036Be2ACbFceF5a5Ea88f",
                             vault: "0x2421C23ffCD2C2D831132670866A3bdc07265F16",
                             clearingHouse: "0x70B48EC7977f9Ceccb94ef8A9DCCf95D08d0A492",
+                        },
+                        erc20: {
+                            weth: "0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa",
+                            usdc: "0xe6b8a5CF854791412c1f6EFC7CAf629f5Df1c747",
+                            chainlinkDataFeed: {
+                                ethUsd: "0x0715A7794a1dc8e42615F059dD6e406A6594651A",
+                            },
                         },
                     },
                 ],

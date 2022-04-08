@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 
 import { Amm } from "container/amm"
 import Big from "big.js"
-import MyBalance from "./MyBalance"
+import MyBalancePerpdex from "./MyBalancePerpdex"
 import SmallFormLabel from "component/SmallFormLabel"
 import { Trade } from "container/trade"
 import { USDC_PRECISION } from "constant"
@@ -62,7 +62,7 @@ function Collateral() {
                         </InputRightElement>
                     </InputGroup>
                 </NumberInput>
-                <MyBalance setCollateral={_setCollateral} />
+                <MyBalancePerpdex setCollateral={_setCollateral} />
             </FormControl>
         ),
         [_collateral, handleOnInput, quoteAssetSymbol],
