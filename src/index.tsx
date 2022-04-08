@@ -23,6 +23,7 @@ import { Web3Provider } from "./container/web3"
 import reportWebVitals from "./reportWebVitals"
 import { setupSegment } from "./lib/segment"
 import theme from "./theme"
+import { LiquidityProvider } from "./container/liquidityProvider"
 
 declare global {
     interface Window {
@@ -56,6 +57,7 @@ const Providers = ((...providers: any[]) => ({ children }: { children: React.Rea
     ClearingHouse.Provider,
     Trade.Provider,
     Position.Provider,
+    LiquidityProvider.Provider,
 )
 
 ReactDOM.render(

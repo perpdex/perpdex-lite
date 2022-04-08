@@ -26,3 +26,6 @@ yarn-error.log*
 /script/tmp
 /.nova
 /.idea/
+
+# vscode
+/.vscode
