@@ -14,7 +14,7 @@ function LiquidityProvider() {
             <SimpleGrid columns={2} spacing={8} mt="6">
                 <Box borderStyle="solid" borderWidth="1px" borderRadius="12px" p="4">
                     <VStack spacing={6} p={0}>
-                        <Mining />
+                        {/*<Mining />*/}
                         <PoolInfo />
                     </VStack>
                 </Box>
