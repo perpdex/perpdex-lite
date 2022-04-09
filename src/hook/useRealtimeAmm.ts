@@ -55,7 +55,7 @@ export function useRealtimeAmm(address: string, name: string) {
             if (exchange !== null && isAddress(address)) {
                 try {
                     const sqrtPriceX96 = await exchange.getSqrtMarkPriceX96(address)
-                    setPrice(sqrtPriceX96ToPrice(bigNum2Big(sqrtPriceX96)))
+                    setPrice(sqrtPriceX96ToPrice(bigNum2Big(sqrtPriceX96, 0)))
                 } catch (err) {
                     console.log(err)
                     setPrice(Big(0))
@@ -79,7 +79,7 @@ export function useRealtimeAmm(address: string, name: string) {
             realizedPnl,
             sqrtPriceAfterX96,
         ) => {
-            setPrice(sqrtPriceX96ToPrice(bigNum2Big(sqrtPriceAfterX96)))
+            setPrice(sqrtPriceX96ToPrice(bigNum2Big(sqrtPriceAfterX96, 0)))
         },
     )
 
