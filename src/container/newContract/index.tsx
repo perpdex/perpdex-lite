@@ -5,13 +5,13 @@ import {
     ERC20__factory as Erc20Factory,
     UniswapV2Factory__factory as UniswapV2FactoryFactory,
     ClearingHouseConfig__factory as ClearingHouseConfigFactory,
-    MarketRegistry__factory as MarketRegistryFactory,
-    OrderBook__factory as OrderBookFactory,
-    AccountBalance__factory as AccountBalanceFactory,
-    Exchange__factory as ExchangeFactory,
+    MarketRegistryPerpdex__factory as MarketRegistryFactory,
+    OrderBookUniswapV2__factory as OrderBookFactory,
+    AccountBalancePerpdex__factory as AccountBalanceFactory,
+    ExchangePerpdex__factory as ExchangeFactory,
     InsuranceFund__factory as InsuranceFundFactory,
     Vault__factory as VaultFactory,
-    ClearingHouseCallee__factory as ClearingHouseFactory,
+    ClearingHousePerpdex__factory as ClearingHouseFactory,
 } from "types/newContracts"
 // import { Amm } from "types/contracts/Amm"
 import { createContainer } from "unstated-next"
@@ -34,6 +34,7 @@ interface AddressMap {
     insuranceFund: string
     vault: string
     clearingHouse: string
+    baseToken: string
     erc20: ERC20Map
 }
 
@@ -61,6 +62,7 @@ function getAddressFromChainId(chainId: number): AddressMap | undefined {
         insuranceFund: contracts.insuranceFund,
         vault: contracts.vault,
         clearingHouse: contracts.clearingHouse,
+        baseToken: contracts.baseToken,
         erc20: erc20,
     }
 }

@@ -9,6 +9,7 @@ import { Contract as MulticallContract } from "ethers-multicall"
 import { big2Decimal } from "util/format"
 import ClearingHouseViewerArtifact from "@perp/contract/build/contracts/src/ClearingHouseViewer.sol/ClearingHouseViewer.json"
 
+// address is base token address
 export function useOpenedPositionSize(address: string) {
     const { addressMap, amm } = OldContract.useContainer()
     const { account, multicallNetworkProvider } = Connection.useContainer()
@@ -32,27 +33,28 @@ export function useOpenedPositionSize(address: string) {
                 addressMap.ClearingHouseViewer,
                 ClearingHouseViewerArtifact.abi,
             )
-            const data = await multicallNetworkProvider.all([
-                clearingHouseViewerContract.getPersonalPositionWithFundingPayment(address, account),
-                clearingHouseViewerContract.getUnrealizedPnl(address, account, PnlCalcOption.SpotPrice),
-            ])
+            // const data = await multicallNetworkProvider.all([
+            //     clearingHouseViewerContract.getPersonalPositionWithFundingPayment(address, account),
+            //     clearingHouseViewerContract.getUnrealizedPnl(address, account, PnlCalcOption.SpotPrice),
+            // ])
 
-            const { size, margin } = data[0]
-            const unrealizedPnl = data[1]
+            // const { size, margin } = data[0]
+            // const unrealizedPnl = data[1]
 
-            const b_size = decimal2Big(size)
+            const b_size = Big(1)
 
             let _outputPrice = null
             if (b_size.eq(0)) {
                 _outputPrice = BIG_ZERO
             } else {
                 const dir = b_size.gt(0) ? Dir.AddToAmm : Dir.RemoveFromAmm
-                _outputPrice = decimal2Big(await amm.attach(address).getOutputPrice(dir, big2Decimal(b_size.abs())))
+                _outputPrice = Big(1)
+                // _outputPrice = decimal2Big(await amm.attach(address).getOutputPrice(dir, big2Decimal(b_size.abs())))
             }
 
             setSize(b_size)
-            setMargin(decimal2Big(margin))
-            setUnrealizedPnl(decimal2Big(unrealizedPnl))
+            setMargin(Big(2))
+            setUnrealizedPnl(Big(3))
             setOutputPrice(_outputPrice)
         }
     }, [multicallNetworkProvider, amm, addressMap, account, address])

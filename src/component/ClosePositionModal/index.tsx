@@ -23,7 +23,7 @@ import { ClearingHouse } from "container/clearingHouse"
 import { Trade } from "container/trade"
 import { Transaction } from "container/transaction"
 import { Connection } from "container/connection"
-import { OldContract } from "container/oldContract"
+import { NewContract } from "container/newContract"
 import { decimal2Big, big2Decimal, numberWithCommasUsdc, bigNum2Big } from "util/format"
 import AmmArtifact from "@perp/contract/build/contracts/src/Amm.sol/Amm.json"
 import ClearingHouseViewerArtifact from "@perp/contract/build/contracts/src/ClearingHouseViewer.sol/ClearingHouseViewer.json"
@@ -31,6 +31,7 @@ import { useInterval } from "hook/useInterval"
 import Big from "big.js"
 import { Dir } from "constant"
 import { Position } from "container/position"
+import { useRealtimeAmm } from "../../hook/useRealtimeAmm"
 
 interface ClosePositionInfo {
     notional: Big
@@ -41,14 +42,16 @@ interface ClosePositionInfo {
 }
 
 function ClosePositionModal() {
+    // address is base token address
     const {
         state: { baseAssetSymbol, quoteAssetSymbol, address, isClosePositionModalOpen },
         closeClosePositionModal,
     } = Position.useContainer()
-    const { account, multicallNetworkProvider } = Connection.useContainer()
-    const { addressMap } = OldContract.useContainer()
+    const { account } = Connection.useContainer()
+    const { addressMap, accountBalance } = NewContract.useContainer()
     const { closePosition } = ClearingHouse.useContainer()
     const { isLoading: isTxLoading } = Transaction.useContainer()
+    const { price } = useRealtimeAmm(address, baseAssetSymbol)
 
     const { slippage } = Trade.useContainer()
 
@@ -57,58 +60,43 @@ function ClosePositionModal() {
     const handleOnClick = useCallback(async () => {
         if (address && closePositionInfo !== null && closePositionInfo.notional && closePositionInfo.size) {
             const { notional, size } = closePositionInfo
-            const slippageLimit = notional.mul(slippage / 100)
-            const quoteLimit = size.gt(0) ? notional.sub(slippageLimit) : notional.add(slippageLimit)
+            const slippageLimit = notional.abs().mul(slippage / 100)
+            const quoteLimit = size.gt(0) ? notional.abs().sub(slippageLimit) : notional.abs().add(slippageLimit)
             closePosition(address, quoteLimit)
         }
     }, [address, closePosition, closePositionInfo, slippage])
 
     const getClosePositionInfo = useCallback(async () => {
-        if (account && addressMap && address && multicallNetworkProvider) {
-            /* get { size, margin, unrealizedPnl } from clearingHouseViewerContract */
-            const clearingHouseViewerContract = new MulticallContract(
-                addressMap.ClearingHouseViewer,
-                ClearingHouseViewerArtifact.abi,
-            )
-            const rawClearingHouseViewerData = await multicallNetworkProvider.all([
-                clearingHouseViewerContract.getPersonalPositionWithFundingPayment(address, account),
-                clearingHouseViewerContract.getUnrealizedPnl(address, account, PnlCalcOption.SpotPrice),
-            ])
-            const size = decimal2Big(rawClearingHouseViewerData[0].size)
-            const margin = decimal2Big(rawClearingHouseViewerData[0].margin)
-            const unrealizedPnl = decimal2Big(rawClearingHouseViewerData[1])
+        if (!account) return
+        if (!accountBalance) return
+        if (!address) return
+        if (!price) return
 
-            /* get { notional, tollRatio, spreadRatio } */
-            const ammContract = new MulticallContract(address, AmmArtifact.abi)
-            const dir: Dir = size.gt(0) ? Dir.AddToAmm : Dir.RemoveFromAmm
-            const rawAmmData = await multicallNetworkProvider.all([
-                ammContract.getOutputPrice(dir, big2Decimal(size.abs())),
-                ammContract.tollRatio(),
-                ammContract.spreadRatio(),
-            ])
-            const [notional, tollRatio, spreadRatio] = rawAmmData
-            const b_tollRatio = bigNum2Big(tollRatio)
-            const b_spreadRatio = bigNum2Big(spreadRatio)
-            const b_notional = decimal2Big(notional)
+        const [
+            takerPositionSizeRaw,
+            takerOpenNotionalRaw,
+            lastTwPremiumGrowthGlobalX96,
+        ] = await accountBalance.getAccountInfo(account, address)
 
-            /* calculate the toll fee for staker and the spread fee for insurance fund */
-            const tollFee = b_notional.mul(b_tollRatio)
-            const spreadFee = b_notional.mul(b_spreadRatio)
-            const fee = tollFee.add(spreadFee)
+        const size = bigNum2Big(takerPositionSizeRaw)
+        const takerOpenNotional = bigNum2Big(takerOpenNotionalRaw)
+        const margin = Big(0)
 
-            const _closePositionInfo = {
-                notional: b_notional,
-                size,
-                margin,
-                unrealizedPnl,
-                fee,
-            }
+        if (size.eq(0)) return
 
-            setClosePositionInfo(_closePositionInfo)
-        } else {
-            setClosePositionInfo(null)
+        const entryPrice = takerOpenNotional.abs().div(size.abs())
+        const unrealizedPnl = price.div(entryPrice).sub(1).mul(takerOpenNotional.mul(-1))
+
+        const info = {
+            notional: takerOpenNotional,
+            size,
+            margin,
+            unrealizedPnl,
+            fee: takerOpenNotional.mul(Big("0.003")),
         }
-    }, [account, address, addressMap, multicallNetworkProvider])
+
+        setClosePositionInfo(info)
+    }, [account, accountBalance, address, price])
 
     useEffect(() => {
         getClosePositionInfo()
@@ -191,7 +179,9 @@ function ClosePositionModal() {
                                         <Tr fontWeight="bold">
                                             <Td>Exit Price</Td>
                                             <Td isNumeric>
-                                                {exitPriceStr} {quoteAssetSymbol}
+                                                {/*{exitPriceStr} */}
+                                                {price?.toFixed(2)}
+                                                {quoteAssetSymbol}
                                             </Td>
                                         </Tr>
                                         <Tr>
@@ -250,6 +240,7 @@ function ClosePositionModal() {
             marginStr,
             pnlStr,
             totalStr,
+            price,
         ],
     )
 }

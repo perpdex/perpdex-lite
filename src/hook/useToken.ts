@@ -28,8 +28,12 @@ export function useToken(address: string, decimals: number, chainId: number) {
     useEffect(() => {
         async function fetchToken() {
             if (contract) {
-                const totalSupply = await contract.totalSupply()
-                setTotalSupply(bigNum2Big(totalSupply, decimals))
+                try {
+                    const totalSupply = await contract.totalSupply()
+                    setTotalSupply(bigNum2Big(totalSupply, decimals))
+                } catch (err) {
+                    console.log(err)
+                }
             }
         }
         fetchToken()
@@ -38,8 +42,12 @@ export function useToken(address: string, decimals: number, chainId: number) {
     useEffect(() => {
         async function fetchBalance() {
             if (contract && account) {
-                const balance = await contract.balanceOf(account)
-                setBalance(bigNum2Big(balance, decimals))
+                try {
+                    const balance = await contract.balanceOf(account)
+                    setBalance(bigNum2Big(balance, decimals))
+                } catch (err) {
+                    console.log(err)
+                }
             }
         }
         fetchBalance()

@@ -17,7 +17,7 @@ function TxInfoTable() {
 
     const ammAddress = selectedAmm?.address || ""
     const ammName = selectedAmm?.baseAssetSymbol || ""
-    const { quoteAssetReserve, baseAssetReserve } = useRealtimeAmm(ammAddress, ammName)
+    const { price } = useRealtimeAmm(ammAddress, ammName)
     const { size: openedSize, margin: openedMargin, unrealizedPnl, outputPrice } = useOpenedPositionSize(ammAddress)
 
     /* prepare data for UI */
@@ -34,11 +34,10 @@ function TxInfoTable() {
 
     const fee: Big | null = useMemo(() => {
         if (collateral !== null && selectedAmm !== null) {
-            const { tollRatio, spreadRatio } = selectedAmm
+            const { tollRatio } = selectedAmm
             const notional = collateral.mul(leverage)
             const tollFee = notional.mul(tollRatio)
-            const spreadFee = notional.mul(spreadRatio)
-            return tollFee.add(spreadFee)
+            return tollFee
         }
         return null
     }, [collateral, leverage, selectedAmm])
@@ -51,15 +50,15 @@ function TxInfoTable() {
     }, [entryPrice])
 
     const priceImpactStr = useMemo(() => {
-        if (entryPrice !== null && quoteAssetReserve !== null && baseAssetReserve !== null) {
-            const spotPrice = quoteAssetReserve.div(baseAssetReserve)
+        if (entryPrice !== null && price !== null) {
+            const spotPrice = price
             if (spotPrice.eq(0)) {
                 return "-"
             }
             return entryPrice.sub(spotPrice).div(spotPrice).mul(100).toFixed(2)
         }
         return "-"
-    }, [entryPrice, quoteAssetReserve, baseAssetReserve])
+    }, [entryPrice, price])
 
     const feeStr = useMemo(() => {
         if (fee !== null) {

@@ -21,7 +21,7 @@ function PoolInfoTable() {
                         </Popover>
                     </Text>
                     <Text fontSize="xl" color="green.400" fontWeight="bold" lineHeight="1.4">
-                        0.4% - 49.6%
+                        -
                     </Text>
                 </Box>
                 <Box>
@@ -37,7 +37,7 @@ function PoolInfoTable() {
                         </Popover>
                     </Text>
                     <Text fontSize="xl" color="green.400" fontWeight="bold" lineHeight="1.4">
-                        0.2% - 27.8%
+                        -
                     </Text>
                 </Box>
                 <Box>
@@ -45,7 +45,7 @@ function PoolInfoTable() {
                         Mark Price
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
-                        $46,446.1
+                        -
                     </Text>
                 </Box>
                 <Box>
@@ -61,7 +61,7 @@ function PoolInfoTable() {
                         Volume (24h)
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
-                        $2.2M
+                        $-,---
                     </Text>
                 </Box>
                 <Box>

@@ -27,10 +27,10 @@ function PositionUnit({ data }: PositionUnitProps) {
     /* prepare data for UI */
     const pnlStr = useMemo(() => unrealizedPnl.toFixed(2), [unrealizedPnl])
     const absSizeStr = useMemo(() => size.abs().toFixed(4), [size])
-    const leverageStr = useMemo(() => `${new Big(1).div(marginRatio).toFixed(2)}x`, [marginRatio])
+    // const leverageStr = useMemo(() => `${new Big(1).div(marginRatio).toFixed(2)}x`, [marginRatio])
     const entryPriceStr = useMemo(() => numberWithCommasUsdc(openNotional.div(size).abs()), [openNotional, size])
-    const marginStr = useMemo(() => numberWithCommasUsdc(margin), [margin])
-    const marginRatioStr = useMemo(() => `${marginRatio.mul(100).toFixed(1)}%`, [marginRatio])
+    // const marginStr = useMemo(() => numberWithCommasUsdc(margin), [margin])
+    // const marginRatioStr = useMemo(() => `${marginRatio.mul(100).toFixed(1)}%`, [marginRatio])
 
     return useMemo(
         () => (
@@ -43,18 +43,18 @@ function PositionUnit({ data }: PositionUnitProps) {
                     <SimpleGrid minChildWidth={["40%", "30%", "20%"]} spacing={4}>
                         <DataUnit label="PnL" value={pnlStr} />
                         <DataUnit label="Position Size" value={absSizeStr} />
-                        <DataUnit label="Leverage" value={leverageStr} />
+                        {/*<DataUnit label="Leverage" value={leverageStr} />*/}
                         <DataUnit label="Entry Price" value={entryPriceStr} />
                         {/* <DataUnit label="Est.Liq.Price" value="943" /> */}
-                        <DataUnit label="Margin" value={marginStr} />
-                        <DataUnit label="Margin Ratio" value={marginRatioStr} />
+                        {/*<DataUnit label="Margin" value={marginStr} />*/}
+                        {/*<DataUnit label="Margin Ratio" value={marginRatioStr} />*/}
                     </SimpleGrid>
                     <Box display={["block", "flex"]}>
                         <Button onClick={handleOnClosePositionClick} mb={[4, 0]} colorScheme="blue">
                             Close Position
                         </Button>
-                        <Spacer />
-                        <Button onClick={handleOnAdjustMarginClick}>Margin Management</Button>
+                        {/*<Spacer />*/}
+                        {/*<Button onClick={handleOnAdjustMarginClick}>Margin Management</Button>*/}
                     </Box>
                 </Stack>
             </Box>
@@ -66,9 +66,9 @@ function PositionUnit({ data }: PositionUnitProps) {
             handleOnAdjustMarginClick,
             handleOnClosePositionClick,
             isLongSide,
-            leverageStr,
-            marginRatioStr,
-            marginStr,
+            // leverageStr,
+            // marginRatioStr,
+            // marginStr,
             pnlStr,
         ],
     )

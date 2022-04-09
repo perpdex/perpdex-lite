@@ -5,92 +5,79 @@ import { useCallback, useEffect, useState } from "react"
 import { Amm } from "container/amm"
 import ClearingHouseViewerArtifact from "@perp/contract/build/contracts/src/ClearingHouseViewer.sol/ClearingHouseViewer.json"
 import { Connection } from "container/connection"
-import { OldContract } from "container/oldContract"
 import NoPosition from "./NoPosition"
 import NoWallet from "./NoWallet"
 import PositionUnit from "./PositionUnit"
 import { SimpleGrid } from "@chakra-ui/layout"
-import { decimal2Big } from "util/format"
+import { bigNum2Big, decimal2Big } from "util/format"
 import { useInterval } from "@chakra-ui/hooks"
+import { NewContract } from "../../../../container/newContract"
+import { useRealtimeAmm } from "../../../../hook/useRealtimeAmm"
+import Big from "big.js"
+import { BigNumber } from "ethers"
 
 function Position() {
-    const { account, multicallNetworkProvider } = Connection.useContainer()
-    const { addressMap } = OldContract.useContainer()
-    const { ammMap } = Amm.useContainer()
-    const [positionInfo, setPositionInfo] = useState<PositionInfo[]>([])
+    const { account } = Connection.useContainer()
+    const { addressMap, accountBalance } = NewContract.useContainer()
+    const { ammMap, selectedAmm } = Amm.useContainer()
+
+    const baseTokenAddress = selectedAmm?.address || ""
+    const baseAssetSymbol = selectedAmm?.baseAssetSymbol || ""
+    const quoteAssetSymbol = selectedAmm?.quoteAssetSymbol || ""
+    const { price } = useRealtimeAmm(baseTokenAddress, baseAssetSymbol)
+    const [positionInfo, setPositionInfo] = useState<PositionInfo>({
+        address: "",
+        baseAssetSymbol: "",
+        quoteAssetSymbol: "",
+        tradeLimitRatio: Big(0),
+        tollRatio: Big(0),
+        indexPrice: Big(0),
+
+        unrealizedPnl: Big(0),
+        size: Big(0),
+        margin: Big(0),
+        openNotional: Big(0),
+        marginRatio: Big(0),
+    })
 
     const getTraderPositionInfo = useCallback(async () => {
-        if (addressMap !== null && addressMap.ClearingHouseViewer && ammMap && account && multicallNetworkProvider) {
-            try {
-                /* get address list from clearing house contract */
-                const clearingHouseViewerContract = new MulticallContract(
-                    addressMap.ClearingHouseViewer,
-                    ClearingHouseViewerArtifact.abi,
-                )
+        if (!account) return
+        if (!accountBalance) return
+        if (!baseTokenAddress) return
+        if (!price) return
+        if (!selectedAmm) return
 
-                /* sort amm list by alphabetical */
-                const sortedAmmList = Object.values(ammMap).sort((a, b) =>
-                    a.baseAssetSymbol.localeCompare(b.baseAssetSymbol),
-                )
+        const [
+            takerPositionSizeRaw,
+            takerOpenNotionalRaw,
+            lastTwPremiumGrowthGlobalX96,
+        ] = await accountBalance.getAccountInfo(account, baseTokenAddress)
 
-                /**
-                 * NOTE:
-                 * If the rawPositionInfo data gonna take too much bandwidth,
-                 * think about slicing the one big multicall request,
-                 * and change the processedPositionInfo structure below.
-                 */
-                const rawPositionInfo = await multicallNetworkProvider.all([
-                    /* dataGroup1: { size, margin, openNotional } = clearingHouseViewerContract.getPersonalPositionWithFundingPayment */
-                    ...((sortedAmmList.map(amm =>
-                        clearingHouseViewerContract.getPersonalPositionWithFundingPayment(amm.address, account),
-                    ) as unknown) as ContractCall[]),
-                    /* dataGroup2: { unrealizedPnl } = clearingHouseViewerContract.getUnrealizedPnl */
-                    ...((sortedAmmList.map(amm =>
-                        clearingHouseViewerContract.getUnrealizedPnl(amm.address, account, PnlCalcOption.SpotPrice),
-                    ) as unknown) as ContractCall[]),
-                ])
-                const dataGroup1 = rawPositionInfo.splice(0, sortedAmmList.length)
-                const dataGroup2 = rawPositionInfo.splice(0, sortedAmmList.length)
+        const takerPositionSize = bigNum2Big(takerPositionSizeRaw)
+        const takerOpenNotional = bigNum2Big(takerOpenNotionalRaw)
 
-                /* add { size, margin, openNotional } info into sortedAmmList */
-                const processedPositionInfo: any[] = dataGroup1.map((info: any, index: number) => ({
-                    ...sortedAmmList[index],
-                    size: decimal2Big(info.size),
-                    margin: decimal2Big(info.margin),
-                    openNotional: decimal2Big(info.openNotional),
-                }))
+        const info = {
+            address: baseTokenAddress,
+            baseAssetSymbol: baseAssetSymbol,
+            quoteAssetSymbol: quoteAssetSymbol,
+            tradeLimitRatio: selectedAmm.tradeLimitRatio,
+            tollRatio: selectedAmm.tollRatio,
+            indexPrice: selectedAmm.indexPrice,
 
-                /* add { unrealizedPnl } info into sortedAmmList */
-                processedPositionInfo.forEach((info, index) => {
-                    info.unrealizedPnl = decimal2Big(dataGroup2[index])
-                })
-
-                /* filter out size zero case */
-                const _positionInfo: PositionInfo[] = processedPositionInfo.filter(info => !info.size.eq(0))
-
-                /**
-                 * NOTE:
-                 * Merge this section with the above xDaiMulticallProvider request,
-                 * so far we separate "getMarginRatio" until the following issue is fixed
-                 * https://github.com/perpetual-protocol/perp-contract/issues/475
-                 */
-                const marginRatioList = await multicallNetworkProvider.all(
-                    (_positionInfo.map(position =>
-                        clearingHouseViewerContract.getMarginRatio(position.address, account),
-                    ) as unknown) as ContractCall[],
-                )
-                _positionInfo.forEach((info, index) => {
-                    info.marginRatio = decimal2Big(marginRatioList[index])
-                })
-
-                setPositionInfo(_positionInfo)
-            } catch (err) {
-                console.error("Get Trader Position Info Err:", err)
-            }
-        } else if (positionInfo.length !== 0) {
-            setPositionInfo([])
+            unrealizedPnl: Big(0),
+            size: takerPositionSize,
+            margin: Big(0),
+            openNotional: takerOpenNotional,
+            marginRatio: Big(0.1),
         }
-    }, [account, addressMap, ammMap, positionInfo.length, multicallNetworkProvider])
+
+        if (!takerPositionSize.eq(0)) {
+            const entryPrice = takerOpenNotional.abs().div(takerPositionSize.abs())
+            info.unrealizedPnl = price.div(entryPrice).sub(1).mul(takerOpenNotional.mul(-1))
+        }
+
+        setPositionInfo(info)
+    }, [account, accountBalance, baseTokenAddress, price, selectedAmm])
 
     useEffect(() => {
         getTraderPositionInfo()
@@ -102,12 +89,10 @@ function Position() {
     return (
         <SimpleGrid columns={1} spacing={8}>
             {!account && <NoWallet />}
-            {account && positionInfo.length === 0 && <NoPosition />}
-            {account &&
-                positionInfo.length !== 0 &&
-                positionInfo.map((info: PositionInfo, index: number) => (
-                    <PositionUnit key={info.baseAssetSymbol} data={info} />
-                ))}
+            {account && positionInfo.size.eq(0) && <NoPosition />}
+            {account && positionInfo.size.gt(0) && (
+                <PositionUnit key={positionInfo.baseAssetSymbol} data={positionInfo} />
+            )}
         </SimpleGrid>
     )
 }
