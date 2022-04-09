@@ -23,7 +23,7 @@ import { ClearingHouse } from "container/clearingHouse"
 import { Trade } from "container/trade"
 import { Transaction } from "container/transaction"
 import { Connection } from "container/connection"
-import { OldContract } from "container/oldContract"
+import { NewContract } from "container/newContract"
 import { decimal2Big, big2Decimal, numberWithCommasUsdc, bigNum2Big } from "util/format"
 import AmmArtifact from "@perp/contract/build/contracts/src/Amm.sol/Amm.json"
 import ClearingHouseViewerArtifact from "@perp/contract/build/contracts/src/ClearingHouseViewer.sol/ClearingHouseViewer.json"
@@ -41,12 +41,13 @@ interface ClosePositionInfo {
 }
 
 function ClosePositionModal() {
+    // address is base token address
     const {
         state: { baseAssetSymbol, quoteAssetSymbol, address, isClosePositionModalOpen },
         closeClosePositionModal,
     } = Position.useContainer()
     const { account, multicallNetworkProvider } = Connection.useContainer()
-    const { addressMap } = OldContract.useContainer()
+    const { addressMap } = NewContract.useContainer()
     const { closePosition } = ClearingHouse.useContainer()
     const { isLoading: isTxLoading } = Transaction.useContainer()
 
@@ -66,35 +67,33 @@ function ClosePositionModal() {
     const getClosePositionInfo = useCallback(async () => {
         if (account && addressMap && address && multicallNetworkProvider) {
             /* get { size, margin, unrealizedPnl } from clearingHouseViewerContract */
-            const clearingHouseViewerContract = new MulticallContract(
-                addressMap.ClearingHouseViewer,
-                ClearingHouseViewerArtifact.abi,
-            )
-            const rawClearingHouseViewerData = await multicallNetworkProvider.all([
-                clearingHouseViewerContract.getPersonalPositionWithFundingPayment(address, account),
-                clearingHouseViewerContract.getUnrealizedPnl(address, account, PnlCalcOption.SpotPrice),
-            ])
-            const size = decimal2Big(rawClearingHouseViewerData[0].size)
-            const margin = decimal2Big(rawClearingHouseViewerData[0].margin)
-            const unrealizedPnl = decimal2Big(rawClearingHouseViewerData[1])
+            // const clearingHouseViewerContract = new MulticallContract(
+            //     addressMap.ClearingHouseViewer,
+            //     ClearingHouseViewerArtifact.abi,
+            // )
+            // const rawClearingHouseViewerData = await multicallNetworkProvider.all([
+            //     clearingHouseViewerContract.getPersonalPositionWithFundingPayment(address, account),
+            //     clearingHouseViewerContract.getUnrealizedPnl(address, account, PnlCalcOption.SpotPrice),
+            // ])
+
+            const size = Big(1)
+            const margin = Big(2)
+            const unrealizedPnl = Big(3)
 
             /* get { notional, tollRatio, spreadRatio } */
-            const ammContract = new MulticallContract(address, AmmArtifact.abi)
-            const dir: Dir = size.gt(0) ? Dir.AddToAmm : Dir.RemoveFromAmm
-            const rawAmmData = await multicallNetworkProvider.all([
-                ammContract.getOutputPrice(dir, big2Decimal(size.abs())),
-                ammContract.tollRatio(),
-                ammContract.spreadRatio(),
-            ])
-            const [notional, tollRatio, spreadRatio] = rawAmmData
-            const b_tollRatio = bigNum2Big(tollRatio)
-            const b_spreadRatio = bigNum2Big(spreadRatio)
-            const b_notional = decimal2Big(notional)
+            // const ammContract = new MulticallContract(address, AmmArtifact.abi)
+            // const dir: Dir = size.gt(0) ? Dir.AddToAmm : Dir.RemoveFromAmm
+            // const rawAmmData = await multicallNetworkProvider.all([
+            //     ammContract.getOutputPrice(dir, big2Decimal(size.abs())),
+            //     ammContract.tollRatio(),
+            // ])
+            // const [notional, tollRatio] = rawAmmData
+            const b_tollRatio = Big("0.003")
+            const b_notional = Big(1)
 
             /* calculate the toll fee for staker and the spread fee for insurance fund */
             const tollFee = b_notional.mul(b_tollRatio)
-            const spreadFee = b_notional.mul(b_spreadRatio)
-            const fee = tollFee.add(spreadFee)
+            const fee = tollFee
 
             const _closePositionInfo = {
                 notional: b_notional,
