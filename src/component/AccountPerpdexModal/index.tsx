@@ -15,6 +15,7 @@ import {
     InputRightElement,
     Text,
     FormControl,
+    Box,
 } from "@chakra-ui/react"
 import { AccountPerpdex } from "container/account"
 import ButtonPerpdex from "component/ButtonPerpdex"
@@ -32,6 +33,7 @@ function AccountPerpdexModal() {
         actions: { toggleAccountModal },
         deposit,
         withdraw,
+        balance,
     } = AccountPerpdex.useContainer()
 
     const [amount, setAmount] = useState<string>("")
@@ -71,6 +73,7 @@ function AccountPerpdexModal() {
                 <ModalCloseButton />
                 <ModalBody pb="1.5rem">
                     <Stack spacing={2}>
+                        <Box>Deposited balance: {balance?.toString()}</Box>
                         <FormControl id="margin">
                             <SmallFormLabel>Amount</SmallFormLabel>
                             <NumberInput value={amount} onInput={handleOnInput}>
