@@ -10,7 +10,7 @@ interface MyBalanceProps {
     setCollateral: Function
 }
 
-function MyBalancePerpdex({ setCollateral }: MyBalanceProps) {
+function MyBalance({ setCollateral }: MyBalanceProps) {
     const { account, chainId } = Connection.useContainer()
     const { addressMap } = NewContract.useContainer()
 
@@ -37,4 +37,4 @@ function MyBalancePerpdex({ setCollateral }: MyBalanceProps) {
     )
 }
 
-export default MyBalancePerpdex
+export default MyBalance

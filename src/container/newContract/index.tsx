@@ -20,11 +20,7 @@ import { useWeb3React } from "@web3-react/core"
 export const NewContract = createContainer(useContract)
 
 interface ERC20Map {
-    weth: string
     usdc: string
-    chainlinkDataFeed: {
-        ethUsd: string
-    }
 }
 
 interface AddressMap {
@@ -64,18 +60,14 @@ function getAddressFromChainId(chainId: number): AddressMap | undefined {
         insuranceFund: contracts.insuranceFund,
         vault: contracts.vault,
         clearingHouse: contracts.clearingHouse,
-        erc20,
+        erc20: erc20,
     }
 }
 
 const defaultContractInstance = {
     isInitialized: false,
     erc20: {
-        weth: null,
         usdc: null,
-        chainlinkDataFeed: {
-            ethUsd: null,
-        },
     },
     uniswap: null,
     clearingHouseConfig: null,

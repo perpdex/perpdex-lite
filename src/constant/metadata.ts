@@ -17,6 +17,9 @@ export const metadata = {
                             vault: "0xA61B4A13C62A52915f601A2679529A7D73D5A8A9",
                             clearingHouse: "0x41D608C9bE7c751217BDc671BC7327D7DB366896",
                         },
+                        erc20: {
+                            usdc: "",
+                        },
                     },
                     {
                         name: "mumbai",
