@@ -71,6 +71,11 @@ function Position() {
             marginRatio: Big(0.1),
         }
 
+        if (!takerPositionSize.eq(0)) {
+            const entryPrice = takerOpenNotional.abs().div(takerPositionSize.abs())
+            info.unrealizedPnl = price.div(entryPrice).sub(1).mul(takerOpenNotional.mul(-1))
+        }
+
         setPositionInfo(info)
     }, [account, accountBalance, baseTokenAddress, price, selectedAmm])
 

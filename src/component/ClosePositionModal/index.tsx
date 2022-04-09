@@ -31,6 +31,7 @@ import { useInterval } from "hook/useInterval"
 import Big from "big.js"
 import { Dir } from "constant"
 import { Position } from "container/position"
+import { useRealtimeAmm } from "../../hook/useRealtimeAmm"
 
 interface ClosePositionInfo {
     notional: Big
@@ -46,10 +47,11 @@ function ClosePositionModal() {
         state: { baseAssetSymbol, quoteAssetSymbol, address, isClosePositionModalOpen },
         closeClosePositionModal,
     } = Position.useContainer()
-    const { account, multicallNetworkProvider } = Connection.useContainer()
-    const { addressMap } = NewContract.useContainer()
+    const { account } = Connection.useContainer()
+    const { addressMap, accountBalance } = NewContract.useContainer()
     const { closePosition } = ClearingHouse.useContainer()
     const { isLoading: isTxLoading } = Transaction.useContainer()
+    const { price } = useRealtimeAmm(address, baseAssetSymbol)
 
     const { slippage } = Trade.useContainer()
 
@@ -58,56 +60,43 @@ function ClosePositionModal() {
     const handleOnClick = useCallback(async () => {
         if (address && closePositionInfo !== null && closePositionInfo.notional && closePositionInfo.size) {
             const { notional, size } = closePositionInfo
-            const slippageLimit = notional.mul(slippage / 100)
-            const quoteLimit = size.gt(0) ? notional.sub(slippageLimit) : notional.add(slippageLimit)
+            const slippageLimit = notional.abs().mul(slippage / 100)
+            const quoteLimit = size.gt(0) ? notional.abs().sub(slippageLimit) : notional.abs().add(slippageLimit)
             closePosition(address, quoteLimit)
         }
     }, [address, closePosition, closePositionInfo, slippage])
 
     const getClosePositionInfo = useCallback(async () => {
-        if (account && addressMap && address && multicallNetworkProvider) {
-            /* get { size, margin, unrealizedPnl } from clearingHouseViewerContract */
-            // const clearingHouseViewerContract = new MulticallContract(
-            //     addressMap.ClearingHouseViewer,
-            //     ClearingHouseViewerArtifact.abi,
-            // )
-            // const rawClearingHouseViewerData = await multicallNetworkProvider.all([
-            //     clearingHouseViewerContract.getPersonalPositionWithFundingPayment(address, account),
-            //     clearingHouseViewerContract.getUnrealizedPnl(address, account, PnlCalcOption.SpotPrice),
-            // ])
+        if (!account) return
+        if (!accountBalance) return
+        if (!address) return
+        if (!price) return
 
-            const size = Big(1)
-            const margin = Big(2)
-            const unrealizedPnl = Big(3)
+        const [
+            takerPositionSizeRaw,
+            takerOpenNotionalRaw,
+            lastTwPremiumGrowthGlobalX96,
+        ] = await accountBalance.getAccountInfo(account, address)
 
-            /* get { notional, tollRatio, spreadRatio } */
-            // const ammContract = new MulticallContract(address, AmmArtifact.abi)
-            // const dir: Dir = size.gt(0) ? Dir.AddToAmm : Dir.RemoveFromAmm
-            // const rawAmmData = await multicallNetworkProvider.all([
-            //     ammContract.getOutputPrice(dir, big2Decimal(size.abs())),
-            //     ammContract.tollRatio(),
-            // ])
-            // const [notional, tollRatio] = rawAmmData
-            const b_tollRatio = Big("0.003")
-            const b_notional = Big(1)
+        const size = bigNum2Big(takerPositionSizeRaw)
+        const takerOpenNotional = bigNum2Big(takerOpenNotionalRaw)
+        const margin = Big(0)
 
-            /* calculate the toll fee for staker and the spread fee for insurance fund */
-            const tollFee = b_notional.mul(b_tollRatio)
-            const fee = tollFee
+        if (size.eq(0)) return
 
-            const _closePositionInfo = {
-                notional: b_notional,
-                size,
-                margin,
-                unrealizedPnl,
-                fee,
-            }
+        const entryPrice = takerOpenNotional.abs().div(size.abs())
+        const unrealizedPnl = price.div(entryPrice).sub(1).mul(takerOpenNotional.mul(-1))
 
-            setClosePositionInfo(_closePositionInfo)
-        } else {
-            setClosePositionInfo(null)
+        const info = {
+            notional: takerOpenNotional,
+            size,
+            margin,
+            unrealizedPnl,
+            fee: takerOpenNotional.mul(Big("0.003")),
         }
-    }, [account, address, addressMap, multicallNetworkProvider])
+
+        setClosePositionInfo(info)
+    }, [account, accountBalance, address, price])
 
     useEffect(() => {
         getClosePositionInfo()
@@ -190,7 +179,9 @@ function ClosePositionModal() {
                                         <Tr fontWeight="bold">
                                             <Td>Exit Price</Td>
                                             <Td isNumeric>
-                                                {exitPriceStr} {quoteAssetSymbol}
+                                                {/*{exitPriceStr} */}
+                                                {price?.toFixed(2)}
+                                                {quoteAssetSymbol}
                                             </Td>
                                         </Tr>
                                         <Tr>
@@ -249,6 +240,7 @@ function ClosePositionModal() {
             marginStr,
             pnlStr,
             totalStr,
+            price,
         ],
     )
 }
