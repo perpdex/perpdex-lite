@@ -1,8 +1,8 @@
 import { useCallback, useMemo, useReducer } from "react"
 import { createContainer } from "unstated-next"
-import { Dir, Network } from "../../constant"
+import { Dir, Network, USDC_DECIMAL_DIGITS } from "../../constant"
 import { Big } from "big.js"
-import { big2Decimal } from "../../util/format"
+import { big2BigNum, big2Decimal } from "../../util/format"
 import { ContractExecutor } from "./ContractExecutor"
 import { NewContract } from "../newContract"
 import { Connection } from "../connection"
@@ -71,7 +71,8 @@ function useAccount() {
     const deposit = useCallback(
         (amount: Big) => {
             if (currentExecutor && collateralToken) {
-                execute(currentExecutor.deposit(collateralToken, big2Decimal(amount)))
+                const amount2 = amount.mul(Big(10).pow(USDC_DECIMAL_DIGITS)).round()
+                execute(currentExecutor.deposit(collateralToken, big2BigNum(amount2)))
             }
         },
         [currentExecutor, execute, collateralToken],
@@ -80,7 +81,8 @@ function useAccount() {
     const withdraw = useCallback(
         (amount: Big) => {
             if (currentExecutor && collateralToken) {
-                execute(currentExecutor.withdraw(collateralToken, big2Decimal(amount)))
+                const amount2 = amount.mul(Big(10).pow(USDC_DECIMAL_DIGITS)).round()
+                execute(currentExecutor.withdraw(collateralToken, big2BigNum(amount2)))
             }
         },
         [currentExecutor, execute, collateralToken],

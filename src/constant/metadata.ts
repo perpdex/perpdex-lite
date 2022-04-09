@@ -34,7 +34,6 @@ export const metadata = {
                             insuranceFund: "0x6be84eb2F0f8920D5236D1EE2eCECB732f69a5B7",
                             vault: "0x6AeC6D37DbB613C0Bc8AceCDF56058bAA712c73A",
                             clearingHouse: "0x03E761Ab35a513fa8fB264Dafee090eDDc220886",
-                            erc20: "0xe11A86849d99F524cAC3E7A0Ec1241828e332C62",
                         },
                         erc20: {
                             usdc: "0xe11A86849d99F524cAC3E7A0Ec1241828e332C62",

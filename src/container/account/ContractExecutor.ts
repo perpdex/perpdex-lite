@@ -10,11 +10,11 @@ export class ContractExecutor {
         }
     }
 
-    deposit(token: string, amountX10_D: Decimal): Promise<ContractTransaction> {
+    deposit(token: string, amountX10_D: BigNumber): Promise<ContractTransaction> {
         return this.execute("deposit", [token, amountX10_D])
     }
 
-    withdraw(token: string, amountX10_D: Decimal): Promise<ContractTransaction> {
+    withdraw(token: string, amountX10_D: BigNumber): Promise<ContractTransaction> {
         return this.execute("withdraw", [token, amountX10_D])
     }
 
