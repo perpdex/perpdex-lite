@@ -5,7 +5,6 @@ import Home from "./page/Home"
 import "focus-visible/dist/focus-visible"
 import { Container, Divider } from "@chakra-ui/react"
 import ClosePositionModal from "component/ClosePositionModal"
-import AdjustMarginModal from "component/AdjustMarginModal"
 import BlockedRegionModal from "component/BlockedRegionModal"
 import UserAgreementModal from "component/UserAgreementModal"
 import AccountPerpdexModal from "component/AccountPerpdexModal"
@@ -23,7 +22,6 @@ export const App = () => (
         <LiquidityProviderModal />
         <WalletListModal />
         <ClosePositionModal />
-        <AdjustMarginModal />
         <UserAgreementModal />
         {/* NOTE: BlockedRegionModal should be in the last one */}
         <BlockedRegionModal />
