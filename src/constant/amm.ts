@@ -6,7 +6,6 @@ export interface Amm {
     quoteAssetSymbol: string
     tradeLimitRatio: Big
     tollRatio: Big
-    spreadRatio: Big
 }
 
 export enum Dir {

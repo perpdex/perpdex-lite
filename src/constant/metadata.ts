@@ -16,6 +16,7 @@ export const metadata = {
                             insuranceFund: "0x209Ad0924DB73c31B74eF9Eb966eb9633472befE",
                             vault: "0xA61B4A13C62A52915f601A2679529A7D73D5A8A9",
                             clearingHouse: "0x41D608C9bE7c751217BDc671BC7327D7DB366896",
+                            baseToken: "",
                         },
                         erc20: {
                             usdc: "",
@@ -34,6 +35,7 @@ export const metadata = {
                             insuranceFund: "0x6be84eb2F0f8920D5236D1EE2eCECB732f69a5B7",
                             vault: "0x6AeC6D37DbB613C0Bc8AceCDF56058bAA712c73A",
                             clearingHouse: "0x03E761Ab35a513fa8fB264Dafee090eDDc220886",
+                            baseToken: "0x63c0a40b455764DB53CDdE2dEcb235f4e51fcf0c", // TODO: refactor
                         },
                         erc20: {
                             usdc: "0xe11A86849d99F524cAC3E7A0Ec1241828e332C62",

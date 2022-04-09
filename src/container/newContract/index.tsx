@@ -34,6 +34,7 @@ interface AddressMap {
     insuranceFund: string
     vault: string
     clearingHouse: string
+    baseToken: string
     erc20: ERC20Map
 }
 
@@ -61,6 +62,7 @@ function getAddressFromChainId(chainId: number): AddressMap | undefined {
         insuranceFund: contracts.insuranceFund,
         vault: contracts.vault,
         clearingHouse: contracts.clearingHouse,
+        baseToken: contracts.baseToken,
         erc20: erc20,
     }
 }
