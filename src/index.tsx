@@ -24,6 +24,7 @@ import { AccountPerpdex } from "./container/account"
 import reportWebVitals from "./reportWebVitals"
 import { setupSegment } from "./lib/segment"
 import theme from "./theme"
+import { LiquidityProvider } from "./container/liquidityProvider"
 
 declare global {
     interface Window {
@@ -58,6 +59,7 @@ const Providers = ((...providers: any[]) => ({ children }: { children: React.Rea
     Trade.Provider,
     Position.Provider,
     AccountPerpdex.Provider,
+    LiquidityProvider.Provider,
 )
 
 ReactDOM.render(

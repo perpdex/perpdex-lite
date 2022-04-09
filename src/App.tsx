@@ -9,9 +9,10 @@ import AdjustMarginModal from "component/AdjustMarginModal"
 import BlockedRegionModal from "component/BlockedRegionModal"
 import UserAgreementModal from "component/UserAgreementModal"
 import AccountPerpdexModal from "component/AccountPerpdexModal"
+import LiquidityProviderModal from "component/LiquidityProviderModal"
 
 export const App = () => (
-    <Container maxW="container.md" pb={20} px={6}>
+    <Container maxW="container.lg" pb={20} px={6}>
         <Header />
         <Divider />
         <Switch>
@@ -19,6 +20,7 @@ export const App = () => (
                 <Home />
             </Route>
         </Switch>
+        <LiquidityProviderModal />
         <WalletListModal />
         <ClosePositionModal />
         <AdjustMarginModal />
