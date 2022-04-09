@@ -92,7 +92,7 @@ function ProvidedInfoTable() {
                         Total Liquidity
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
-                        $ {makerPositionInfo.liquidityValue.toFixed(6)}
+                        $ {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.liquidityValue.toFixed(6)}
                     </Text>
                 </Box>
                 <Box>
@@ -110,7 +110,7 @@ function ProvidedInfoTable() {
                         </Popover>
                     </Text>
                     <Text fontSize="xl" color="green.400" fontWeight="bold" lineHeight="1.4">
-                        $ {makerPositionInfo.unrealizedPnl.toFixed(6)}
+                        $ {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.unrealizedPnl.toFixed(6)}
                     </Text>
                 </Box>
             </SimpleGrid>

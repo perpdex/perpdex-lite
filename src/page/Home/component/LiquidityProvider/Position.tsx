@@ -1,13 +1,50 @@
-import { AddIcon } from "@chakra-ui/icons"
+import { AddIcon, MinusIcon } from "@chakra-ui/icons"
 import { Box, Button, Heading, HStack } from "@chakra-ui/react"
 import { LiquidityProvider } from "container/liquidityProvider"
 import { useCallback } from "react"
+import { Amm } from "../../../../container/amm"
+import { ClearingHouse } from "../../../../container/clearingHouse"
+import { bigNum2Big } from "../../../../util/format"
+import { NewContract } from "../../../../container/newContract"
+import { Connection } from "../../../../container/connection"
 
 function Position() {
+    const { account } = Connection.useContainer()
+    const { orderBook } = NewContract.useContainer()
+    const { selectedAmm } = Amm.useContainer()
+    const baseTokenAddress = selectedAmm?.address
+    const { removeLiquidity } = ClearingHouse.useContainer()
+
     const { openLiquidityProviderModal } = LiquidityProvider.useContainer()
+
     const handleOnAddLiquidityClick = useCallback(() => {
         openLiquidityProviderModal()
     }, [openLiquidityProviderModal])
+
+    const handleOnRemoveLiquidityClick = useCallback(async () => {
+        if (!orderBook) return
+        if (!account) return
+        if (!baseTokenAddress) return
+
+        const { liquidity: liquidityRaw } = await orderBook.getOpenOrder(account, baseTokenAddress)
+
+        const [quoteAmountRaw, quotePendingFee] = await orderBook.getTotalTokenAmountInPoolAndPendingFee(
+            account,
+            baseTokenAddress,
+            false,
+        )
+        const [baseAmountRaw, basePendingFee] = await orderBook.getTotalTokenAmountInPoolAndPendingFee(
+            account,
+            baseTokenAddress,
+            true,
+        )
+
+        const liquidity = bigNum2Big(liquidityRaw)
+        const baseAmount = bigNum2Big(baseAmountRaw)
+        const quoteAmount = bigNum2Big(quoteAmountRaw)
+
+        removeLiquidity(baseTokenAddress, liquidity, baseAmount.mul(0.9), quoteAmount.mul(0.9))
+    }, [orderBook, account, removeLiquidity, baseTokenAddress])
 
     return (
         <>
@@ -22,6 +59,15 @@ function Position() {
                         onClick={handleOnAddLiquidityClick}
                     >
                         Add Liquidity
+                    </Button>
+                    <Button
+                        leftIcon={<MinusIcon />}
+                        colorScheme="pink"
+                        variant="solid"
+                        size="xs"
+                        onClick={handleOnRemoveLiquidityClick}
+                    >
+                        Remove All Liquidity
                     </Button>
                 </HStack>
             </Box>
