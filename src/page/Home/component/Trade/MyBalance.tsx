@@ -1,8 +1,7 @@
 import { Box, Button, FormHelperText, HStack } from "@chakra-ui/react"
-import { supportedChains } from "connector"
 import { USDC_DECIMAL_DIGITS } from "constant"
 import { Connection } from "container/connection"
-import { OldContract } from "container/oldContract"
+import { NewContract } from "container/newContract"
 import { useToken } from "hook/useToken"
 import { useCallback } from "react"
 import { numberWithCommasUsdc } from "util/format"
@@ -11,18 +10,12 @@ interface MyBalanceProps {
     setCollateral: Function
 }
 
-function MyBalance({ setCollateral }: MyBalanceProps) {
-    const { account } = Connection.useContainer()
-    const { addressMap } = OldContract.useContainer()
+function MyBalancePerpdex({ setCollateral }: MyBalanceProps) {
+    const { account, chainId } = Connection.useContainer()
+    const { addressMap } = NewContract.useContainer()
 
     /* prepare balance data  */
-    const { contract, decimals, totalSupply, balance, allowance } = useToken(
-        addressMap ? addressMap.XDaiUsdc : "",
-        USDC_DECIMAL_DIGITS,
-        supportedChains.XDai,
-    )
-
-    console.log("@@@", contract, decimals, totalSupply, account ? numberWithCommasUsdc(balance) : null, allowance)
+    const { balance } = useToken(addressMap ? addressMap.erc20.usdc : "", USDC_DECIMAL_DIGITS, chainId ? chainId : 1)
 
     const handleOnClick = useCallback(() => {
         /* make sure the precision will be controlled */
@@ -44,4 +37,4 @@ function MyBalance({ setCollateral }: MyBalanceProps) {
     )
 }
 
-export default MyBalance
+export default MyBalancePerpdex
