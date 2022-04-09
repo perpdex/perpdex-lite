@@ -32,7 +32,7 @@ export function useRealtimeAmm(address: string, name: string) {
             }
             return null
         },
-        [address, name],
+        [address, name, price],
     )
 
     const getOutputPrice = useCallback(
@@ -47,7 +47,7 @@ export function useRealtimeAmm(address: string, name: string) {
             }
             return null
         },
-        [address, name],
+        [address, name, price],
     )
 
     useEffect(() => {

@@ -17,7 +17,7 @@ function Trade() {
                 <MarketSelector />
                 <Collateral />
                 <Position />
-                <Leverage />
+                {/*<Leverage />*/}
                 <Slippage />
             </VStack>
             <VStack p={0} spacing={6}>

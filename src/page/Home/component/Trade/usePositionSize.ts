@@ -8,7 +8,7 @@ import { useRealtimeAmm } from "hook/useRealtimeAmm"
 
 export function usePositionSize() {
     const { selectedAmm } = Amm.useContainer()
-    const { collateral, leverage, side } = Trade.useContainer()
+    const { collateral, side } = Trade.useContainer()
     const dir = side === Side.Long ? Dir.AddToAmm : Dir.RemoveFromAmm
 
     const ammAddress = selectedAmm?.address || ""
@@ -40,7 +40,7 @@ export function usePositionSize() {
             setIsCalculating(true)
 
             /* calculate the position size */
-            const notional = collateral.mul(leverage)
+            const notional = collateral.mul(1)
             const positionReceived = await getInputPrice(dir, notional)
 
             let formattedValue = ""
@@ -52,7 +52,7 @@ export function usePositionSize() {
             setIsCalculating(false)
         }
         updatePositionByUserControl()
-    }, [dir, getInputPrice, collateral, leverage])
+    }, [dir, getInputPrice, collateral])
 
     return { positionSize, isCalculating, dir }
 }

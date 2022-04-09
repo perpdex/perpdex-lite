@@ -24,7 +24,7 @@ function SendTxButton() {
             const _positionSize = new Big(positionSize)
             const _slippage = slippage / 100
             const quoteAmountBound: Big =
-                side === Side.Long ? _positionSize.mul(1 + _slippage) : _positionSize.mul(1 - _slippage)
+                side === Side.Long ? collateral.mul(1 + _slippage) : collateral.mul(1 - _slippage)
 
             openPosition(ammAddress, side, _positionSize, quoteAmountBound)
         }
