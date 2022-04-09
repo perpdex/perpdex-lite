@@ -9,6 +9,8 @@ export const Connection = createContainer(useConnection)
 
 // The ethereum provider is needed all the time
 const ethProvider = getEthereumNetworkLibrary()
+const multipleEthProvider = new MulticallProvider(ethProvider)
+multipleEthProvider.init()
 
 function useConnection() {
     const { account, library, active, chainId } = useWeb3React()
@@ -31,6 +33,7 @@ function useConnection() {
 
     return {
         ethProvider,
+        multipleEthProvider,
         baseNetworkProvider,
         multicallNetworkProvider,
         signer: library?.getSigner() || null,

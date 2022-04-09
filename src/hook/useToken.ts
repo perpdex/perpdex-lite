@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from "react"
 import { Contract as MulticallContract } from "ethers-multicall"
 import { constants } from "ethers"
 import { Big } from "big.js"
-import { OldContract } from "container/oldContract"
+import { NewContract } from "container/newContract"
 import { BIG_ZERO } from "../constant/number"
 import { Connection } from "../container/connection"
 import { Transaction, TransactionAction } from "../container/transaction"
@@ -14,13 +14,12 @@ import { useContractEvent } from "./useContractEvent"
 
 export function useToken(address: string, decimals: number, chainId: number) {
     const { multicallNetworkProvider, account, signer } = Connection.useContainer()
-    const { erc20: erc20Contract } = OldContract.useContainer()
+    // const { erc20: erc20Contract } = OldContract.useContainer()
+    const { erc20 } = NewContract.useContainer()
     const { executeWithGasLimit } = Transaction.useContainer()
     const [balance, setBalance] = useState(BIG_ZERO)
     const [allowance, setAllowance] = useState<Record<string, Big>>({})
     const [totalSupply, setTotalSupply] = useState(BIG_ZERO)
-
-    const erc20 = chainId === supportedChains.XDai ? erc20Contract?.XDai : erc20Contract?.Eth
 
     const contract = useMemo(() => {
         return isAddress(address) ? erc20?.attach(address) || null : null
@@ -28,25 +27,23 @@ export function useToken(address: string, decimals: number, chainId: number) {
 
     useEffect(() => {
         async function fetchToken() {
-            if (erc20 && multicallNetworkProvider && address) {
-                const contract = new MulticallContract(address, erc20.interface.fragments)
-                const [totalSupply] = await multicallNetworkProvider.all([contract.totalSupply()])
+            if (contract) {
+                const totalSupply = await contract.totalSupply()
                 setTotalSupply(bigNum2Big(totalSupply, decimals))
             }
         }
         fetchToken()
-    }, [erc20, multicallNetworkProvider, address, decimals])
+    }, [contract, decimals])
 
     useEffect(() => {
         async function fetchBalance() {
-            if (erc20 && multicallNetworkProvider && address && account) {
-                const contract = new MulticallContract(address, erc20.interface.fragments)
-                const [balance] = await multicallNetworkProvider.all([contract.balanceOf(account)])
+            if (contract && account) {
+                const balance = await contract.balanceOf(account)
                 setBalance(bigNum2Big(balance, decimals))
             }
         }
         fetchBalance()
-    }, [erc20, multicallNetworkProvider, address, account, decimals])
+    }, [erc20, contract, account, decimals])
 
     const queryAllowanceBySpender = useCallback(
         async (spender: string) => {
