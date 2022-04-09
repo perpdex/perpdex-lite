@@ -115,11 +115,7 @@ function useContract() {
             clearingHouse: ClearingHouseFactory.connect(contractAddress.clearingHouse, baseNetworkProvider),
             addressMap: contractAddress,
             erc20: {
-                weth: Erc20Factory.connect(contractAddress.erc20.weth, baseNetworkProvider),
                 usdc: Erc20Factory.connect(contractAddress.erc20.usdc, baseNetworkProvider),
-                chainlinkDataFeed: {
-                    ethUsd: Erc20Factory.connect(contractAddress.erc20.chainlinkDataFeed.ethUsd, baseNetworkProvider),
-                },
             },
         }
     }, [chainId, baseNetworkProvider])
