@@ -17,10 +17,10 @@ export class ContractExecutorPerpdex implements ClearingHousePerpdexActions {
 
     addLiquidity(
         baseToken: string,
-        base: Decimal,
-        quote: Decimal,
-        minBase: Decimal,
-        minQuote: Decimal,
+        base: BigNumber,
+        quote: BigNumber,
+        minBase: BigNumber,
+        minQuote: BigNumber,
     ): Promise<ContractTransaction> {
         return this.execute("addLiquidity", [
             {
@@ -36,9 +36,9 @@ export class ContractExecutorPerpdex implements ClearingHousePerpdexActions {
 
     removeLiquidity(
         baseToken: string,
-        liquidity: Decimal,
-        minBase: Decimal,
-        minQuote: Decimal,
+        liquidity: BigNumber,
+        minBase: BigNumber,
+        minQuote: BigNumber,
     ): Promise<ContractTransaction> {
         return this.execute("removeLiquidity", [
             {
@@ -54,8 +54,8 @@ export class ContractExecutorPerpdex implements ClearingHousePerpdexActions {
     openPosition(
         baseToken: string,
         side: Side,
-        baseAmount: Decimal,
-        quoteAmountBound: Decimal,
+        baseAmount: BigNumber,
+        quoteAmountBound: BigNumber,
     ): Promise<ContractTransaction> {
         const isLong = side == Side.Long
 
@@ -72,7 +72,7 @@ export class ContractExecutorPerpdex implements ClearingHousePerpdexActions {
         ])
     }
 
-    closePosition(baseToken: string, quoteAmountBound: Decimal): Promise<ContractTransaction> {
+    closePosition(baseToken: string, quoteAmountBound: BigNumber): Promise<ContractTransaction> {
         return this.execute("openPosition", [
             {
                 baseToken: baseToken,

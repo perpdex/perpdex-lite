@@ -1,5 +1,6 @@
 import { ContractTransaction } from "ethers"
 import { Dir, Side, Decimal } from "constant"
+import { BigNumber } from "ethers"
 
 type ReturnType = ContractTransaction | string
 
@@ -24,17 +25,22 @@ export interface ClearingHouseActions {
 export interface ClearingHousePerpdexActions {
     addLiquidity(
         baseToken: string,
-        base: Decimal,
-        quote: Decimal,
-        minBase: Decimal,
-        minQuote: Decimal,
+        base: BigNumber,
+        quote: BigNumber,
+        minBase: BigNumber,
+        minQuote: BigNumber,
     ): Promise<ReturnType>
 
-    removeLiquidity(baseToken: string, liquidity: Decimal, minBase: Decimal, minQuote: Decimal): Promise<ReturnType>
+    removeLiquidity(
+        baseToken: string,
+        liquidity: BigNumber,
+        minBase: BigNumber,
+        minQuote: BigNumber,
+    ): Promise<ReturnType>
 
-    openPosition(baseToken: string, side: Side, baseAmount: Decimal, quoteAmountBound: Decimal): Promise<ReturnType>
+    openPosition(baseToken: string, side: Side, baseAmount: BigNumber, quoteAmountBound: BigNumber): Promise<ReturnType>
 
-    closePosition(baseToken: string, quoteAmountBound: Decimal): Promise<ReturnType>
+    closePosition(baseToken: string, quoteAmountBound: BigNumber): Promise<ReturnType>
 }
 
 export interface TypedData<T> {

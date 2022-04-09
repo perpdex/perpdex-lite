@@ -34,6 +34,7 @@ function LiquidityProviderModal() {
     const { selectedAmm } = Amm.useContainer()
     const ammAddress = selectedAmm?.address || ""
     const ammName = selectedAmm?.baseAssetSymbol || ""
+    const indexPrice = selectedAmm?.indexPrice || Big(0)
     const { price } = useRealtimeAmm(ammAddress, ammName)
     const { addLiquidity } = ClearingHouse.useContainer()
 
@@ -42,10 +43,12 @@ function LiquidityProviderModal() {
     const baseAmount = useMemo(() => {
         if (price && price.gt(0)) {
             return collateral.div(price)
+        } else if (indexPrice.gt(0)) {
+            return collateral.div(indexPrice)
         } else {
             return Big(0)
         }
-    }, [collateral, price])
+    }, [collateral, price, indexPrice])
 
     const handleAddLiquidity = useCallback(
         e => {
@@ -54,45 +57,42 @@ function LiquidityProviderModal() {
         [addLiquidity, ammAddress, baseAmount, collateral],
     )
 
-    return useMemo(
-        () => (
-            <Modal
-                isCentered
-                motionPreset="slideInBottom"
-                isOpen={isLiquidityProviderModalOpen}
-                onClose={closeLiquidityProviderModal}
-            >
-                <ModalOverlay />
-                <ModalContent borderRadius="2xl" pb={3}>
-                    <ModalHeader>Add Liquidity</ModalHeader>
-                    <ModalCloseButton />
-                    <ModalBody>
-                        <VStack spacing={5}>
-                            <MarketSelector />
-                            <Collateral onChange={setCollateral} />
-                            <Box>baseAmount: {baseAmount.toString()}</Box>
-                            {/*<Position/>*/}
-                            <Divider />
-                            <Slippage />
-                            <Divider />
-                        </VStack>
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button
-                            onClick={handleAddLiquidity}
-                            isFullWidth
-                            size="md"
-                            leftIcon={<AddIcon />}
-                            colorScheme="pink"
-                            variant="solid"
-                        >
-                            Add Liquidity
-                        </Button>
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
-        ),
-        [closeLiquidityProviderModal, isLiquidityProviderModalOpen],
+    return (
+        <Modal
+            isCentered
+            motionPreset="slideInBottom"
+            isOpen={isLiquidityProviderModalOpen}
+            onClose={closeLiquidityProviderModal}
+        >
+            <ModalOverlay />
+            <ModalContent borderRadius="2xl" pb={3}>
+                <ModalHeader>Add Liquidity</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody>
+                    <VStack spacing={5}>
+                        <MarketSelector />
+                        <Collateral onChange={setCollateral} />
+                        <Box>baseAmount: {baseAmount.toString()}</Box>
+                        {/*<Position/>*/}
+                        <Divider />
+                        <Slippage />
+                        <Divider />
+                    </VStack>
+                </ModalBody>
+                <ModalFooter>
+                    <Button
+                        onClick={handleAddLiquidity}
+                        isFullWidth
+                        size="md"
+                        leftIcon={<AddIcon />}
+                        colorScheme="pink"
+                        variant="solid"
+                    >
+                        Add Liquidity
+                    </Button>
+                </ModalFooter>
+            </ModalContent>
+        </Modal>
     )
 }
 

@@ -1,5 +1,5 @@
 import { Decimal, Dir, Network, Side } from "../../constant"
-import { big2Decimal, bigNum2Decimal } from "util/format"
+import { big2BigNum, big2Decimal, bigNum2Decimal } from "util/format"
 import { useCallback, useMemo } from "react"
 
 import { Big } from "big.js"
@@ -39,7 +39,7 @@ function useClearingHouse() {
     const closePosition = useCallback(
         (baseToken: string, quoteAmountBound: Big) => {
             if (currentExecutor) {
-                execute(currentExecutor.closePosition(baseToken, big2Decimal(quoteAmountBound)))
+                execute(currentExecutor.closePosition(baseToken, big2BigNum(quoteAmountBound)))
             }
         },
         [currentExecutor, execute],
@@ -49,12 +49,7 @@ function useClearingHouse() {
         (baseToken: string, side: Side, baseAmount: Big, quoteAmountBound: Big) => {
             if (currentExecutor) {
                 execute(
-                    currentExecutor.openPosition(
-                        baseToken,
-                        side,
-                        big2Decimal(baseAmount),
-                        big2Decimal(quoteAmountBound),
-                    ),
+                    currentExecutor.openPosition(baseToken, side, big2BigNum(baseAmount), big2BigNum(quoteAmountBound)),
                 )
             }
         },
@@ -67,10 +62,10 @@ function useClearingHouse() {
                 execute(
                     currentExecutor.addLiquidity(
                         baseToken,
-                        big2Decimal(base),
-                        big2Decimal(quote),
-                        big2Decimal(minBase),
-                        big2Decimal(minQuote),
+                        big2BigNum(base),
+                        big2BigNum(quote),
+                        big2BigNum(minBase),
+                        big2BigNum(minQuote),
                     ),
                 )
             }
@@ -84,9 +79,9 @@ function useClearingHouse() {
                 execute(
                     currentExecutor.removeLiquidity(
                         baseToken,
-                        big2Decimal(liquidity),
-                        big2Decimal(minBase),
-                        big2Decimal(minQuote),
+                        big2BigNum(liquidity),
+                        big2BigNum(minBase),
+                        big2BigNum(minQuote),
                     ),
                 )
             }

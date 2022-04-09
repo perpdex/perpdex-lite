@@ -39,6 +39,7 @@ function useAmm() {
                 quoteAssetSymbol: "USD",
                 tradeLimitRatio: Big(1),
                 tollRatio: Big("0.003"),
+                indexPrice: Big(3200),
             }
 
             setAmmMap(_ammMap)
