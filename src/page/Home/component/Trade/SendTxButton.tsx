@@ -2,7 +2,7 @@ import { Amm } from "container/amm"
 import Big from "big.js"
 import { Button } from "@chakra-ui/react"
 import { ClearingHouse } from "container/clearingHouse"
-import { Side } from "constant"
+import { Decimal, Side } from "constant"
 import { Trade } from "container/trade"
 import { Transaction } from "container/transaction"
 import { isAddress } from "ethers/lib/utils"
@@ -22,11 +22,11 @@ function SendTxButton() {
     const handleOnTrade = useCallback(async () => {
         if (collateral && isAddress(ammAddress)) {
             const _positionSize = new Big(positionSize)
-            const _leverage = new Big(leverage)
             const _slippage = slippage / 100
-            const minPositionSizeReceived: Big =
-                side === Side.Long ? _positionSize.mul(1 - _slippage) : _positionSize.mul(1 + _slippage)
-            openPosition(dir, ammAddress, collateral, _leverage, minPositionSizeReceived)
+            const quoteAmountBound: Big =
+                side === Side.Long ? _positionSize.mul(1 + _slippage) : _positionSize.mul(1 - _slippage)
+
+            openPosition(ammAddress, side, _positionSize, quoteAmountBound)
         }
     }, [ammAddress, collateral, leverage, dir, openPosition, positionSize, side, slippage])
 
