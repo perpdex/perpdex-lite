@@ -16,6 +16,7 @@ import {
 // import { Amm } from "types/contracts/Amm"
 import { createContainer } from "unstated-next"
 import { useWeb3React } from "@web3-react/core"
+import { constants } from "ethers"
 
 export const NewContract = createContainer(useContract)
 
@@ -66,9 +67,7 @@ function getAddressFromChainId(chainId: number): AddressMap | undefined {
 
 const defaultContractInstance = {
     isInitialized: false,
-    erc20: {
-        usdc: null,
-    },
+    erc20: null,
     uniswap: null,
     clearingHouseConfig: null,
     marketRegistry: null,
@@ -106,9 +105,7 @@ function useContract() {
             vault: VaultFactory.connect(contractAddress.vault, baseNetworkProvider),
             clearingHouse: ClearingHouseFactory.connect(contractAddress.clearingHouse, baseNetworkProvider),
             addressMap: contractAddress,
-            erc20: {
-                usdc: Erc20Factory.connect(contractAddress.erc20.usdc, baseNetworkProvider),
-            },
+            erc20: Erc20Factory.connect(constants.AddressZero, baseNetworkProvider),
         }
     }, [chainId, baseNetworkProvider])
 }

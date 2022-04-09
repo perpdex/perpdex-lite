@@ -1,12 +1,13 @@
-import { useCallback, useMemo, useReducer } from "react"
+import { useCallback, useEffect, useMemo, useReducer } from "react"
 import { createContainer } from "unstated-next"
 import { Dir, Network, USDC_DECIMAL_DIGITS } from "../../constant"
 import { Big } from "big.js"
-import { big2BigNum, big2Decimal } from "../../util/format"
+import { big2BigNum, big2Decimal, bigNum2Big } from "../../util/format"
 import { ContractExecutor } from "./ContractExecutor"
 import { NewContract } from "../newContract"
 import { Connection } from "../connection"
 import { Transaction } from "../transaction"
+import { useToken } from "../../hook/useToken"
 
 export interface Executors {
     [Network.Xdai]: ContractExecutor
@@ -43,9 +44,14 @@ export const AccountPerpdex = createContainer(useAccount)
 
 function useAccount() {
     const [state, dispatch] = useReducer(reducer, initialState)
-    const { signer } = Connection.useContainer()
+    const { signer, chainId } = Connection.useContainer()
     const { vault, addressMap } = NewContract.useContainer()
     const { execute } = Transaction.useContainer()
+    const { approve, allowance, queryAllowanceBySpender } = useToken(
+        addressMap ? addressMap.erc20.usdc : "",
+        USDC_DECIMAL_DIGITS,
+        chainId ? chainId : 1,
+    )
 
     const toggleAccountModal = useCallback(() => {
         dispatch({ type: ACTIONS.TOGGLE_ACCOUNT_MODAL })
@@ -69,10 +75,16 @@ function useAccount() {
     }, [addressMap?.erc20.usdc])
 
     const deposit = useCallback(
-        (amount: Big) => {
+        async (amount: Big) => {
             if (currentExecutor && collateralToken) {
-                const amount2 = amount.mul(Big(10).pow(USDC_DECIMAL_DIGITS)).round()
-                execute(currentExecutor.deposit(collateralToken, big2BigNum(amount2)))
+                const spender = currentExecutor.contract.address
+                await queryAllowanceBySpender(spender) // TODO: fix
+                if (!allowance[spender] || amount.gt(allowance[spender])) {
+                    await approve(spender, amount)
+                    return
+                }
+
+                await execute(currentExecutor.deposit(collateralToken, big2BigNum(amount, USDC_DECIMAL_DIGITS)))
             }
         },
         [currentExecutor, execute, collateralToken],
@@ -81,8 +93,7 @@ function useAccount() {
     const withdraw = useCallback(
         (amount: Big) => {
             if (currentExecutor && collateralToken) {
-                const amount2 = amount.mul(Big(10).pow(USDC_DECIMAL_DIGITS)).round()
-                execute(currentExecutor.withdraw(collateralToken, big2BigNum(amount2)))
+                execute(currentExecutor.withdraw(collateralToken, big2BigNum(amount, USDC_DECIMAL_DIGITS)))
             }
         },
         [currentExecutor, execute, collateralToken],
