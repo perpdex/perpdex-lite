@@ -3,14 +3,14 @@ import { Button } from "@chakra-ui/react"
 
 interface IButtonPerpdex {
     text: string
-    handleClick?: () => void
+    onClick?: () => void
 }
 
-function ButtonPerpdex({ text, handleClick }: IButtonPerpdex) {
+function ButtonPerpdex({ text, onClick }: IButtonPerpdex) {
     return (
         <Button
             size="md"
-            onClick={handleClick!}
+            onClick={onClick!}
             colorScheme="gray"
             variant="outline"
             // leftIcon={<WalletFill boxSize={4} />}
