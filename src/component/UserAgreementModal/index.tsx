@@ -39,16 +39,12 @@ function UserAgreementModal() {
         >
             <ModalOverlay />
             <ModalContent>
-                <ModalHeader>Welcome to PERP Lite</ModalHeader>
+                <ModalHeader>Welcome to PerpDEX</ModalHeader>
                 <ModalBody>
                     <Text>
-                        Perpetual Protocol is a decentralized perpetual contract protocol with virtual AMMs to provide
-                        guaranteed liquidity. Please visit our
-                        <ExternalLink
-                            color="blue.500"
-                            href="https://medium.com/@perpetualprotocol/a-deep-dive-into-our-virtual-amm-vamm-40345c522eeb"
-                            isExternal
-                        >
+                        PerpDEX is a decentralized perpetual contract protocol with virtual AMMs to provide guaranteed
+                        liquidity. Please visit our
+                        <ExternalLink color="blue.500" href="https://perpdex.com" isExternal>
                             &nbsp;Docs&nbsp;
                         </ExternalLink>
                         to know more.

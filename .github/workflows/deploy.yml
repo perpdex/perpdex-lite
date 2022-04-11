@@ -120,6 +120,6 @@ jobs:
                   DISCORD_WEBHOOK: ${{ secrets.DISCORD_RELEASE_WEBHOOK }}
               uses: Ilshidur/action-discord@master
               with:
-                  args: "**[${{ steps.set-variables.outputs.release_env }}]** perp-lite deployed.
+                  args: "**[${{ steps.set-variables.outputs.release_env }}]** perpdex-lite deployed.
                       Tag: **${{ github.event.release.tag_name }}** (${{ github.event.release.html_url }})
                       ${{ github.event.release.body }}"

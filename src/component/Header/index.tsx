@@ -8,7 +8,7 @@ function Header() {
     return (
         <Flex h="64px" alignItems="center">
             <Link to="/">
-                <Heading size="md">PERP Lite</Heading>
+                <Heading size="md">PerpDEX</Heading>
             </Link>
             <Spacer />
             <ConnectBtn />

@@ -1,13 +1,11 @@
-## Perp Lite
+## PerpDEX UI
 
-<img width="256px" style="margin: 0 auto; float: right" src="https://github.com/perpetual-protocol/perp-lite/raw/main/public/lite-banner.png" />
+<img width="256px" style="margin: 0 auto; float: right" src="https://fascinating-daffodil-abb5d2.netlify.app/images/perpdex_logo.png" />
 
-This is a lite version of Perpetual Protocol UI with essential features. Note that you need to manually switch to xDai network to trade.
+This is a UI of PerpDEX protocol with essential features. Note that you need to manually switch to xDai network to trade.
 
--   👉🏻 [Official Site](https://perp.exchange)
--   👉🏻 [Official Lite Site](https://lite.perp.exchange)
--   👉🏻 [Official Staking Site](https://staking.perp.exchange)
--   👉🏻 [Discord](https://discord.com/invite/mYKKRTn)
+-   👉🏻 [Official Site](https://perpdex.com)
+-   👉🏻 Discord (coming soon)
 
 ### How to start?
 
