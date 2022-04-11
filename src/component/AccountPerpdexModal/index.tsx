@@ -7,7 +7,6 @@ import {
     ModalHeader,
     ModalOverlay,
     Stack,
-    Button,
     ButtonGroup,
     NumberInput,
     InputGroup,
@@ -21,8 +20,7 @@ import { AccountPerpdex } from "container/account"
 import ButtonPerpdex from "component/ButtonPerpdex"
 import SmallFormLabel from "../SmallFormLabel"
 import { formatInput } from "../../util/format"
-import { Side, USDC_PRECISION } from "../../constant"
-import { isAddress } from "ethers/lib/utils"
+import { USDC_PRECISION } from "../../constant"
 import Big from "big.js"
 
 function AccountPerpdexModal() {

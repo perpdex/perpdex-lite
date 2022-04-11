@@ -15,10 +15,7 @@ import {
     HStack,
 } from "@chakra-ui/react"
 import { useCallback, useEffect, useState } from "react"
-import { Contract as MulticallContract } from "ethers-multicall/dist/contract"
-import { ContractCall } from "ethers-multicall"
-import { PnlCalcOption } from "../../../../constant"
-import { bigNum2Big, decimal2Big } from "../../../../util/format"
+import { bigNum2Big } from "../../../../util/format"
 import { useInterval } from "@chakra-ui/hooks"
 import { Connection } from "../../../../container/connection"
 import { Amm } from "../../../../container/amm"
@@ -33,8 +30,8 @@ export interface MakerPositionInfo {
 
 function ProvidedInfoTable() {
     const { account } = Connection.useContainer()
-    const { addressMap, orderBook } = NewContract.useContainer()
-    const { ammMap, selectedAmm } = Amm.useContainer()
+    const { orderBook } = NewContract.useContainer()
+    const { selectedAmm } = Amm.useContainer()
     const baseTokenAddress = selectedAmm?.address || ""
     const ammName = selectedAmm?.baseAssetSymbol || ""
     const { price } = useRealtimeAmm(baseTokenAddress, ammName)

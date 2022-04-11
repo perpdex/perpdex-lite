@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 
 import { Amm } from "container/amm"
 import Big from "big.js"
-import MyBalance from "./MyBalance"
+// import MyBalance from "./MyBalance"
 import SmallFormLabel from "component/SmallFormLabel"
 import { Trade } from "container/trade"
 import { USDC_PRECISION } from "constant"

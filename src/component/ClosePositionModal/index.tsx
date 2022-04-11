@@ -17,19 +17,17 @@ import {
     Button,
 } from "@chakra-ui/react"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { Contract as MulticallContract } from "ethers-multicall"
-import { PnlCalcOption } from "constant/position"
+// import { PnlCalcOption } from "constant/position"
 import { ClearingHouse } from "container/clearingHouse"
 import { Trade } from "container/trade"
 import { Transaction } from "container/transaction"
 import { Connection } from "container/connection"
 import { NewContract } from "container/newContract"
-import { decimal2Big, big2Decimal, numberWithCommasUsdc, bigNum2Big } from "util/format"
-import AmmArtifact from "@perp/contract/build/contracts/src/Amm.sol/Amm.json"
-import ClearingHouseViewerArtifact from "@perp/contract/build/contracts/src/ClearingHouseViewer.sol/ClearingHouseViewer.json"
+import { numberWithCommasUsdc, bigNum2Big } from "util/format"
+// import AmmArtifact from "@perp/contract/build/contracts/src/Amm.sol/Amm.json"
+// import ClearingHouseViewerArtifact from "@perp/contract/build/contracts/src/ClearingHouseViewer.sol/ClearingHouseViewer.json"
 import { useInterval } from "hook/useInterval"
 import Big from "big.js"
-import { Dir } from "constant"
 import { Position } from "container/position"
 import { useRealtimeAmm } from "../../hook/useRealtimeAmm"
 
@@ -48,7 +46,7 @@ function ClosePositionModal() {
         closeClosePositionModal,
     } = Position.useContainer()
     const { account } = Connection.useContainer()
-    const { addressMap, accountBalance } = NewContract.useContainer()
+    const { accountBalance } = NewContract.useContainer()
     const { closePosition } = ClearingHouse.useContainer()
     const { isLoading: isTxLoading } = Transaction.useContainer()
     const { price } = useRealtimeAmm(address, baseAssetSymbol)
@@ -75,7 +73,7 @@ function ClosePositionModal() {
         const [
             takerPositionSizeRaw,
             takerOpenNotionalRaw,
-            lastTwPremiumGrowthGlobalX96,
+            // lastTwPremiumGrowthGlobalX96,
         ] = await accountBalance.getAccountInfo(account, address)
 
         const size = bigNum2Big(takerPositionSizeRaw)
@@ -109,16 +107,16 @@ function ClosePositionModal() {
     useInterval(getClosePositionInfo, 2000)
 
     /* prepare data for UI */
-    const exitPriceStr = useMemo(() => {
-        if (closePositionInfo === null) {
-            return "-"
-        }
-        const { notional, size } = closePositionInfo
-        if (size.eq(0)) {
-            return "-"
-        }
-        return numberWithCommasUsdc(notional.div(size.abs()))
-    }, [closePositionInfo])
+    // const exitPriceStr = useMemo(() => {
+    //     if (closePositionInfo === null) {
+    //         return "-"
+    //     }
+    //     const { notional, size } = closePositionInfo
+    //     if (size.eq(0)) {
+    //         return "-"
+    //     }
+    //     return numberWithCommasUsdc(notional.div(size.abs()))
+    // }, [closePositionInfo])
     const pnlStr = useMemo(() => {
         if (closePositionInfo !== null && closePositionInfo.unrealizedPnl) {
             return closePositionInfo.unrealizedPnl.toFixed(2)
@@ -232,7 +230,6 @@ function ClosePositionModal() {
             baseAssetSymbol,
             quoteAssetSymbol,
             closeClosePositionModal,
-            exitPriceStr,
             feeStr,
             handleOnClick,
             isClosePositionModalOpen,

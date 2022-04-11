@@ -1,7 +1,7 @@
 import { SimpleGrid, VStack } from "@chakra-ui/react"
 
 import Collateral from "./Collateral"
-import Leverage from "./Leverage"
+// import Leverage from "./Leverage"
 import MarketSelector from "./MarketSelector"
 import Position from "./Position"
 import React from "react"

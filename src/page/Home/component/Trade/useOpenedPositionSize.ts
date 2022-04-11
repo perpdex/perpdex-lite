@@ -1,13 +1,9 @@
 import { isAddress } from "@ethersproject/address"
 import Big from "big.js"
-import { BIG_ZERO, Dir, PnlCalcOption } from "constant"
+import { BIG_ZERO } from "constant"
 import { Connection } from "container/connection"
 import { OldContract } from "container/oldContract"
 import { useCallback, useEffect, useState } from "react"
-import { decimal2Big } from "util/format"
-import { Contract as MulticallContract } from "ethers-multicall"
-import { big2Decimal } from "util/format"
-import ClearingHouseViewerArtifact from "@perp/contract/build/contracts/src/ClearingHouseViewer.sol/ClearingHouseViewer.json"
 
 // address is base token address
 export function useOpenedPositionSize(address: string) {
@@ -29,10 +25,10 @@ export function useOpenedPositionSize(address: string) {
             isAddress(address)
         ) {
             /* get { size, margin, unrealizedPnl } from clearingHouseViewerContract */
-            const clearingHouseViewerContract = new MulticallContract(
-                addressMap.ClearingHouseViewer,
-                ClearingHouseViewerArtifact.abi,
-            )
+            // const clearingHouseViewerContract = new MulticallContract(
+            //     addressMap.ClearingHouseViewer,
+            //     ClearingHouseViewerArtifact.abi,
+            // )
             // const data = await multicallNetworkProvider.all([
             //     clearingHouseViewerContract.getPersonalPositionWithFundingPayment(address, account),
             //     clearingHouseViewerContract.getUnrealizedPnl(address, account, PnlCalcOption.SpotPrice),
@@ -47,7 +43,7 @@ export function useOpenedPositionSize(address: string) {
             if (b_size.eq(0)) {
                 _outputPrice = BIG_ZERO
             } else {
-                const dir = b_size.gt(0) ? Dir.AddToAmm : Dir.RemoveFromAmm
+                // const dir = b_size.gt(0) ? Dir.AddToAmm : Dir.RemoveFromAmm
                 _outputPrice = Big(1)
                 // _outputPrice = decimal2Big(await amm.attach(address).getOutputPrice(dir, big2Decimal(b_size.abs())))
             }

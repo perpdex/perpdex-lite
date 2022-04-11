@@ -1,25 +1,23 @@
-import { ContractCall, Contract as MulticallContract } from "ethers-multicall"
-import { PnlCalcOption, PositionInfo } from "constant/position"
+import { PositionInfo } from "constant/position"
 import { useCallback, useEffect, useState } from "react"
 
 import { Amm } from "container/amm"
-import ClearingHouseViewerArtifact from "@perp/contract/build/contracts/src/ClearingHouseViewer.sol/ClearingHouseViewer.json"
+// import ClearingHouseViewerArtifact from "@perp/contract/build/contracts/src/ClearingHouseViewer.sol/ClearingHouseViewer.json"
 import { Connection } from "container/connection"
 import NoPosition from "./NoPosition"
 import NoWallet from "./NoWallet"
 import PositionUnit from "./PositionUnit"
 import { SimpleGrid } from "@chakra-ui/layout"
-import { bigNum2Big, decimal2Big } from "util/format"
+import { bigNum2Big } from "util/format"
 import { useInterval } from "@chakra-ui/hooks"
 import { NewContract } from "../../../../container/newContract"
 import { useRealtimeAmm } from "../../../../hook/useRealtimeAmm"
 import Big from "big.js"
-import { BigNumber } from "ethers"
 
 function Position() {
     const { account } = Connection.useContainer()
-    const { addressMap, accountBalance } = NewContract.useContainer()
-    const { ammMap, selectedAmm } = Amm.useContainer()
+    const { accountBalance } = NewContract.useContainer()
+    const { selectedAmm } = Amm.useContainer()
 
     const baseTokenAddress = selectedAmm?.address || ""
     const baseAssetSymbol = selectedAmm?.baseAssetSymbol || ""
@@ -47,11 +45,10 @@ function Position() {
         if (!price) return
         if (!selectedAmm) return
 
-        const [
-            takerPositionSizeRaw,
-            takerOpenNotionalRaw,
-            lastTwPremiumGrowthGlobalX96,
-        ] = await accountBalance.getAccountInfo(account, baseTokenAddress)
+        const [takerPositionSizeRaw, takerOpenNotionalRaw] = await accountBalance.getAccountInfo(
+            account,
+            baseTokenAddress,
+        )
 
         const takerPositionSize = bigNum2Big(takerPositionSizeRaw)
         const takerOpenNotional = bigNum2Big(takerOpenNotionalRaw)
@@ -77,7 +74,7 @@ function Position() {
         }
 
         setPositionInfo(info)
-    }, [account, accountBalance, baseTokenAddress, price, selectedAmm])
+    }, [account, accountBalance, baseAssetSymbol, baseTokenAddress, price, quoteAssetSymbol, selectedAmm])
 
     useEffect(() => {
         getTraderPositionInfo()

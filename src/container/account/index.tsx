@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useReducer, useState } from "react"
 import { createContainer } from "unstated-next"
-import { Dir, Network, USDC_DECIMAL_DIGITS } from "../../constant"
+import { Network, USDC_DECIMAL_DIGITS } from "../../constant"
 import { Big } from "big.js"
-import { big2BigNum, big2Decimal, bigNum2Big } from "../../util/format"
+import { big2BigNum, bigNum2Big } from "../../util/format"
 import { ContractExecutor } from "./ContractExecutor"
 import { NewContract } from "../newContract"
 import { Connection } from "../connection"
@@ -89,7 +89,7 @@ function useAccount() {
                 await execute(currentExecutor.deposit(collateralToken, big2BigNum(amount, USDC_DECIMAL_DIGITS)))
             }
         },
-        [currentExecutor, execute, collateralToken],
+        [allowance, approve, collateralToken, currentExecutor, execute, queryAllowanceBySpender],
     )
 
     const withdraw = useCallback(

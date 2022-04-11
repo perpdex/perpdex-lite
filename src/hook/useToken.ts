@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useMemo } from "react"
-import { Contract as MulticallContract } from "ethers-multicall"
 import { constants } from "ethers"
 import { Big } from "big.js"
 import { NewContract } from "container/newContract"
@@ -8,12 +7,11 @@ import { Connection } from "../container/connection"
 import { Transaction, TransactionAction } from "../container/transaction"
 import { big2BigNum, bigNum2Big } from "../util/format"
 import { useContractCall } from "./useContractCall"
-import { supportedChains } from "connector"
 import { isAddress } from "@ethersproject/address"
 import { useContractEvent } from "./useContractEvent"
 
 export function useToken(address: string, decimals: number, chainId: number) {
-    const { multicallNetworkProvider, account, signer } = Connection.useContainer()
+    const { account, signer } = Connection.useContainer()
     // const { erc20: erc20Contract } = OldContract.useContainer()
     const { erc20 } = NewContract.useContainer()
     const { executeWithGasLimit } = Transaction.useContainer()

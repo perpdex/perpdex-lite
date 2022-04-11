@@ -1,8 +1,8 @@
+import React from "react"
 import { SimpleGrid, VStack, Box } from "@chakra-ui/react"
 
-import React from "react"
 import TitleBar from "./TitleBar"
-import Mining from "./Mining"
+// import Mining from "./Mining"
 import ProvidedInfo from "./ProvidedInfo"
 import Position from "./Position"
 import PoolInfo from "./PoolInfo"

@@ -1,7 +1,6 @@
-import { Badge, Box, Button, HStack, Heading, SimpleGrid, Spacer, Stack } from "@chakra-ui/react"
+import { Badge, Box, Button, HStack, Heading, SimpleGrid, Stack } from "@chakra-ui/react"
 import { useCallback, useMemo } from "react"
 
-import Big from "big.js"
 import DataUnit from "./DataUnit"
 import { Position } from "container/position"
 import { PositionInfo } from "constant/position"
@@ -12,17 +11,19 @@ interface PositionUnitProps {
 }
 
 function PositionUnit({ data }: PositionUnitProps) {
-    const { openClosePositionModal, openAdjustMarginModal } = Position.useContainer()
-    const { address, baseAssetSymbol, quoteAssetSymbol, unrealizedPnl, size, margin, marginRatio, openNotional } = data
+    const { openClosePositionModal } = Position.useContainer()
+    // const { openClosePositionModal, openAdjustMarginModal } = Position.useContainer()
+    const { address, baseAssetSymbol, quoteAssetSymbol, unrealizedPnl, size, openNotional } = data
+    // const { address, baseAssetSymbol, quoteAssetSymbol, unrealizedPnl, size, margin, marginRatio, openNotional } = data
     const isLongSide = size.gte(0)
 
     const handleOnClosePositionClick = useCallback(() => {
         openClosePositionModal(address, baseAssetSymbol, quoteAssetSymbol)
     }, [address, baseAssetSymbol, quoteAssetSymbol, openClosePositionModal])
 
-    const handleOnAdjustMarginClick = useCallback(() => {
-        openAdjustMarginModal(address, baseAssetSymbol, quoteAssetSymbol)
-    }, [address, baseAssetSymbol, quoteAssetSymbol, openAdjustMarginModal])
+    // const handleOnAdjustMarginClick = useCallback(() => {
+    //     openAdjustMarginModal(address, baseAssetSymbol, quoteAssetSymbol)
+    // }, [address, baseAssetSymbol, quoteAssetSymbol, openAdjustMarginModal])
 
     /* prepare data for UI */
     const pnlStr = useMemo(() => unrealizedPnl.toFixed(2), [unrealizedPnl])
@@ -63,7 +64,7 @@ function PositionUnit({ data }: PositionUnitProps) {
             absSizeStr,
             baseAssetSymbol,
             entryPriceStr,
-            handleOnAdjustMarginClick,
+            // handleOnAdjustMarginClick,
             handleOnClosePositionClick,
             isLongSide,
             // leverageStr,
