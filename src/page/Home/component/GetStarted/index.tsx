@@ -9,19 +9,19 @@ function GetStarted() {
             <Stack spacing={5}>
                 <Heading size="md">About</Heading>
                 <Text>
-                    This is a lite version of{" "}
-                    <ExternalLink color="blue.500" href="https://perp.exchange" isExternal>
-                        Perpetual Protocol <ExternalLinkIcon mx="2px" />
+                    This is a{" "}
+                    <ExternalLink color="blue.500" href="https://perpdex.com" isExternal>
+                        PerpDEX Protocol <ExternalLinkIcon mx="2px" />
                     </ExternalLink>{" "}
                     UI with essential features. Note that you need to manually switch to <strong>xDai network</strong>{" "}
                     to trade.
                 </Text>
                 <HStack>
-                    <ExternalLink color="blue.500" href="https://github.com/perpetual-protocol/perp-lite" isExternal>
+                    <ExternalLink color="blue.500" href="https://github.com/perpdex/perpdex-lite" isExternal>
                         Github <ExternalLinkIcon mx="2px" />
                     </ExternalLink>{" "}
-                    <ExternalLink color="blue.500" href="https://discord.com/invite/mYKKRTn" isExternal>
-                        Discord <ExternalLinkIcon mx="2px" />
+                    <ExternalLink color="blue.500" href="https://discord.com/" isExternal>
+                        Discord (coming soon) <ExternalLinkIcon mx="2px" />
                     </ExternalLink>
                 </HStack>
             </Stack>
