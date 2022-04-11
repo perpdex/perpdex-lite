@@ -1,6 +1,6 @@
 ## PerpDEX UI
 
-<img width="256px" style="margin: 0 auto; float: right" src="https://github.com/perpdex/perpdex-lite/raw/main/public/lite-banner.png" />
+<img width="256px" style="margin: 0 auto; float: right" src="https://fascinating-daffodil-abb5d2.netlify.app/images/perpdex_logo.png" />
 
 This is a UI of PerpDEX protocol with essential features. Note that you need to manually switch to xDai network to trade.
 
