@@ -32,14 +32,17 @@ function useAmm() {
             const _ammMap: Record<string, AmmType> = {}
 
             /* [quoteAssetReserve, baseAssetReserve, tradeLimitRatio, fundingPeriod, quoteAssetSymbol, baseAssetSymbol, priceFeedKey, priceFeed] */
-            _ammMap["ETH"] = {
+            _ammMap["USD/ETH"] = {
                 // address: void 0,
                 address: addressMap.baseToken, // mumbai
-                baseAssetSymbol: "ETH",
-                quoteAssetSymbol: "USD",
+                baseAssetSymbol: "USD",
+                quoteAssetSymbol: "ETH",
+                baseAssetSymbolDisplay: "ETH",
+                quoteAssetSymbolDisplay: "USD",
                 tradeLimitRatio: Big(1),
                 tollRatio: Big("0.003"),
-                indexPrice: Big(3200),
+                indexPrice: Big(1.0 / 3200),
+                inverse: true,
             }
 
             setAmmMap(_ammMap)

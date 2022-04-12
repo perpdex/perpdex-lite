@@ -22,6 +22,7 @@ import { Amm } from "../../../../container/amm"
 import { NewContract } from "../../../../container/newContract"
 import Big from "big.js"
 import { useRealtimeAmm } from "../../../../hook/useRealtimeAmm"
+import { BigNumber } from "ethers"
 
 export interface MakerPositionInfo {
     unrealizedPnl: Big

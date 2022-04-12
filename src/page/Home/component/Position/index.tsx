@@ -27,9 +27,12 @@ function Position() {
         address: "",
         baseAssetSymbol: "",
         quoteAssetSymbol: "",
+        baseAssetSymbolDisplay: "",
+        quoteAssetSymbolDisplay: "",
         tradeLimitRatio: Big(0),
         tollRatio: Big(0),
         indexPrice: Big(0),
+        inverse: false,
 
         unrealizedPnl: Big(0),
         size: Big(0),
@@ -54,12 +57,7 @@ function Position() {
         const takerOpenNotional = bigNum2Big(takerOpenNotionalRaw)
 
         const info = {
-            address: baseTokenAddress,
-            baseAssetSymbol: baseAssetSymbol,
-            quoteAssetSymbol: quoteAssetSymbol,
-            tradeLimitRatio: selectedAmm.tradeLimitRatio,
-            tollRatio: selectedAmm.tollRatio,
-            indexPrice: selectedAmm.indexPrice,
+            ...selectedAmm,
 
             unrealizedPnl: Big(0),
             size: takerPositionSize,
