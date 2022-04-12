@@ -32,6 +32,7 @@ function AccountPerpdexModal() {
         deposit,
         withdraw,
         balance,
+        accountValue,
     } = AccountPerpdex.useContainer()
 
     const [amount, setAmount] = useState<string>("")
@@ -72,6 +73,7 @@ function AccountPerpdexModal() {
                 <ModalBody pb="1.5rem">
                     <Stack spacing={2}>
                         <Box>Deposited balance: {balance?.toString()}</Box>
+                        <Box>Account value: {accountValue?.toString()}</Box>
                         <FormControl id="margin">
                             <SmallFormLabel>Amount</SmallFormLabel>
                             <NumberInput value={amount} onInput={handleOnInput}>

@@ -45,7 +45,7 @@ export const AccountPerpdex = createContainer(useAccount)
 function useAccount() {
     const [state, dispatch] = useReducer(reducer, initialState)
     const { account, signer, chainId } = Connection.useContainer()
-    const { vault, addressMap } = NewContract.useContainer()
+    const { vault, clearingHouse, addressMap } = NewContract.useContainer()
     const { execute } = Transaction.useContainer()
     const { approve, allowance, queryAllowanceBySpender } = useToken(
         addressMap ? addressMap.erc20.usdc : "",
@@ -54,6 +54,7 @@ function useAccount() {
     )
 
     const [balance, setBalance] = useState<Big | null>(null)
+    const [accountValue, setAccountValue] = useState<Big | null>(null)
 
     const toggleAccountModal = useCallback(() => {
         dispatch({ type: ACTIONS.TOGGLE_ACCOUNT_MODAL })
@@ -111,6 +112,16 @@ function useAccount() {
         fetchBalance()
     }, [vault, account])
 
+    useEffect(() => {
+        async function fetchAccountValue() {
+            if (account && clearingHouse) {
+                const accountValue = await clearingHouse.getAccountValue(account)
+                setAccountValue(bigNum2Big(accountValue, USDC_DECIMAL_DIGITS))
+            }
+        }
+        fetchAccountValue()
+    }, [vault, clearingHouse])
+
     return {
         state,
         actions: {
@@ -119,5 +130,6 @@ function useAccount() {
         deposit,
         withdraw,
         balance,
+        accountValue,
     }
 }
