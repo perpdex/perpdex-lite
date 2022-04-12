@@ -87,7 +87,7 @@ function Position() {
         <SimpleGrid columns={1} spacing={8}>
             {!account && <NoWallet />}
             {account && positionInfo.size.eq(0) && <NoPosition />}
-            {account && positionInfo.size.gt(0) && (
+            {account && !positionInfo.size.eq(0) && (
                 <PositionUnit key={positionInfo.baseAssetSymbol} data={positionInfo} />
             )}
         </SimpleGrid>
