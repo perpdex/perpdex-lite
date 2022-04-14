@@ -10,12 +10,13 @@ import { useContractCall } from "./useContractCall"
 import { isAddress } from "@ethersproject/address"
 import { useContractEvent } from "./useContractEvent"
 
-export function useToken(address: string, decimals: number, chainId: number) {
+export function useToken(address: string, chainId: number) {
     const { account, signer } = Connection.useContainer()
     // const { erc20: erc20Contract } = OldContract.useContainer()
     const { erc20 } = NewContract.useContainer()
     const { executeWithGasLimit } = Transaction.useContainer()
     const [balance, setBalance] = useState(BIG_ZERO)
+    const [decimals, setDecimals] = useState(0)
     const [allowance, setAllowance] = useState<Record<string, Big>>({})
     const [totalSupply, setTotalSupply] = useState(BIG_ZERO)
 
@@ -27,15 +28,17 @@ export function useToken(address: string, decimals: number, chainId: number) {
         async function fetchToken() {
             if (contract) {
                 try {
+                    const decimals = await contract.decimals()
                     const totalSupply = await contract.totalSupply()
                     setTotalSupply(bigNum2Big(totalSupply, decimals))
+                    setDecimals(decimals)
                 } catch (err) {
                     console.log(err)
                 }
             }
         }
         fetchToken()
-    }, [contract, decimals])
+    }, [contract])
 
     useEffect(() => {
         async function fetchBalance() {

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useReducer, useState } from "react"
 import { createContainer } from "unstated-next"
-import { Network, USDC_DECIMAL_DIGITS } from "../../constant"
+import { Network } from "../../constant"
 import { Big } from "big.js"
 import { big2BigNum, bigNum2Big } from "../../util/format"
 import { ContractExecutor } from "./ContractExecutor"
@@ -47,9 +47,8 @@ function useAccount() {
     const { account, signer, chainId } = Connection.useContainer()
     const { vault, clearingHouse, addressMap } = NewContract.useContainer()
     const { execute } = Transaction.useContainer()
-    const { approve, allowance, queryAllowanceBySpender } = useToken(
+    const { approve, allowance, queryAllowanceBySpender, decimals } = useToken(
         addressMap ? addressMap.erc20.usdc : "",
-        USDC_DECIMAL_DIGITS,
         chainId ? chainId : 1,
     )
 
@@ -87,40 +86,40 @@ function useAccount() {
                     return
                 }
 
-                await execute(currentExecutor.deposit(collateralToken, big2BigNum(amount, USDC_DECIMAL_DIGITS)))
+                await execute(currentExecutor.deposit(collateralToken, big2BigNum(amount, decimals)))
             }
         },
-        [allowance, approve, collateralToken, currentExecutor, execute, queryAllowanceBySpender],
+        [allowance, approve, collateralToken, currentExecutor, execute, queryAllowanceBySpender, decimals],
     )
 
     const withdraw = useCallback(
         (amount: Big) => {
             if (currentExecutor && collateralToken) {
-                execute(currentExecutor.withdraw(collateralToken, big2BigNum(amount, USDC_DECIMAL_DIGITS)))
+                execute(currentExecutor.withdraw(collateralToken, big2BigNum(amount, decimals)))
             }
         },
-        [currentExecutor, execute, collateralToken],
+        [currentExecutor, execute, collateralToken, decimals],
     )
 
     useEffect(() => {
         async function fetchBalance() {
             if (account && vault) {
                 const balance = await vault.getBalance(account)
-                setBalance(bigNum2Big(balance, USDC_DECIMAL_DIGITS))
+                setBalance(bigNum2Big(balance, decimals))
             }
         }
         fetchBalance()
-    }, [vault, account])
+    }, [vault, account, decimals])
 
     useEffect(() => {
         async function fetchAccountValue() {
             if (account && clearingHouse) {
                 const accountValue = await clearingHouse.getAccountValue(account)
-                setAccountValue(bigNum2Big(accountValue, USDC_DECIMAL_DIGITS))
+                setAccountValue(bigNum2Big(accountValue, decimals))
             }
         }
         fetchAccountValue()
-    }, [vault, clearingHouse])
+    }, [vault, clearingHouse, decimals])
 
     return {
         state,
