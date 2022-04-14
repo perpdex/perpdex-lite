@@ -1,6 +1,7 @@
 {
     "name": "perpdex-lite",
     "version": "0.1.0",
+    "homepage": "./",
     "license": "BSD-3-Clause",
     "private": true,
     "scripts": {
