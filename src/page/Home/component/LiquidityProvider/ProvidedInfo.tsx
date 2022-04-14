@@ -90,7 +90,8 @@ function ProvidedInfoTable() {
                         Total Liquidity
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
-                        $ {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.liquidityValue.toFixed(6)}
+                        {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.liquidityValue.toFixed(6)}{" "}
+                        {selectedAmm?.quoteAssetSymbol}
                     </Text>
                 </Box>
                 <Box>
@@ -108,7 +109,8 @@ function ProvidedInfoTable() {
                         </Popover>
                     </Text>
                     <Text fontSize="xl" color="green.400" fontWeight="bold" lineHeight="1.4">
-                        $ {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.unrealizedPnl.toFixed(6)}
+                        {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.unrealizedPnl.toFixed(6)}{" "}
+                        {selectedAmm?.quoteAssetSymbol}
                     </Text>
                 </Box>
             </SimpleGrid>
@@ -129,7 +131,7 @@ function ProvidedInfoTable() {
                                 </Popover>
                             </Text>
                             <Text fontSize="sm" color="green.400" fontWeight="bold" lineHeight="1.6">
-                                --%
+                                -%
                             </Text>
                         </HStack>
                     </Box>
@@ -147,7 +149,7 @@ function ProvidedInfoTable() {
                                 </Popover>
                             </Text>
                             <Text fontSize="sm" color="green.400" fontWeight="bold" lineHeight="1.4">
-                                -,---
+                                -
                             </Text>
                         </HStack>
                     </Box>
@@ -162,7 +164,7 @@ function ProvidedInfoTable() {
                                 Margin Ratio
                             </Text>
                             <Text fontSize="sm" color="green.400" fontWeight="bold" lineHeight="1.6">
-                                -,---
+                                -
                             </Text>
                         </HStack>
                     </Box>
@@ -172,7 +174,7 @@ function ProvidedInfoTable() {
                                 Account Leverage
                             </Text>
                             <Text fontSize="sm" fontWeight="bold" lineHeight="1.4" color="red.400">
-                                -,---
+                                -
                             </Text>
                         </HStack>
                     </Box>

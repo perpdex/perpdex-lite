@@ -22,6 +22,7 @@ import SmallFormLabel from "../SmallFormLabel"
 import { formatInput } from "../../util/format"
 import { USDC_PRECISION } from "../../constant"
 import Big from "big.js"
+import { Amm } from "../../container/amm"
 
 function AccountPerpdexModal() {
     const {
@@ -34,6 +35,7 @@ function AccountPerpdexModal() {
         balance,
         accountValue,
     } = AccountPerpdex.useContainer()
+    const { selectedAmm } = Amm.useContainer()
 
     const [amount, setAmount] = useState<string>("")
 
@@ -72,8 +74,12 @@ function AccountPerpdexModal() {
                 <ModalCloseButton />
                 <ModalBody pb="1.5rem">
                     <Stack spacing={2}>
-                        <Box>Deposited balance: {balance?.toString()}</Box>
-                        <Box>Account value: {accountValue?.toString()}</Box>
+                        <Box>
+                            Deposited balance: {balance?.toString()} {selectedAmm?.quoteAssetSymbol}
+                        </Box>
+                        <Box>
+                            Account value: {accountValue?.toString()} {selectedAmm?.quoteAssetSymbol}
+                        </Box>
                         <FormControl id="margin">
                             <SmallFormLabel>Amount</SmallFormLabel>
                             <NumberInput value={amount} onInput={handleOnInput}>
