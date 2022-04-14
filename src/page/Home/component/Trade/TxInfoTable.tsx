@@ -17,6 +17,7 @@ function TxInfoTable() {
 
     const ammAddress = selectedAmm?.address || ""
     const ammName = selectedAmm?.baseAssetSymbol || ""
+    const inverse = selectedAmm?.inverse
     const { price } = useRealtimeAmm(ammAddress, ammName)
     const { size: openedSize, margin: openedMargin, unrealizedPnl, outputPrice } = useOpenedPositionSize(ammAddress)
 
@@ -24,7 +25,7 @@ function TxInfoTable() {
     const entryPrice: Big | null = useMemo(() => {
         if (!isCalculating && positionSize !== "" && collateral !== null) {
             const b_positionSize = new Big(positionSize)
-            if (b_positionSize.eq(0)) {
+            if (b_positionSize.eq(0) || collateral.mul(leverage).eq(0)) {
                 return null
             }
             return collateral.mul(leverage).div(b_positionSize)
@@ -44,10 +45,14 @@ function TxInfoTable() {
 
     const entryPriceStr = useMemo(() => {
         if (entryPrice !== null) {
-            return numberWithCommasUsdc(entryPrice)
+            if (inverse) {
+                return numberWithCommasUsdc(Big(1).div(entryPrice))
+            } else {
+                return numberWithCommasUsdc(entryPrice)
+            }
         }
         return "-"
-    }, [entryPrice])
+    }, [entryPrice, inverse])
 
     const priceImpactStr = useMemo(() => {
         if (entryPrice !== null && price !== null) {

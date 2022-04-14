@@ -15,32 +15,38 @@ import {
     HStack,
 } from "@chakra-ui/react"
 import { useCallback, useEffect, useState } from "react"
-import { Contract as MulticallContract } from "ethers-multicall/dist/contract"
-import { ContractCall } from "ethers-multicall"
-import { PnlCalcOption } from "../../../../constant"
-import { bigNum2Big, decimal2Big } from "../../../../util/format"
+import { bigNum2Big } from "../../../../util/format"
 import { useInterval } from "@chakra-ui/hooks"
 import { Connection } from "../../../../container/connection"
 import { Amm } from "../../../../container/amm"
 import { NewContract } from "../../../../container/newContract"
 import Big from "big.js"
 import { useRealtimeAmm } from "../../../../hook/useRealtimeAmm"
+import { BigNumber } from "ethers"
 
 export interface MakerPositionInfo {
     unrealizedPnl: Big
     liquidityValue: Big
+    baseAmount: Big
+    quoteAmount: Big
+    baseDebt: Big
+    quoteDebt: Big
 }
 
 function ProvidedInfoTable() {
     const { account } = Connection.useContainer()
-    const { addressMap, orderBook } = NewContract.useContainer()
-    const { ammMap, selectedAmm } = Amm.useContainer()
+    const { orderBook } = NewContract.useContainer()
+    const { selectedAmm } = Amm.useContainer()
     const baseTokenAddress = selectedAmm?.address || ""
     const ammName = selectedAmm?.baseAssetSymbol || ""
     const { price } = useRealtimeAmm(baseTokenAddress, ammName)
     const [makerPositionInfo, setMakerPositionInfo] = useState<MakerPositionInfo>({
         unrealizedPnl: Big(0),
         liquidityValue: Big(0),
+        baseAmount: Big(0),
+        quoteAmount: Big(0),
+        baseDebt: Big(0),
+        quoteDebt: Big(0),
     })
 
     const getMakerPositionInfo = useCallback(async () => {
@@ -70,6 +76,10 @@ function ProvidedInfoTable() {
         const info = {
             liquidityValue: baseAmount.mul(price).add(quoteAmount),
             unrealizedPnl: baseAmount.sub(baseDebt).mul(price).add(quoteAmount.sub(quoteDebt)),
+            baseAmount: baseAmount,
+            quoteAmount: quoteAmount,
+            baseDebt: baseDebt,
+            quoteDebt: quoteDebt,
         }
 
         setMakerPositionInfo(info)
@@ -92,7 +102,8 @@ function ProvidedInfoTable() {
                         Total Liquidity
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
-                        $ {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.liquidityValue.toFixed(6)}
+                        {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.liquidityValue.toFixed(6)}{" "}
+                        {selectedAmm?.quoteAssetSymbol}
                     </Text>
                 </Box>
                 <Box>
@@ -110,7 +121,44 @@ function ProvidedInfoTable() {
                         </Popover>
                     </Text>
                     <Text fontSize="xl" color="green.400" fontWeight="bold" lineHeight="1.4">
-                        $ {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.unrealizedPnl.toFixed(6)}
+                        {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.unrealizedPnl.toFixed(6)}{" "}
+                        {selectedAmm?.quoteAssetSymbol}
+                    </Text>
+                </Box>
+                <Box>
+                    <Text fontSize="xs" color="gray.500">
+                        Base assets
+                    </Text>
+                    <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
+                        {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.baseAmount.toFixed(6)}{" "}
+                        {selectedAmm?.baseAssetSymbol}
+                    </Text>
+                </Box>
+                <Box>
+                    <Text fontSize="xs" color="gray.500">
+                        Quote assets
+                    </Text>
+                    <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
+                        {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.quoteAmount.toFixed(6)}{" "}
+                        {selectedAmm?.quoteAssetSymbol}
+                    </Text>
+                </Box>
+                <Box>
+                    <Text fontSize="xs" color="gray.500">
+                        Base debt
+                    </Text>
+                    <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
+                        {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.baseDebt.toFixed(6)}{" "}
+                        {selectedAmm?.baseAssetSymbol}
+                    </Text>
+                </Box>
+                <Box>
+                    <Text fontSize="xs" color="gray.500">
+                        Quote debt
+                    </Text>
+                    <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
+                        {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.quoteDebt.toFixed(6)}{" "}
+                        {selectedAmm?.quoteAssetSymbol}
                     </Text>
                 </Box>
             </SimpleGrid>
@@ -131,7 +179,7 @@ function ProvidedInfoTable() {
                                 </Popover>
                             </Text>
                             <Text fontSize="sm" color="green.400" fontWeight="bold" lineHeight="1.6">
-                                --%
+                                -%
                             </Text>
                         </HStack>
                     </Box>
@@ -149,7 +197,7 @@ function ProvidedInfoTable() {
                                 </Popover>
                             </Text>
                             <Text fontSize="sm" color="green.400" fontWeight="bold" lineHeight="1.4">
-                                -,---
+                                -
                             </Text>
                         </HStack>
                     </Box>
@@ -164,7 +212,7 @@ function ProvidedInfoTable() {
                                 Margin Ratio
                             </Text>
                             <Text fontSize="sm" color="green.400" fontWeight="bold" lineHeight="1.6">
-                                -,---
+                                -
                             </Text>
                         </HStack>
                     </Box>
@@ -174,7 +222,7 @@ function ProvidedInfoTable() {
                                 Account Leverage
                             </Text>
                             <Text fontSize="sm" fontWeight="bold" lineHeight="1.4" color="red.400">
-                                -,---
+                                -
                             </Text>
                         </HStack>
                     </Box>

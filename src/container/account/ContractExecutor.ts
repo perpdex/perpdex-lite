@@ -1,5 +1,4 @@
 import { BigNumber, ContractTransaction, Signer } from "ethers"
-import { Decimal } from "constant"
 
 import { Vault } from "types/newContracts"
 

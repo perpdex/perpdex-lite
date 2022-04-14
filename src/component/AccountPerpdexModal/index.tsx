@@ -7,7 +7,6 @@ import {
     ModalHeader,
     ModalOverlay,
     Stack,
-    Button,
     ButtonGroup,
     NumberInput,
     InputGroup,
@@ -21,9 +20,9 @@ import { AccountPerpdex } from "container/account"
 import ButtonPerpdex from "component/ButtonPerpdex"
 import SmallFormLabel from "../SmallFormLabel"
 import { formatInput } from "../../util/format"
-import { Side, USDC_PRECISION } from "../../constant"
-import { isAddress } from "ethers/lib/utils"
+import { USDC_PRECISION } from "../../constant"
 import Big from "big.js"
+import { Amm } from "../../container/amm"
 
 function AccountPerpdexModal() {
     const {
@@ -34,7 +33,9 @@ function AccountPerpdexModal() {
         deposit,
         withdraw,
         balance,
+        accountValue,
     } = AccountPerpdex.useContainer()
+    const { selectedAmm } = Amm.useContainer()
 
     const [amount, setAmount] = useState<string>("")
 
@@ -73,7 +74,12 @@ function AccountPerpdexModal() {
                 <ModalCloseButton />
                 <ModalBody pb="1.5rem">
                     <Stack spacing={2}>
-                        <Box>Deposited balance: {balance?.toString()}</Box>
+                        <Box>
+                            Deposited balance: {balance?.toString()} {selectedAmm?.quoteAssetSymbol}
+                        </Box>
+                        <Box>
+                            Account value: {accountValue?.toString()} {selectedAmm?.quoteAssetSymbol}
+                        </Box>
                         <FormControl id="margin">
                             <SmallFormLabel>Amount</SmallFormLabel>
                             <NumberInput value={amount} onInput={handleOnInput}>

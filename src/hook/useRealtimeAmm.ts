@@ -1,12 +1,10 @@
-import { big2Decimal, bigNum2Big, decimal2Big } from "util/format"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { bigNum2Big } from "util/format"
+import { useCallback, useEffect, useState } from "react"
 
 import { AmmError } from "util/error"
 import Big from "big.js"
-import { Connection } from "container/connection"
 import { NewContract } from "container/newContract"
 import { Dir } from "constant"
-// import { Contract as MulticallContract } from "ethers-multicall"
 import { isAddress } from "@ethersproject/address"
 import { useContractEvent } from "./useContractEvent"
 
@@ -16,13 +14,12 @@ function sqrtPriceX96ToPrice(x: Big): Big {
 
 // address: base token address
 export function useRealtimeAmm(address: string, name: string) {
-    const { multicallNetworkProvider } = Connection.useContainer()
     const { clearingHouse, exchange } = NewContract.useContainer()
     const [price, setPrice] = useState<Big | null>(null)
 
     const getInputPrice = useCallback(
         async (dir: Dir, notional: Big): Promise<Big | null> => {
-            if (price) {
+            if (price && price.gt(0)) {
                 try {
                     // TODO: accurate calculation
                     return notional.div(price)

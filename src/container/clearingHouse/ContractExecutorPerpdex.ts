@@ -1,5 +1,5 @@
-import { BigNumber, BigNumberish, ContractTransaction, Signer } from "ethers"
-import { Decimal, Side } from "constant"
+import { BigNumber, ContractTransaction, Signer } from "ethers"
+import { Side } from "constant"
 
 import { ClearingHousePerpdex } from "types/newContracts"
 import { ClearingHousePerpdexActions } from "./type"
@@ -58,7 +58,7 @@ export class ContractExecutorPerpdex implements ClearingHousePerpdexActions {
         baseAmount: BigNumber,
         quoteAmountBound: BigNumber,
     ): Promise<ContractTransaction> {
-        const isLong = side == Side.Long
+        const isLong = side === Side.Long
 
         return this.execute("openPosition", [
             {

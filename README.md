@@ -2,7 +2,7 @@
 
 <img width="256px" style="margin: 0 auto; float: right" src="https://fascinating-daffodil-abb5d2.netlify.app/images/perpdex_logo.png" />
 
-This is a UI of PerpDEX protocol with essential features. Note that you need to manually switch to xDai network to trade.
+This is a UI of PerpDEX protocol with essential features. Note that you need to manually switch to rinkeby network to trade.
 
 -   👉🏻 [Official Site](https://perpdex.com)
 -   👉🏻 Discord (coming soon)

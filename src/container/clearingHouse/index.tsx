@@ -1,9 +1,8 @@
-import { Decimal, Dir, Network, Side } from "../../constant"
-import { big2BigNum, big2Decimal, bigNum2Decimal } from "util/format"
+import { Network, Side } from "../../constant"
+import { big2BigNum } from "util/format"
 import { useCallback, useMemo } from "react"
 
 import { Big } from "big.js"
-import { BigNumber } from "ethers"
 import { ClearingHousePerpdexActions } from "./type"
 import { Connection } from "../connection"
 import { NewContract } from "../newContract"
@@ -30,7 +29,7 @@ function useClearingHouse() {
         return {
             [Network.Mumbai]: new ContractExecutorPerpdex(clearingHouse, signer),
         }
-    }, [clearingHouse, void 0, signer])
+    }, [clearingHouse, signer])
 
     const currentExecutor = useMemo(() => {
         return executors ? executors[Network.Mumbai] : null

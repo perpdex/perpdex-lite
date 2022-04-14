@@ -10,7 +10,8 @@ function TitleBar() {
         <HStack justifyContent="start">
             <VStack spacing={-2} alignItems="start">
                 <Text fontSize="lg" fontWeight="bold">
-                    {selectedAmm?.baseAssetSymbol}/{selectedAmm?.quoteAssetSymbol}
+                    {selectedAmm?.baseAssetSymbolDisplay}/{selectedAmm?.quoteAssetSymbolDisplay}{" "}
+                    {selectedAmm?.inverse ? "(inverse)" : ""}
                 </Text>
                 {/*<Text fontSize="xs" color="gray.500">*/}
                 {/*    ETH*/}

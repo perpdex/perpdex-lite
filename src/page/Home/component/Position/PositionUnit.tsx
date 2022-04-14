@@ -1,34 +1,53 @@
-import { Badge, Box, Button, HStack, Heading, SimpleGrid, Spacer, Stack } from "@chakra-ui/react"
+import { Badge, Box, Button, HStack, Heading, SimpleGrid, Stack } from "@chakra-ui/react"
 import { useCallback, useMemo } from "react"
 
-import Big from "big.js"
 import DataUnit from "./DataUnit"
 import { Position } from "container/position"
 import { PositionInfo } from "constant/position"
 import { numberWithCommasUsdc } from "util/format"
+import { Amm } from "../../../../container/amm"
 
 interface PositionUnitProps {
     data: PositionInfo
 }
 
 function PositionUnit({ data }: PositionUnitProps) {
-    const { openClosePositionModal, openAdjustMarginModal } = Position.useContainer()
-    const { address, baseAssetSymbol, quoteAssetSymbol, unrealizedPnl, size, margin, marginRatio, openNotional } = data
+    const { selectedAmm } = Amm.useContainer()
+    const inverse = selectedAmm?.inverse
+    const { openClosePositionModal } = Position.useContainer()
+    // const { openClosePositionModal, openAdjustMarginModal } = Position.useContainer()
+    const {
+        address,
+        baseAssetSymbol,
+        quoteAssetSymbol,
+        baseAssetSymbolDisplay,
+        quoteAssetSymbolDisplay,
+        unrealizedPnl,
+        size,
+        openNotional,
+    } = data
+    // const { address, baseAssetSymbol, quoteAssetSymbol, unrealizedPnl, size, margin, marginRatio, openNotional } = data
     const isLongSide = size.gte(0)
 
     const handleOnClosePositionClick = useCallback(() => {
         openClosePositionModal(address, baseAssetSymbol, quoteAssetSymbol)
     }, [address, baseAssetSymbol, quoteAssetSymbol, openClosePositionModal])
 
-    const handleOnAdjustMarginClick = useCallback(() => {
-        openAdjustMarginModal(address, baseAssetSymbol, quoteAssetSymbol)
-    }, [address, baseAssetSymbol, quoteAssetSymbol, openAdjustMarginModal])
+    // const handleOnAdjustMarginClick = useCallback(() => {
+    //     openAdjustMarginModal(address, baseAssetSymbol, quoteAssetSymbol)
+    // }, [address, baseAssetSymbol, quoteAssetSymbol, openAdjustMarginModal])
 
     /* prepare data for UI */
     const pnlStr = useMemo(() => unrealizedPnl.toFixed(2), [unrealizedPnl])
     const absSizeStr = useMemo(() => size.abs().toFixed(4), [size])
     // const leverageStr = useMemo(() => `${new Big(1).div(marginRatio).toFixed(2)}x`, [marginRatio])
-    const entryPriceStr = useMemo(() => numberWithCommasUsdc(openNotional.div(size).abs()), [openNotional, size])
+    const entryPriceStr = useMemo(() => {
+        if (inverse) {
+            return numberWithCommasUsdc(size.div(openNotional).abs())
+        } else {
+            return numberWithCommasUsdc(openNotional.div(size).abs())
+        }
+    }, [openNotional, size, inverse])
     // const marginStr = useMemo(() => numberWithCommasUsdc(margin), [margin])
     // const marginRatioStr = useMemo(() => `${marginRatio.mul(100).toFixed(1)}%`, [marginRatio])
 
@@ -37,7 +56,9 @@ function PositionUnit({ data }: PositionUnitProps) {
             <Box>
                 <Stack direction="column" spacing={4} borderRadius="2xl" borderWidth="1px" borderColor="gray.200" p={6}>
                     <HStack>
-                        <Heading size="md">{baseAssetSymbol}</Heading>
+                        <Heading size="md">
+                            {baseAssetSymbolDisplay}/{quoteAssetSymbolDisplay} {inverse ? "(inverse)" : ""}
+                        </Heading>
                         <Badge colorScheme={isLongSide ? "green" : "red"}>{isLongSide ? "Long" : "Short"}</Badge>
                     </HStack>
                     <SimpleGrid minChildWidth={["40%", "30%", "20%"]} spacing={4}>
@@ -61,9 +82,10 @@ function PositionUnit({ data }: PositionUnitProps) {
         ),
         [
             absSizeStr,
-            baseAssetSymbol,
+            baseAssetSymbolDisplay,
+            quoteAssetSymbolDisplay,
             entryPriceStr,
-            handleOnAdjustMarginClick,
+            // handleOnAdjustMarginClick,
             handleOnClosePositionClick,
             isLongSide,
             // leverageStr,

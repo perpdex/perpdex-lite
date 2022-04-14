@@ -13,16 +13,14 @@ import {
 } from "@chakra-ui/react"
 import MarketSelector from "./MarketSelector"
 import Collateral from "./Collateral"
-import Position from "./Position"
+// import Position from "./Position"
 import Slippage from "./Slippage"
 import { useCallback, useMemo, useState } from "react"
 import { LiquidityProvider } from "container/liquidityProvider"
 import Big from "big.js"
-import { Dir, Network, Side, USDC_PRECISION } from "../../constant"
 import { Amm } from "../../container/amm"
 import { useRealtimeAmm } from "../../hook/useRealtimeAmm"
 import { AddIcon } from "@chakra-ui/icons"
-import { formatInput } from "../../util/format"
 import { ClearingHouse } from "../../container/clearingHouse"
 
 function LiquidityProviderModal() {
