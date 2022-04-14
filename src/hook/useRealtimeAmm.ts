@@ -19,7 +19,7 @@ export function useRealtimeAmm(address: string, name: string) {
 
     const getInputPrice = useCallback(
         async (dir: Dir, notional: Big): Promise<Big | null> => {
-            if (price) {
+            if (price && price.gt(0)) {
                 try {
                     // TODO: accurate calculation
                     return notional.div(price)

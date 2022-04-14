@@ -27,6 +27,10 @@ import { BigNumber } from "ethers"
 export interface MakerPositionInfo {
     unrealizedPnl: Big
     liquidityValue: Big
+    baseAmount: Big
+    quoteAmount: Big
+    baseDebt: Big
+    quoteDebt: Big
 }
 
 function ProvidedInfoTable() {
@@ -39,6 +43,10 @@ function ProvidedInfoTable() {
     const [makerPositionInfo, setMakerPositionInfo] = useState<MakerPositionInfo>({
         unrealizedPnl: Big(0),
         liquidityValue: Big(0),
+        baseAmount: Big(0),
+        quoteAmount: Big(0),
+        baseDebt: Big(0),
+        quoteDebt: Big(0),
     })
 
     const getMakerPositionInfo = useCallback(async () => {
@@ -68,6 +76,10 @@ function ProvidedInfoTable() {
         const info = {
             liquidityValue: baseAmount.mul(price).add(quoteAmount),
             unrealizedPnl: baseAmount.sub(baseDebt).mul(price).add(quoteAmount.sub(quoteDebt)),
+            baseAmount: baseAmount,
+            quoteAmount: quoteAmount,
+            baseDebt: baseDebt,
+            quoteDebt: quoteDebt,
         }
 
         setMakerPositionInfo(info)
@@ -110,6 +122,42 @@ function ProvidedInfoTable() {
                     </Text>
                     <Text fontSize="xl" color="green.400" fontWeight="bold" lineHeight="1.4">
                         {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.unrealizedPnl.toFixed(6)}{" "}
+                        {selectedAmm?.quoteAssetSymbol}
+                    </Text>
+                </Box>
+                <Box>
+                    <Text fontSize="xs" color="gray.500">
+                        Base assets
+                    </Text>
+                    <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
+                        {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.baseAmount.toFixed(6)}{" "}
+                        {selectedAmm?.baseAssetSymbol}
+                    </Text>
+                </Box>
+                <Box>
+                    <Text fontSize="xs" color="gray.500">
+                        Quote assets
+                    </Text>
+                    <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
+                        {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.quoteAmount.toFixed(6)}{" "}
+                        {selectedAmm?.quoteAssetSymbol}
+                    </Text>
+                </Box>
+                <Box>
+                    <Text fontSize="xs" color="gray.500">
+                        Base debt
+                    </Text>
+                    <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
+                        {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.baseDebt.toFixed(6)}{" "}
+                        {selectedAmm?.baseAssetSymbol}
+                    </Text>
+                </Box>
+                <Box>
+                    <Text fontSize="xs" color="gray.500">
+                        Quote debt
+                    </Text>
+                    <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
+                        {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.quoteDebt.toFixed(6)}{" "}
                         {selectedAmm?.quoteAssetSymbol}
                     </Text>
                 </Box>

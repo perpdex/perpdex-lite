@@ -30,6 +30,7 @@ import { useInterval } from "hook/useInterval"
 import Big from "big.js"
 import { Position } from "container/position"
 import { useRealtimeAmm } from "../../hook/useRealtimeAmm"
+import { Amm } from "../../container/amm"
 
 interface ClosePositionInfo {
     notional: Big
@@ -50,6 +51,8 @@ function ClosePositionModal() {
     const { closePosition } = ClearingHouse.useContainer()
     const { isLoading: isTxLoading } = Transaction.useContainer()
     const { price } = useRealtimeAmm(address, baseAssetSymbol)
+    const { selectedAmm } = Amm.useContainer() // TODO: refactor (this modal shouldn't depend on global state)
+    const inverse = selectedAmm?.inverse
 
     const { slippage } = Trade.useContainer()
 
@@ -107,16 +110,21 @@ function ClosePositionModal() {
     useInterval(getClosePositionInfo, 2000)
 
     /* prepare data for UI */
-    // const exitPriceStr = useMemo(() => {
-    //     if (closePositionInfo === null) {
-    //         return "-"
-    //     }
-    //     const { notional, size } = closePositionInfo
-    //     if (size.eq(0)) {
-    //         return "-"
-    //     }
-    //     return numberWithCommasUsdc(notional.div(size.abs()))
-    // }, [closePositionInfo])
+    const exitPriceStr = useMemo(() => {
+        if (closePositionInfo === null) {
+            return "-"
+        }
+        const { notional, size } = closePositionInfo
+        if (notional.eq(0) || size.eq(0)) {
+            return "-"
+        }
+        if (inverse) {
+            return numberWithCommasUsdc(size.div(notional).abs())
+        } else {
+            return numberWithCommasUsdc(notional.div(size).abs())
+        }
+    }, [closePositionInfo])
+
     const pnlStr = useMemo(() => {
         if (closePositionInfo !== null && closePositionInfo.unrealizedPnl) {
             return closePositionInfo.unrealizedPnl.toFixed(2)
@@ -177,8 +185,7 @@ function ClosePositionModal() {
                                         <Tr fontWeight="bold">
                                             <Td>Exit Price</Td>
                                             <Td isNumeric>
-                                                {/*{exitPriceStr} */}
-                                                {price?.toFixed(2)}
+                                                {exitPriceStr}
                                                 {quoteAssetSymbol}
                                             </Td>
                                         </Tr>

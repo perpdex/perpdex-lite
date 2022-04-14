@@ -38,7 +38,7 @@ function MarketSelector() {
             <Select onChange={handleOnChange} isDisabled={isLoadingAmmMap}>
                 {sortedAmmList.map((amm: AmmType, index: number) => (
                     <option key={`${amm.baseAssetSymbol}-${amm.quoteAssetSymbol}`} value={index}>
-                        {amm.baseAssetSymbolDisplay} / {amm.quoteAssetSymbolDisplay}
+                        {amm.baseAssetSymbolDisplay} / {amm.quoteAssetSymbolDisplay} {amm.inverse ? "(inverse)" : ""}
                     </option>
                 ))}
             </Select>
