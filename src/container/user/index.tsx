@@ -94,7 +94,7 @@ function useUser() {
                 // @ts-ignore
                 wrongNetworkRef.current = notifyError({
                     title: "Wrong network",
-                    description: `Please switch network to xDai.`,
+                    description: `Please switch network to rinkeby.`,
                     isClosable: true,
                     duration: null,
                 })
