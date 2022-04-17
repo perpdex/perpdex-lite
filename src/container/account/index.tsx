@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useReducer, useState } from "react"
 import { createContainer } from "unstated-next"
-import { Network } from "../../constant"
 import { Big } from "big.js"
 import { big2BigNum, bigNum2Big } from "../../util/format"
 import { ContractExecutor } from "./ContractExecutor"
@@ -8,10 +7,6 @@ import { NewContract } from "../newContract"
 import { Connection } from "../connection"
 import { Transaction } from "../transaction"
 import { TokenPerpdex } from "../token"
-
-export interface Executors {
-    [Network.Xdai]: ContractExecutor
-}
 
 enum ACTIONS {
     TOGGLE_ACCOUNT_MODAL = "TOGGLE_ACCOUNT_MODAL",
@@ -56,18 +51,10 @@ function useAccount() {
         dispatch({ type: ACTIONS.TOGGLE_ACCOUNT_MODAL })
     }, [dispatch])
 
-    const executors: Executors | null = useMemo(() => {
-        if (!vault || !signer) {
-            return null
-        }
-        return {
-            [Network.Xdai]: new ContractExecutor(vault, signer), // TODO: fix
-        }
-    }, [vault, signer])
-
     const currentExecutor = useMemo(() => {
-        return executors ? executors[Network.Xdai] : null // TODO: fix
-    }, [executors])
+        if (vault) return new ContractExecutor(vault, signer)
+        return null
+    }, [signer, vault])
 
     const collateralToken = useMemo(() => {
         return addressMap?.erc20.usdc
