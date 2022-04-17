@@ -21,6 +21,7 @@ import { Transaction } from "./container/transaction"
 import { User } from "./container/user"
 import { Web3Provider } from "./container/web3"
 import { AccountPerpdex } from "./container/account"
+import { TokenPerpdex } from "./container/token"
 import reportWebVitals from "./reportWebVitals"
 import { setupSegment } from "./lib/segment"
 import theme from "./theme"
@@ -58,6 +59,7 @@ const Providers = ((...providers: any[]) => ({ children }: { children: React.Rea
     ClearingHouse.Provider,
     Trade.Provider,
     Position.Provider,
+    TokenPerpdex.Provider,
     AccountPerpdex.Provider,
     LiquidityProvider.Provider,
 )

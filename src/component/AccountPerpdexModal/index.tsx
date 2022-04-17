@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import {
     Modal,
     ModalBody,
@@ -17,6 +17,7 @@ import {
     Box,
 } from "@chakra-ui/react"
 import { AccountPerpdex } from "container/account"
+import { TokenPerpdex } from "container/token"
 import ButtonPerpdex from "component/ButtonPerpdex"
 import SmallFormLabel from "../SmallFormLabel"
 import { formatInput } from "../../util/format"
@@ -30,6 +31,7 @@ function AccountPerpdexModal() {
             modal: { isAccountModalOpen },
         },
         actions: { toggleAccountModal },
+        getIsNeedApprove,
         deposit,
         withdraw,
         balance,
@@ -37,7 +39,10 @@ function AccountPerpdexModal() {
     } = AccountPerpdex.useContainer()
     const { selectedAmm } = Amm.useContainer()
 
+    const { state: tokenState } = TokenPerpdex.useContainer()
+
     const [amount, setAmount] = useState<string>("")
+    const [bigAmount, setBigAmount] = useState<Big>(Big(0))
 
     const handleOnInput = useCallback(
         e => {
@@ -50,19 +55,23 @@ function AccountPerpdexModal() {
         [setAmount],
     )
 
+    useEffect(() => {
+        amount && setBigAmount(Big(amount))
+    }, [amount])
+
     const handleOnDeposit = useCallback(async () => {
-        const amountNum = Big(amount)
-        if (amountNum.gt(0)) {
-            await deposit(amountNum)
+        if (bigAmount.gt(0)) {
+            const isNeedApprove = await getIsNeedApprove(bigAmount)
+            console.log("@@@@@ isNeedApprove", isNeedApprove)
+            await deposit(bigAmount, isNeedApprove, tokenState.decimals)
         }
-    }, [deposit, amount])
+    }, [bigAmount, deposit, getIsNeedApprove, tokenState.decimals])
 
     const handleOnWithdraw = useCallback(async () => {
-        const amountNum = Big(amount)
-        if (amountNum.gt(0)) {
-            await withdraw(amountNum)
+        if (bigAmount.gt(0)) {
+            await withdraw(bigAmount)
         }
-    }, [withdraw, amount])
+    }, [bigAmount, withdraw])
 
     return (
         <Modal isCentered={true} size="xs" isOpen={isAccountModalOpen} onClose={toggleAccountModal}>
@@ -101,8 +110,8 @@ function AccountPerpdexModal() {
                             </NumberInput>
                         </FormControl>
                         <ButtonGroup>
-                            <ButtonPerpdex text="Deposit" onClick={handleOnDeposit} />
-                            <ButtonPerpdex text="Withdraw" onClick={handleOnWithdraw} />
+                            <ButtonPerpdex text="Deposit" disabled={!bigAmount.gt(0)} onClick={handleOnDeposit} />
+                            <ButtonPerpdex text="Withdraw" disabled={!bigAmount.gt(0)} onClick={handleOnWithdraw} />
                         </ButtonGroup>
                     </Stack>
                 </ModalBody>

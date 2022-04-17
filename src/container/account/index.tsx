@@ -7,7 +7,7 @@ import { ContractExecutor } from "./ContractExecutor"
 import { NewContract } from "../newContract"
 import { Connection } from "../connection"
 import { Transaction } from "../transaction"
-import { useToken } from "../../hook/useToken"
+import { TokenPerpdex } from "../token"
 
 export interface Executors {
     [Network.Xdai]: ContractExecutor
@@ -44,13 +44,10 @@ export const AccountPerpdex = createContainer(useAccount)
 
 function useAccount() {
     const [state, dispatch] = useReducer(reducer, initialState)
-    const { account, signer, chainId } = Connection.useContainer()
+    const { account, signer } = Connection.useContainer()
     const { vault, clearingHouse, addressMap } = NewContract.useContainer()
     const { execute } = Transaction.useContainer()
-    const { approve, allowance, queryAllowanceBySpender, decimals } = useToken(
-        addressMap ? addressMap.erc20.usdc : "",
-        chainId ? chainId : 1,
-    )
+    const { state: tokenState, approve, queryAllowanceBySpender } = TokenPerpdex.useContainer()
 
     const [balance, setBalance] = useState<Big | null>(null)
     const [accountValue, setAccountValue] = useState<Big | null>(null)
@@ -76,56 +73,70 @@ function useAccount() {
         return addressMap?.erc20.usdc
     }, [addressMap?.erc20.usdc])
 
-    const deposit = useCallback(
+    const getIsNeedApprove = useCallback(
         async (amount: Big) => {
             if (currentExecutor && collateralToken) {
                 const spender = currentExecutor.contract.address
-                await queryAllowanceBySpender(spender) // TODO: fix
-                if (!allowance[spender] || amount.gt(allowance[spender])) {
+                const allowance = await queryAllowanceBySpender(spender)
+
+                console.log("verifyAllowance", amount.toNumber(), allowance.toNumber())
+                if (!allowance || amount.gt(allowance)) return true
+            }
+            return false
+        },
+        [collateralToken, currentExecutor, queryAllowanceBySpender],
+    )
+
+    const deposit = useCallback(
+        async (amount: Big, isNeedApprove: boolean, tokenDecimals: number) => {
+            if (currentExecutor && collateralToken) {
+                const spender = currentExecutor.contract.address
+                if (spender && isNeedApprove) {
                     await approve(spender, amount)
-                    return
                 }
 
-                await execute(currentExecutor.deposit(collateralToken, big2BigNum(amount, decimals)))
+                console.log("@@@@@@ start deposit with", collateralToken, big2BigNum(amount, tokenDecimals))
+                await execute(currentExecutor.deposit(collateralToken, big2BigNum(amount, tokenDecimals)))
             }
         },
-        [allowance, approve, collateralToken, currentExecutor, execute, queryAllowanceBySpender, decimals],
+        [approve, collateralToken, currentExecutor, execute],
     )
 
     const withdraw = useCallback(
-        (amount: Big) => {
+        async (amount: Big) => {
             if (currentExecutor && collateralToken) {
-                execute(currentExecutor.withdraw(collateralToken, big2BigNum(amount, decimals)))
+                await execute(currentExecutor.withdraw(collateralToken, big2BigNum(amount, tokenState.decimals)))
             }
         },
-        [currentExecutor, execute, collateralToken, decimals],
+        [collateralToken, currentExecutor, execute, tokenState.decimals],
     )
 
     useEffect(() => {
         async function fetchBalance() {
             if (account && vault) {
                 const balance = await vault.getBalance(account)
-                setBalance(bigNum2Big(balance, decimals))
+                setBalance(bigNum2Big(balance, tokenState.decimals))
             }
         }
         fetchBalance()
-    }, [vault, account, decimals])
+    }, [account, tokenState.decimals, vault])
 
     useEffect(() => {
         async function fetchAccountValue() {
             if (account && clearingHouse) {
                 const accountValue = await clearingHouse.getAccountValue(account)
-                setAccountValue(bigNum2Big(accountValue, decimals))
+                setAccountValue(bigNum2Big(accountValue, tokenState.decimals))
             }
         }
         fetchAccountValue()
-    }, [vault, clearingHouse, decimals])
+    }, [account, clearingHouse, tokenState.decimals])
 
     return {
         state,
         actions: {
             toggleAccountModal,
         },
+        getIsNeedApprove,
         deposit,
         withdraw,
         balance,
