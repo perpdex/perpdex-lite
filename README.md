@@ -5,7 +5,7 @@
 This is a UI of PerpDEX protocol with essential features. Note that you need to manually switch to rinkeby network to trade.
 
 -   👉🏻 [Official Site](https://perpdex.com)
--   👉🏻 Discord (coming soon)
+-   👉🏻 [Discord] (https://discord.gg/x4cnMGUfyg)
 
 ### How to start?
 

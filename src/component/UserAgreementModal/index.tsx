@@ -17,12 +17,13 @@ import { STORAGE_KEY } from "constant"
 const { IS_TOS_AGREED } = STORAGE_KEY
 
 function UserAgreementModal() {
-    const [isRead, setIsRead] = useState(false)
+    // TODO set terms-of-service link
+    const [isRead, setIsRead] = useState(true)
     const [isTosAgreed, setIsTosAgreed] = useLocalStorage(IS_TOS_AGREED.name, IS_TOS_AGREED.defaultValue)
 
-    const handleOnCheck = useCallback(() => {
-        setIsRead(!isRead)
-    }, [isRead])
+    // const handleOnCheck = useCallback(() => {
+    //     setIsRead(!isRead)
+    // }, [isRead])
 
     const handleOnClick = useCallback(() => {
         setIsTosAgreed("true")
@@ -53,12 +54,12 @@ function UserAgreementModal() {
                     <Text>
                         This is <strong>BETA</strong> Software — use at your own risk.
                     </Text>
-                    <Checkbox size="md" colorScheme="green" onChange={handleOnCheck}>
+                    {/* <Checkbox size="md" colorScheme="green" onChange={handleOnCheck}>
                         I have read and agreed to
-                        <ExternalLink color="blue.500" href="https://docs.perp.fi/library/terms-of-service" isExternal>
+                        <ExternalLink color="blue.500" href="terms-of-service link" isExternal>
                             &nbsp;Terms of Service&nbsp;
                         </ExternalLink>
-                    </Checkbox>
+                    </Checkbox> */}
                 </ModalBody>
                 <ModalFooter>
                     <Button colorScheme="blue" mr={3} onClick={handleOnClick} isDisabled={!isRead}>

@@ -20,8 +20,8 @@ function GetStarted() {
                     <ExternalLink color="blue.500" href="https://github.com/perpdex/perpdex-lite" isExternal>
                         Github <ExternalLinkIcon mx="2px" />
                     </ExternalLink>{" "}
-                    <ExternalLink color="blue.500" href="https://discord.com/" isExternal>
-                        Discord (coming soon) <ExternalLinkIcon mx="2px" />
+                    <ExternalLink color="blue.500" href="https://discord.gg/x4cnMGUfyg" isExternal>
+                        Discord <ExternalLinkIcon mx="2px" />
                     </ExternalLink>
                 </HStack>
             </Stack>
