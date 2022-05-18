@@ -40,3 +40,7 @@ REACT_APP_SEGMENT_API_KEY= /* segment api key */
 -   run `yarn build`
 -   run `yarn deploy-ipfs`
     - Note: Using `ipfs-deploy@v8.0.1` because newer version needs node v14
+
+## Contribution
+
+Please see [CONTRIBUTING.md](CONTRIBUTING.md)
