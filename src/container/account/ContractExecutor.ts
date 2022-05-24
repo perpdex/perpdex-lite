@@ -1,9 +1,9 @@
 import { BigNumber, ContractTransaction, Signer } from "ethers"
 
-import { TestClearingHousePerpdex } from "types/newContracts"
+import { ClearingHousePerpdexNew } from "types/newContracts"
 
 export class ContractExecutor {
-    constructor(readonly contract: TestClearingHousePerpdex, readonly signer: Signer | undefined) {
+    constructor(readonly contract: ClearingHousePerpdexNew, readonly signer: Signer | undefined) {
         if (signer) {
             this.contract = contract.connect(signer)
         }

@@ -51,11 +51,11 @@ function Position() {
         if (!price) return
         if (!selectedAmm) return
 
-        const takerInfo = await clearingHousePerpDex.getTakerInfo(account, baseTokens)
-        const makerInfo = await clearingHousePerpDex.getMakerInfo(account, baseTokens)
+        const positionSizeBig = await clearingHousePerpDex.getPositionSize(account, baseTokens.usd)
+        const positionNotionalBig = await clearingHousePerpDex.getPositionNotional(account, baseTokens.usd)
 
-        const takerPositionSize = bigNum2Big(takerInfo)
-        const takerOpenNotional = bigNum2Big(makerInfo)
+        const takerPositionSize = bigNum2Big(positionSizeBig)
+        const takerOpenNotional = bigNum2Big(positionNotionalBig)
 
         const info = {
             ...selectedAmm,

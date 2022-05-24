@@ -55,7 +55,7 @@ function ProvidedInfoTable() {
         if (!price) return
 
         // FIX
-        const tmp = await clearingHousePerpDex.getAccountValue(account)
+        const tmp = await clearingHousePerpDex.getTotalAccountValue(account)
 
         // const [quoteAmountRaw, quotePendingFee] = await orderBook.getTotalTokenAmountInPoolAndPendingFee(
         //     account,

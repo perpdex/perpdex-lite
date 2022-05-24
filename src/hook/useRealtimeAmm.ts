@@ -51,8 +51,9 @@ export function useRealtimeAmm(address: string, name: string) {
         async function getPrice() {
             if (clearingHousePerpDex && isAddress(address)) {
                 try {
-                    const sqrtPriceX96 = await clearingHousePerpDex.getSqrtMarkPriceX96(address)
-                    setPrice(sqrtPriceX96ToPrice(bigNum2Big(sqrtPriceX96, 0)))
+                    // FIX
+                    // const sqrtPriceX96 = await clearingHousePerpDex.getSqrtMarkPriceX96(address)
+                    // setPrice(sqrtPriceX96ToPrice(bigNum2Big(sqrtPriceX96, 0)))
                 } catch (err) {
                     console.log(err)
                     setPrice(Big(0))

@@ -1,7 +1,7 @@
 import { BigNumber, ContractTransaction, Signer } from "ethers"
 import { Side } from "constant"
 
-import { ClearingHousePerpdex } from "types/newContracts"
+import { ClearingHousePerpdexNew } from "types/newContracts"
 import { ClearingHousePerpdexActions } from "./type"
 import { constants } from "ethers"
 
@@ -10,7 +10,7 @@ function getDeadline(): Number {
 }
 
 export class ContractExecutorPerpdex implements ClearingHousePerpdexActions {
-    constructor(readonly contract: ClearingHousePerpdex, readonly signer: Signer | undefined) {
+    constructor(readonly contract: ClearingHousePerpdexNew, readonly signer: Signer | undefined) {
         if (signer) {
             this.contract = contract.connect(signer)
         }

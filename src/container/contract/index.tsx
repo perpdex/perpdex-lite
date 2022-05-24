@@ -2,9 +2,9 @@ import { Connection } from "container/connection"
 import { metadata } from "constant"
 import { useMemo } from "react"
 import {
-    TestClearingHousePerpdex__factory as TestClearingHousePerpdexFactory,
+    ClearingHousePerpdexNew__factory as ClearingHousePerpdexNewFactory,
+    ClearingHousePerpdexNew,
     ERC20__factory as Erc20Factory,
-    TestClearingHousePerpdex,
     ERC20,
 } from "types/newContracts"
 import { createContainer } from "unstated-next"
@@ -25,7 +25,7 @@ interface AddressMap {
 
 interface ContractState {
     isInitialized: boolean
-    clearingHousePerpDex?: TestClearingHousePerpdex
+    clearingHousePerpDex?: ClearingHousePerpdexNew
     ercToken?: ERC20
     ercTokenAddress: {
         quoteToken: string
@@ -75,7 +75,7 @@ function useContract() {
 
         return {
             isInitialized: true,
-            clearingHousePerpDex: TestClearingHousePerpdexFactory.connect(
+            clearingHousePerpDex: ClearingHousePerpdexNewFactory.connect(
                 contractAddress.clearingHouse,
                 baseNetworkProvider,
             ),

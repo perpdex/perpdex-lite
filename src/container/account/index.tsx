@@ -102,7 +102,7 @@ function useAccount() {
     useEffect(() => {
         async function fetchBalance() {
             if (account && clearingHousePerpDex) {
-                const balance = await clearingHousePerpDex.getBalance(account)
+                const balance = await clearingHousePerpDex.callStatic.getTotalAccountValue(account) // FIX: balance
                 setBalance(bigNum2Big(balance, decimals))
             }
         }
@@ -112,7 +112,7 @@ function useAccount() {
     useEffect(() => {
         async function fetchAccountValue() {
             if (account && clearingHousePerpDex) {
-                const accountValue = await clearingHousePerpDex.getAccountValue(account)
+                const accountValue = await clearingHousePerpDex.callStatic.getTotalAccountValue(account)
                 setAccountValue(bigNum2Big(accountValue, decimals))
             }
         }

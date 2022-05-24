@@ -73,11 +73,11 @@ function ClosePositionModal() {
         if (!clearingHousePerpDex) return
         if (!price) return
 
-        const takerInfo = await clearingHousePerpDex.getTakerInfo(account, address)
-        const makerInfo = await clearingHousePerpDex.getMakerInfo(account, address)
+        const positionSizeBig = await clearingHousePerpDex.getPositionSize(account, address)
+        const positionNotionalBig = await clearingHousePerpDex.getPositionNotional(account, address)
 
-        const size = bigNum2Big(takerInfo)
-        const takerOpenNotional = bigNum2Big(makerInfo)
+        const size = bigNum2Big(positionSizeBig)
+        const takerOpenNotional = bigNum2Big(positionNotionalBig)
         const margin = Big(0)
 
         if (size.eq(0)) return
