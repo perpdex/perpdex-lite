@@ -1,9 +1,9 @@
 import { useEffect, useCallback, useRef } from "react"
-import { OldContract } from "../container/oldContract"
+import { NewContract } from "../container/newContract"
 
 export function useContractCall(fn: Function, deps: any[]) {
     const savedCallback = useRef<Function>()
-    const { isInitialized } = OldContract.useContainer()
+    const { isInitialized } = NewContract.useContainer()
 
     useEffect(() => {
         savedCallback.current = fn
