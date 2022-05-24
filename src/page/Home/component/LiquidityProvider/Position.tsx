@@ -5,12 +5,12 @@ import { useCallback } from "react"
 import { Amm } from "../../../../container/amm"
 import { ClearingHouse } from "../../../../container/clearingHouse"
 import { bigNum2Big } from "../../../../util/format"
-import { NewContract } from "../../../../container/newContract"
+import { Contract } from "../../../../container/contract"
 import { Connection } from "../../../../container/connection"
 
 function Position() {
     const { account } = Connection.useContainer()
-    const { orderBook } = NewContract.useContainer()
+    const { clearingHousePerpDex } = Contract.useContainer()
     const { selectedAmm } = Amm.useContainer()
     const baseTokenAddress = selectedAmm?.address
     const { removeLiquidity } = ClearingHouse.useContainer()
@@ -22,29 +22,32 @@ function Position() {
     }, [openLiquidityProviderModal])
 
     const handleOnRemoveLiquidityClick = useCallback(async () => {
-        if (!orderBook) return
+        if (!clearingHousePerpDex) return
         if (!account) return
         if (!baseTokenAddress) return
 
-        const { liquidity: liquidityRaw } = await orderBook.getOpenOrder(account, baseTokenAddress)
+        // FIX
+        const tmp = await clearingHousePerpDex.getAccountValue(account)
 
-        const [quoteAmountRaw, quotePendingFee] = await orderBook.getTotalTokenAmountInPoolAndPendingFee(
-            account,
-            baseTokenAddress,
-            false,
-        )
-        const [baseAmountRaw, basePendingFee] = await orderBook.getTotalTokenAmountInPoolAndPendingFee(
-            account,
-            baseTokenAddress,
-            true,
-        )
+        // const { liquidity: liquidityRaw } = await orderBook.getOpenOrder(account, baseTokenAddress)
 
-        const liquidity = bigNum2Big(liquidityRaw)
-        const baseAmount = bigNum2Big(baseAmountRaw)
-        const quoteAmount = bigNum2Big(quoteAmountRaw)
+        // const [quoteAmountRaw, quotePendingFee] = await orderBook.getTotalTokenAmountInPoolAndPendingFee(
+        //     account,
+        //     baseTokenAddress,
+        //     false,
+        // )
+        // const [baseAmountRaw, basePendingFee] = await orderBook.getTotalTokenAmountInPoolAndPendingFee(
+        //     account,
+        //     baseTokenAddress,
+        //     true,
+        // )
+
+        const liquidity = bigNum2Big(tmp)
+        const baseAmount = bigNum2Big(tmp)
+        const quoteAmount = bigNum2Big(tmp)
 
         removeLiquidity(baseTokenAddress, liquidity, baseAmount.mul(0.9), quoteAmount.mul(0.9))
-    }, [orderBook, account, removeLiquidity, baseTokenAddress])
+    }, [clearingHousePerpDex, account, baseTokenAddress, removeLiquidity])
 
     return (
         <>

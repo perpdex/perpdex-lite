@@ -1,7 +1,7 @@
 import { Box, Button, FormHelperText, HStack } from "@chakra-ui/react"
 import { supportedChains } from "connector"
 import { Connection } from "container/connection"
-import { NewContract } from "container/newContract"
+import { Contract } from "container/contract"
 import { useToken } from "hook/useToken"
 import { useCallback } from "react"
 import { numberWithCommasUsdc } from "util/format"
@@ -12,9 +12,14 @@ interface MyBalanceProps {
 
 function MyBalance({ setCollateral }: MyBalanceProps) {
     const { account } = Connection.useContainer()
-    const { erc20 } = NewContract.useContainer()
+    const { ercTokenAddress } = Contract.useContainer()
 
-    const { balance } = useToken(erc20?.address ? erc20.address : "", supportedChains.Rinkeby) // TODO: support other chains
+    /**
+     * TODO:
+     * - support other chains
+     * - support combination of quoteToken and baseToken
+     * */
+    const { balance } = useToken(ercTokenAddress.baseTokens.usd, supportedChains.Rinkeby)
 
     const handleOnClick = useCallback(() => {
         /* make sure the precision will be controlled */

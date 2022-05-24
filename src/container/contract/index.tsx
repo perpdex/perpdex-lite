@@ -5,6 +5,7 @@ import {
     TestClearingHousePerpdex__factory as TestClearingHousePerpdexFactory,
     ERC20__factory as Erc20Factory,
     TestClearingHousePerpdex,
+    ERC20,
 } from "types/newContracts"
 import { createContainer } from "unstated-next"
 import { useWeb3React } from "@web3-react/core"
@@ -13,22 +14,22 @@ import { constants } from "ethers"
 export const Contract = createContainer(useContract)
 
 interface BaseToken {
-    [key: string]: string
+    usd: string
 }
 
 interface AddressMap {
     clearingHouse: string
     quoteToken: string
-    baseTokens: BaseToken[]
+    baseTokens: BaseToken
 }
 
 interface ContractState {
     isInitialized: boolean
     clearingHousePerpDex?: TestClearingHousePerpdex
-    ercToken: string
+    ercToken?: ERC20
     ercTokenAddress: {
         quoteToken: string
-        baseTokens: BaseToken[]
+        baseTokens: BaseToken
     }
 }
 
@@ -53,10 +54,12 @@ function getAddressFromChainId(chainId: number): AddressMap | undefined {
 const defaultContractInstance: ContractState = {
     isInitialized: false,
     clearingHousePerpDex: undefined,
-    ercToken: "",
+    ercToken: undefined,
     ercTokenAddress: {
         quoteToken: "",
-        baseTokens: [],
+        baseTokens: {
+            usd: "",
+        },
     },
 }
 

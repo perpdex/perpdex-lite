@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react"
 
 import { AmmError } from "util/error"
 import Big from "big.js"
-import { NewContract } from "container/newContract"
+import { Contract } from "container/contract"
 import { Dir } from "constant"
 import { isAddress } from "@ethersproject/address"
 import { useContractEvent } from "./useContractEvent"
@@ -14,7 +14,7 @@ function sqrtPriceX96ToPrice(x: Big): Big {
 
 // address: base token address
 export function useRealtimeAmm(address: string, name: string) {
-    const { clearingHouse, exchange } = NewContract.useContainer()
+    const { clearingHousePerpDex } = Contract.useContainer()
     const [price, setPrice] = useState<Big | null>(null)
 
     const getInputPrice = useCallback(
@@ -49,9 +49,9 @@ export function useRealtimeAmm(address: string, name: string) {
 
     useEffect(() => {
         async function getPrice() {
-            if (exchange !== null && isAddress(address)) {
+            if (clearingHousePerpDex && isAddress(address)) {
                 try {
-                    const sqrtPriceX96 = await exchange.getSqrtMarkPriceX96(address)
+                    const sqrtPriceX96 = await clearingHousePerpDex.getSqrtMarkPriceX96(address)
                     setPrice(sqrtPriceX96ToPrice(bigNum2Big(sqrtPriceX96, 0)))
                 } catch (err) {
                     console.log(err)
@@ -60,11 +60,11 @@ export function useRealtimeAmm(address: string, name: string) {
             }
         }
         getPrice()
-    }, [address, exchange])
+    }, [address, clearingHousePerpDex])
 
     /* will receive [quoteAssetReserve, baseAssetReserve, timestamp] */
     useContractEvent(
-        clearingHouse,
+        clearingHousePerpDex,
         "PositionChanged",
         (
             trader,

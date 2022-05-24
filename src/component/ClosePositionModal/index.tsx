@@ -22,7 +22,7 @@ import { ClearingHouse } from "container/clearingHouse"
 import { Trade } from "container/trade"
 import { Transaction } from "container/transaction"
 import { Connection } from "container/connection"
-import { NewContract } from "container/newContract"
+import { Contract } from "container/contract"
 import { numberWithCommasUsdc, bigNum2Big } from "util/format"
 // import AmmArtifact from "@perp/contract/build/contracts/src/Amm.sol/Amm.json"
 // import ClearingHouseViewerArtifact from "@perp/contract/build/contracts/src/ClearingHouseViewer.sol/ClearingHouseViewer.json"
@@ -47,7 +47,7 @@ function ClosePositionModal() {
         closeClosePositionModal,
     } = Position.useContainer()
     const { account } = Connection.useContainer()
-    const { accountBalance } = NewContract.useContainer()
+    const { clearingHousePerpDex } = Contract.useContainer()
     const { closePosition } = ClearingHouse.useContainer()
     const { isLoading: isTxLoading } = Transaction.useContainer()
     const { price } = useRealtimeAmm(address, baseAssetSymbol)
@@ -69,18 +69,15 @@ function ClosePositionModal() {
 
     const getClosePositionInfo = useCallback(async () => {
         if (!account) return
-        if (!accountBalance) return
         if (!address) return
+        if (!clearingHousePerpDex) return
         if (!price) return
 
-        const [
-            takerPositionSizeRaw,
-            takerOpenNotionalRaw,
-            // lastTwPremiumGrowthGlobalX96,
-        ] = await accountBalance.getAccountInfo(account, address)
+        const takerInfo = await clearingHousePerpDex.getTakerInfo(account, address)
+        const makerInfo = await clearingHousePerpDex.getMakerInfo(account, address)
 
-        const size = bigNum2Big(takerPositionSizeRaw)
-        const takerOpenNotional = bigNum2Big(takerOpenNotionalRaw)
+        const size = bigNum2Big(takerInfo)
+        const takerOpenNotional = bigNum2Big(makerInfo)
         const margin = Big(0)
 
         if (size.eq(0)) return
@@ -97,7 +94,7 @@ function ClosePositionModal() {
         }
 
         setClosePositionInfo(info)
-    }, [account, accountBalance, address, price])
+    }, [account, address, clearingHousePerpDex, price])
 
     useEffect(() => {
         getClosePositionInfo()
@@ -123,7 +120,7 @@ function ClosePositionModal() {
         } else {
             return numberWithCommasUsdc(notional.div(size).abs())
         }
-    }, [closePositionInfo])
+    }, [closePositionInfo, inverse])
 
     const pnlStr = useMemo(() => {
         if (closePositionInfo !== null && closePositionInfo.unrealizedPnl) {
@@ -234,17 +231,17 @@ function ClosePositionModal() {
             </Modal>
         ),
         [
-            baseAssetSymbol,
-            quoteAssetSymbol,
-            closeClosePositionModal,
-            feeStr,
-            handleOnClick,
             isClosePositionModalOpen,
-            isTxLoading,
+            closeClosePositionModal,
+            baseAssetSymbol,
+            exitPriceStr,
+            quoteAssetSymbol,
             marginStr,
             pnlStr,
+            feeStr,
             totalStr,
-            price,
+            handleOnClick,
+            isTxLoading,
         ],
     )
 }

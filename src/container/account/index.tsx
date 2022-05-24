@@ -4,7 +4,7 @@ import { Network } from "../../constant"
 import { Big } from "big.js"
 import { big2BigNum, bigNum2Big } from "../../util/format"
 import { ContractExecutor } from "./ContractExecutor"
-import { NewContract } from "../newContract"
+import { Contract } from "../contract"
 import { Connection } from "../connection"
 import { Transaction } from "../transaction"
 import { useToken } from "../../hook/useToken"
@@ -45,10 +45,10 @@ export const AccountPerpdex = createContainer(useAccount)
 function useAccount() {
     const [state, dispatch] = useReducer(reducer, initialState)
     const { account, signer, chainId } = Connection.useContainer()
-    const { vault, clearingHouse, addressMap } = NewContract.useContainer()
+    const { clearingHousePerpDex, ercTokenAddress } = Contract.useContainer()
     const { execute } = Transaction.useContainer()
     const { approve, allowance, queryAllowanceBySpender, decimals } = useToken(
-        addressMap ? addressMap.erc20.usdc : "",
+        ercTokenAddress.quoteToken,
         chainId ? chainId : 1,
     )
 
@@ -60,21 +60,19 @@ function useAccount() {
     }, [dispatch])
 
     const executors: Executors | null = useMemo(() => {
-        if (!vault || !signer) {
+        if (!clearingHousePerpDex || !signer) {
             return null
         }
         return {
-            [Network.Xdai]: new ContractExecutor(vault, signer), // TODO: fix
+            [Network.Xdai]: new ContractExecutor(clearingHousePerpDex, signer), // TODO: fix
         }
-    }, [vault, signer])
+    }, [clearingHousePerpDex, signer])
 
     const currentExecutor = useMemo(() => {
         return executors ? executors[Network.Xdai] : null // TODO: fix
     }, [executors])
 
-    const collateralToken = useMemo(() => {
-        return addressMap?.erc20.usdc
-    }, [addressMap?.erc20.usdc])
+    const collateralToken = ercTokenAddress.quoteToken
 
     const deposit = useCallback(
         async (amount: Big) => {
@@ -89,7 +87,7 @@ function useAccount() {
                 await execute(currentExecutor.deposit(collateralToken, big2BigNum(amount, decimals)))
             }
         },
-        [allowance, approve, collateralToken, currentExecutor, execute, queryAllowanceBySpender, decimals],
+        [currentExecutor, queryAllowanceBySpender, allowance, execute, collateralToken, decimals, approve],
     )
 
     const withdraw = useCallback(
@@ -103,23 +101,23 @@ function useAccount() {
 
     useEffect(() => {
         async function fetchBalance() {
-            if (account && vault) {
-                const balance = await vault.getBalance(account)
+            if (account && clearingHousePerpDex) {
+                const balance = await clearingHousePerpDex.getBalance(account)
                 setBalance(bigNum2Big(balance, decimals))
             }
         }
         fetchBalance()
-    }, [vault, account, decimals])
+    }, [account, decimals, clearingHousePerpDex])
 
     useEffect(() => {
         async function fetchAccountValue() {
-            if (account && clearingHouse) {
-                const accountValue = await clearingHouse.getAccountValue(account)
+            if (account && clearingHousePerpDex) {
+                const accountValue = await clearingHousePerpDex.getAccountValue(account)
                 setAccountValue(bigNum2Big(accountValue, decimals))
             }
         }
         fetchAccountValue()
-    }, [vault, clearingHouse, decimals])
+    }, [decimals, account, clearingHousePerpDex])
 
     return {
         state,

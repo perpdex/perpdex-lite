@@ -5,7 +5,7 @@ import { useCallback, useMemo } from "react"
 import { Big } from "big.js"
 import { ClearingHousePerpdexActions } from "./type"
 import { Connection } from "../connection"
-import { NewContract } from "../newContract"
+import { Contract } from "../contract"
 import { ContractExecutorPerpdex } from "./ContractExecutorPerpdex"
 import { Transaction } from "../transaction"
 import { createContainer } from "unstated-next"
@@ -19,17 +19,17 @@ export interface Executors {
 
 function useClearingHouse() {
     const { signer } = Connection.useContainer()
-    const { clearingHouse } = NewContract.useContainer()
+    const { clearingHousePerpDex } = Contract.useContainer()
     const { execute } = Transaction.useContainer()
 
     const executors: Executors | null = useMemo(() => {
-        if (!clearingHouse || !signer) {
+        if (!clearingHousePerpDex || !signer) {
             return null
         }
         return {
-            [Network.Mumbai]: new ContractExecutorPerpdex(clearingHouse, signer),
+            [Network.Mumbai]: new ContractExecutorPerpdex(clearingHousePerpDex, signer),
         }
-    }, [clearingHouse, signer])
+    }, [clearingHousePerpDex, signer])
 
     const currentExecutor = useMemo(() => {
         return executors ? executors[Network.Mumbai] : null

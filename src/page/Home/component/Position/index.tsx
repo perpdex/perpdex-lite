@@ -10,18 +10,21 @@ import PositionUnit from "./PositionUnit"
 import { SimpleGrid } from "@chakra-ui/layout"
 import { bigNum2Big } from "util/format"
 import { useInterval } from "@chakra-ui/hooks"
-import { NewContract } from "../../../../container/newContract"
+import { Contract } from "../../../../container/contract"
 import { useRealtimeAmm } from "../../../../hook/useRealtimeAmm"
 import Big from "big.js"
 
 function Position() {
     const { account } = Connection.useContainer()
-    const { accountBalance } = NewContract.useContainer()
+    const {
+        clearingHousePerpDex,
+        ercTokenAddress: { baseTokens },
+    } = Contract.useContainer()
     const { selectedAmm } = Amm.useContainer()
 
     const baseTokenAddress = selectedAmm?.address || ""
     const baseAssetSymbol = selectedAmm?.baseAssetSymbol || ""
-    const quoteAssetSymbol = selectedAmm?.quoteAssetSymbol || ""
+    // const quoteAssetSymbol = selectedAmm?.quoteAssetSymbol || ""
     const { price } = useRealtimeAmm(baseTokenAddress, baseAssetSymbol)
     const [positionInfo, setPositionInfo] = useState<PositionInfo>({
         address: "",
@@ -43,18 +46,16 @@ function Position() {
 
     const getTraderPositionInfo = useCallback(async () => {
         if (!account) return
-        if (!accountBalance) return
-        if (!baseTokenAddress) return
+        if (!baseTokens) return
+        if (!clearingHousePerpDex) return
         if (!price) return
         if (!selectedAmm) return
 
-        const [takerPositionSizeRaw, takerOpenNotionalRaw] = await accountBalance.getAccountInfo(
-            account,
-            baseTokenAddress,
-        )
+        const takerInfo = await clearingHousePerpDex.getTakerInfo(account, baseTokens)
+        const makerInfo = await clearingHousePerpDex.getMakerInfo(account, baseTokens)
 
-        const takerPositionSize = bigNum2Big(takerPositionSizeRaw)
-        const takerOpenNotional = bigNum2Big(takerOpenNotionalRaw)
+        const takerPositionSize = bigNum2Big(takerInfo)
+        const takerOpenNotional = bigNum2Big(makerInfo)
 
         const info = {
             ...selectedAmm,
@@ -72,7 +73,7 @@ function Position() {
         }
 
         setPositionInfo(info)
-    }, [account, accountBalance, baseAssetSymbol, baseTokenAddress, price, quoteAssetSymbol, selectedAmm])
+    }, [account, baseTokens, clearingHousePerpDex, price, selectedAmm])
 
     useEffect(() => {
         getTraderPositionInfo()

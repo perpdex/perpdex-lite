@@ -19,10 +19,9 @@ import { bigNum2Big } from "../../../../util/format"
 import { useInterval } from "@chakra-ui/hooks"
 import { Connection } from "../../../../container/connection"
 import { Amm } from "../../../../container/amm"
-import { NewContract } from "../../../../container/newContract"
+import { Contract } from "../../../../container/contract"
 import Big from "big.js"
 import { useRealtimeAmm } from "../../../../hook/useRealtimeAmm"
-import { BigNumber } from "ethers"
 
 export interface MakerPositionInfo {
     unrealizedPnl: Big
@@ -35,7 +34,7 @@ export interface MakerPositionInfo {
 
 function ProvidedInfoTable() {
     const { account } = Connection.useContainer()
-    const { orderBook } = NewContract.useContainer()
+    const { clearingHousePerpDex } = Contract.useContainer()
     const { selectedAmm } = Amm.useContainer()
     const baseTokenAddress = selectedAmm?.address || ""
     const ammName = selectedAmm?.baseAssetSymbol || ""
@@ -51,27 +50,30 @@ function ProvidedInfoTable() {
 
     const getMakerPositionInfo = useCallback(async () => {
         if (!account) return
-        if (!orderBook) return
+        if (!clearingHousePerpDex) return
         if (!baseTokenAddress) return
         if (!price) return
 
-        const [quoteAmountRaw, quotePendingFee] = await orderBook.getTotalTokenAmountInPoolAndPendingFee(
-            account,
-            baseTokenAddress,
-            false,
-        )
-        const [baseAmountRaw, basePendingFee] = await orderBook.getTotalTokenAmountInPoolAndPendingFee(
-            account,
-            baseTokenAddress,
-            true,
-        )
-        const quoteDebtRaw = await orderBook.getTotalOrderDebt(account, baseTokenAddress, false)
-        const baseDebtRaw = await orderBook.getTotalOrderDebt(account, baseTokenAddress, true)
+        // FIX
+        const tmp = await clearingHousePerpDex.getAccountValue(account)
 
-        const baseAmount = bigNum2Big(baseAmountRaw)
-        const quoteAmount = bigNum2Big(quoteAmountRaw)
-        const baseDebt = bigNum2Big(baseDebtRaw)
-        const quoteDebt = bigNum2Big(quoteDebtRaw)
+        // const [quoteAmountRaw, quotePendingFee] = await orderBook.getTotalTokenAmountInPoolAndPendingFee(
+        //     account,
+        //     baseTokenAddress,
+        //     false,
+        // )
+        // const [baseAmountRaw, basePendingFee] = await orderBook.getTotalTokenAmountInPoolAndPendingFee(
+        //     account,
+        //     baseTokenAddress,
+        //     true,
+        // )
+        // const quoteDebtRaw = await orderBook.getTotalOrderDebt(account, baseTokenAddress, false)
+        // const baseDebtRaw = await orderBook.getTotalOrderDebt(account, baseTokenAddress, true)
+
+        const baseAmount = bigNum2Big(tmp)
+        const quoteAmount = bigNum2Big(tmp)
+        const baseDebt = bigNum2Big(tmp)
+        const quoteDebt = bigNum2Big(tmp)
 
         const info = {
             liquidityValue: baseAmount.mul(price).add(quoteAmount),
@@ -83,7 +85,7 @@ function ProvidedInfoTable() {
         }
 
         setMakerPositionInfo(info)
-    }, [account, orderBook, baseTokenAddress, price, setMakerPositionInfo])
+    }, [account, clearingHousePerpDex, baseTokenAddress, price])
 
     useEffect(() => {
         getMakerPositionInfo()

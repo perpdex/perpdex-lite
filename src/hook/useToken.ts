@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react"
 import { constants } from "ethers"
 import { Big } from "big.js"
-import { NewContract } from "container/newContract"
+import { Contract } from "container/contract"
 import { BIG_ZERO } from "../constant/number"
 import { Connection } from "../container/connection"
 import { Transaction, TransactionAction } from "../container/transaction"
@@ -13,7 +13,7 @@ import { useContractEvent } from "./useContractEvent"
 export function useToken(address: string, chainId: number) {
     const { account, signer } = Connection.useContainer()
     // const { erc20: erc20Contract } = OldContract.useContainer()
-    const { erc20 } = NewContract.useContainer()
+    const { ercToken } = Contract.useContainer()
     const { executeWithGasLimit } = Transaction.useContainer()
     const [balance, setBalance] = useState(BIG_ZERO)
     const [decimals, setDecimals] = useState(0)
@@ -21,8 +21,8 @@ export function useToken(address: string, chainId: number) {
     const [totalSupply, setTotalSupply] = useState(BIG_ZERO)
 
     const contract = useMemo(() => {
-        return isAddress(address) ? erc20?.attach(address) || null : null
-    }, [erc20, address])
+        return ercToken && isAddress(address) ? ercToken.attach(address) || null : null
+    }, [ercToken, address])
 
     useEffect(() => {
         async function fetchToken() {
@@ -52,7 +52,7 @@ export function useToken(address: string, chainId: number) {
             }
         }
         fetchBalance()
-    }, [erc20, contract, account, decimals])
+    }, [contract, account, decimals])
 
     const queryAllowanceBySpender = useCallback(
         async (spender: string) => {
