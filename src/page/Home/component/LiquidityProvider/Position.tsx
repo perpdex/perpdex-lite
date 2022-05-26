@@ -10,7 +10,7 @@ import { Connection } from "../../../../container/connection"
 
 function Position() {
     const { account } = Connection.useContainer()
-    const { clearingHousePerpDex } = Contract.useContainer()
+    const { clearingHousePerpdex } = Contract.useContainer()
     const { selectedAmm } = Amm.useContainer()
     const baseTokenAddress = selectedAmm?.address
     const { removeLiquidity } = ClearingHouse.useContainer()
@@ -22,12 +22,12 @@ function Position() {
     }, [openLiquidityProviderModal])
 
     const handleOnRemoveLiquidityClick = useCallback(async () => {
-        if (!clearingHousePerpDex) return
+        if (!clearingHousePerpdex) return
         if (!account) return
         if (!baseTokenAddress) return
 
         // FIX
-        const tmp = await clearingHousePerpDex.getAccountValue(account)
+        const tmp = await clearingHousePerpdex.getAccountValue(account)
 
         // const { liquidity: liquidityRaw } = await orderBook.getOpenOrder(account, baseTokenAddress)
 
@@ -47,7 +47,7 @@ function Position() {
         const quoteAmount = bigNum2Big(tmp)
 
         removeLiquidity(baseTokenAddress, liquidity, baseAmount.mul(0.9), quoteAmount.mul(0.9))
-    }, [clearingHousePerpDex, account, baseTokenAddress, removeLiquidity])
+    }, [clearingHousePerpdex, account, baseTokenAddress, removeLiquidity])
 
     return (
         <>

@@ -25,7 +25,7 @@ interface AddressMap {
 
 interface ContractState {
     isInitialized: boolean
-    clearingHousePerpDex?: ClearingHousePerpdexNew
+    clearingHousePerpdex?: ClearingHousePerpdexNew
     ercToken?: ERC20
     ercTokenAddress: {
         quoteToken: string
@@ -53,7 +53,7 @@ function getAddressFromChainId(chainId: number): AddressMap | undefined {
 
 const defaultContractInstance: ContractState = {
     isInitialized: false,
-    clearingHousePerpDex: undefined,
+    clearingHousePerpdex: undefined,
     ercToken: undefined,
     ercTokenAddress: {
         quoteToken: "",
@@ -75,7 +75,7 @@ function useContract() {
 
         return {
             isInitialized: true,
-            clearingHousePerpDex: ClearingHousePerpdexNewFactory.connect(
+            clearingHousePerpdex: ClearingHousePerpdexNewFactory.connect(
                 contractAddress.clearingHouse,
                 baseNetworkProvider,
             ),

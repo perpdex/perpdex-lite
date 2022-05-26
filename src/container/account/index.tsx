@@ -45,7 +45,7 @@ export const AccountPerpdex = createContainer(useAccount)
 function useAccount() {
     const [state, dispatch] = useReducer(reducer, initialState)
     const { account, signer, chainId } = Connection.useContainer()
-    const { clearingHousePerpDex, ercTokenAddress } = Contract.useContainer()
+    const { clearingHousePerpdex, ercTokenAddress } = Contract.useContainer()
     const { execute } = Transaction.useContainer()
     const { approve, allowance, queryAllowanceBySpender, decimals } = useToken(
         ercTokenAddress.quoteToken,
@@ -60,13 +60,13 @@ function useAccount() {
     }, [dispatch])
 
     const executors: Executors | null = useMemo(() => {
-        if (!clearingHousePerpDex || !signer) {
+        if (!clearingHousePerpdex || !signer) {
             return null
         }
         return {
-            [Network.Xdai]: new ContractExecutor(clearingHousePerpDex, signer), // TODO: fix
+            [Network.Xdai]: new ContractExecutor(clearingHousePerpdex, signer), // TODO: fix
         }
-    }, [clearingHousePerpDex, signer])
+    }, [clearingHousePerpdex, signer])
 
     const currentExecutor = useMemo(() => {
         return executors ? executors[Network.Xdai] : null // TODO: fix
@@ -101,23 +101,23 @@ function useAccount() {
 
     useEffect(() => {
         async function fetchBalance() {
-            if (account && clearingHousePerpDex) {
-                const balance = await clearingHousePerpDex.callStatic.getTotalAccountValue(account) // FIX: balance
+            if (account && clearingHousePerpdex) {
+                const balance = await clearingHousePerpdex.callStatic.getTotalAccountValue(account) // FIX: balance
                 setBalance(bigNum2Big(balance, decimals))
             }
         }
         fetchBalance()
-    }, [account, decimals, clearingHousePerpDex])
+    }, [account, decimals, clearingHousePerpdex])
 
     useEffect(() => {
         async function fetchAccountValue() {
-            if (account && clearingHousePerpDex) {
-                const accountValue = await clearingHousePerpDex.callStatic.getTotalAccountValue(account)
+            if (account && clearingHousePerpdex) {
+                const accountValue = await clearingHousePerpdex.callStatic.getTotalAccountValue(account)
                 setAccountValue(bigNum2Big(accountValue, decimals))
             }
         }
         fetchAccountValue()
-    }, [decimals, account, clearingHousePerpDex])
+    }, [decimals, account, clearingHousePerpdex])
 
     return {
         state,

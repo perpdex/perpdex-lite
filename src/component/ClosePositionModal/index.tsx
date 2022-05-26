@@ -47,7 +47,7 @@ function ClosePositionModal() {
         closeClosePositionModal,
     } = Position.useContainer()
     const { account } = Connection.useContainer()
-    const { clearingHousePerpDex } = Contract.useContainer()
+    const { clearingHousePerpdex } = Contract.useContainer()
     const { closePosition } = ClearingHouse.useContainer()
     const { isLoading: isTxLoading } = Transaction.useContainer()
     const { price } = useRealtimeAmm(address, baseAssetSymbol)
@@ -70,11 +70,11 @@ function ClosePositionModal() {
     const getClosePositionInfo = useCallback(async () => {
         if (!account) return
         if (!address) return
-        if (!clearingHousePerpDex) return
+        if (!clearingHousePerpdex) return
         if (!price) return
 
-        const positionSizeBig = await clearingHousePerpDex.getPositionSize(account, address)
-        const positionNotionalBig = await clearingHousePerpDex.getPositionNotional(account, address)
+        const positionSizeBig = await clearingHousePerpdex.getPositionSize(account, address)
+        const positionNotionalBig = await clearingHousePerpdex.getPositionNotional(account, address)
 
         const size = bigNum2Big(positionSizeBig)
         const takerOpenNotional = bigNum2Big(positionNotionalBig)
@@ -94,7 +94,7 @@ function ClosePositionModal() {
         }
 
         setClosePositionInfo(info)
-    }, [account, address, clearingHousePerpDex, price])
+    }, [account, address, clearingHousePerpdex, price])
 
     useEffect(() => {
         getClosePositionInfo()

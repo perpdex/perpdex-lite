@@ -17,7 +17,7 @@ import Big from "big.js"
 function Position() {
     const { account } = Connection.useContainer()
     const {
-        clearingHousePerpDex,
+        clearingHousePerpdex,
         ercTokenAddress: { baseTokens },
     } = Contract.useContainer()
     const { selectedAmm } = Amm.useContainer()
@@ -47,12 +47,12 @@ function Position() {
     const getTraderPositionInfo = useCallback(async () => {
         if (!account) return
         if (!baseTokens) return
-        if (!clearingHousePerpDex) return
+        if (!clearingHousePerpdex) return
         if (!price) return
         if (!selectedAmm) return
 
-        const positionSizeBig = await clearingHousePerpDex.getPositionSize(account, baseTokens.usd)
-        const positionNotionalBig = await clearingHousePerpDex.getPositionNotional(account, baseTokens.usd)
+        const positionSizeBig = await clearingHousePerpdex.getPositionSize(account, baseTokens.usd)
+        const positionNotionalBig = await clearingHousePerpdex.getPositionNotional(account, baseTokens.usd)
 
         const takerPositionSize = bigNum2Big(positionSizeBig)
         const takerOpenNotional = bigNum2Big(positionNotionalBig)
@@ -73,7 +73,7 @@ function Position() {
         }
 
         setPositionInfo(info)
-    }, [account, baseTokens, clearingHousePerpDex, price, selectedAmm])
+    }, [account, baseTokens, clearingHousePerpdex, price, selectedAmm])
 
     useEffect(() => {
         getTraderPositionInfo()
