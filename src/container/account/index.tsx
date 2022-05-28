@@ -2,12 +2,14 @@ import { useCallback, useEffect, useMemo, useReducer, useState } from "react"
 import { createContainer } from "unstated-next"
 import { Network } from "../../constant"
 import { Big } from "big.js"
-import { big2BigNum, bigNum2Big } from "../../util/format"
+import { big2BigNum } from "../../util/format"
 import { ContractExecutor } from "./ContractExecutor"
 import { Contract } from "../contract"
 import { Connection } from "../connection"
 import { Transaction } from "../transaction"
 import { useToken } from "../../hook/useToken"
+import { getBlance } from "util/ethers"
+import { BigNumber } from "ethers"
 
 export interface Executors {
     [Network.Xdai]: ContractExecutor
@@ -44,7 +46,7 @@ export const AccountPerpdex = createContainer(useAccount)
 
 function useAccount() {
     const [state, dispatch] = useReducer(reducer, initialState)
-    const { account, signer, chainId } = Connection.useContainer()
+    const { account, signer, chainId, baseNetworkProvider } = Connection.useContainer()
     const { perpdexExchange, ercTokenAddress } = Contract.useContainer()
     const { execute } = Transaction.useContainer()
     const { approve, allowance, queryAllowanceBySpender, decimals } = useToken(
@@ -52,8 +54,8 @@ function useAccount() {
         chainId ? chainId : 1,
     )
 
-    const [balance, setBalance] = useState<Big | null>(null)
-    const [accountValue, setAccountValue] = useState<Big | null>(null)
+    const [balance, setBalance] = useState<BigNumber | null>(null)
+    const [accountValue, setAccountValue] = useState<BigNumber | null>(null)
 
     const toggleAccountModal = useCallback(() => {
         dispatch({ type: ACTIONS.TOGGLE_ACCOUNT_MODAL })
@@ -78,7 +80,7 @@ function useAccount() {
         async (amount: Big) => {
             if (currentExecutor && collateralToken) {
                 const spender = currentExecutor.contract.address
-                await queryAllowanceBySpender(spender) // TODO: fix
+                await queryAllowanceBySpender(spender)
                 if (!allowance[spender] || amount.gt(allowance[spender])) {
                     await approve(spender, amount)
                 }
@@ -100,19 +102,19 @@ function useAccount() {
 
     useEffect(() => {
         async function fetchBalance() {
-            if (account && perpdexExchange) {
-                const balance = await perpdexExchange.callStatic.getTotalAccountValue(account) // FIX: balance
-                setBalance(bigNum2Big(balance, decimals))
+            if (account && perpdexExchange && baseNetworkProvider) {
+                const balance = await getBlance(baseNetworkProvider, account)
+                setBalance(balance)
             }
         }
         fetchBalance()
-    }, [account, decimals, perpdexExchange])
+    }, [account, baseNetworkProvider, decimals, perpdexExchange])
 
     useEffect(() => {
         async function fetchAccountValue() {
             if (account && perpdexExchange) {
                 const accountValue = await perpdexExchange.callStatic.getTotalAccountValue(account)
-                setAccountValue(bigNum2Big(accountValue, decimals))
+                setAccountValue(accountValue)
             }
         }
         fetchAccountValue()
