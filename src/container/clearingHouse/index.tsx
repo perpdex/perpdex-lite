@@ -19,17 +19,17 @@ export interface Executors {
 
 function useClearingHouse() {
     const { signer } = Connection.useContainer()
-    const { clearingHousePerpdex } = Contract.useContainer()
+    const { perpdexExchange } = Contract.useContainer()
     const { execute } = Transaction.useContainer()
 
     const executors: Executors | null = useMemo(() => {
-        if (!clearingHousePerpdex || !signer) {
+        if (!perpdexExchange || !signer) {
             return null
         }
         return {
-            [Network.Mumbai]: new ContractExecutorPerpdex(clearingHousePerpdex, signer),
+            [Network.Mumbai]: new ContractExecutorPerpdex(perpdexExchange, signer),
         }
-    }, [clearingHousePerpdex, signer])
+    }, [perpdexExchange, signer])
 
     const currentExecutor = useMemo(() => {
         return executors ? executors[Network.Mumbai] : null

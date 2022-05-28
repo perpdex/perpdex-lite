@@ -34,7 +34,7 @@ export interface MakerPositionInfo {
 
 function ProvidedInfoTable() {
     const { account } = Connection.useContainer()
-    const { clearingHousePerpdex } = Contract.useContainer()
+    const { perpdexExchange } = Contract.useContainer()
     const { selectedAmm } = Amm.useContainer()
     const baseTokenAddress = selectedAmm?.address || ""
     const ammName = selectedAmm?.baseAssetSymbol || ""
@@ -50,12 +50,12 @@ function ProvidedInfoTable() {
 
     const getMakerPositionInfo = useCallback(async () => {
         if (!account) return
-        if (!clearingHousePerpdex) return
+        if (!perpdexExchange) return
         if (!baseTokenAddress) return
         if (!price) return
 
         // FIX
-        const tmp = await clearingHousePerpdex.getTotalAccountValue(account)
+        const tmp = await perpdexExchange.getTotalAccountValue(account)
 
         // const [quoteAmountRaw, quotePendingFee] = await orderBook.getTotalTokenAmountInPoolAndPendingFee(
         //     account,
@@ -85,7 +85,7 @@ function ProvidedInfoTable() {
         }
 
         setMakerPositionInfo(info)
-    }, [account, clearingHousePerpdex, baseTokenAddress, price])
+    }, [account, perpdexExchange, baseTokenAddress, price])
 
     useEffect(() => {
         getMakerPositionInfo()

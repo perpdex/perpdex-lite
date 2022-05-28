@@ -7,7 +7,7 @@ export const metadata = {
                         name: "rinkeby",
                         chainId: 4,
                         contracts: {
-                            clearingHouse: "0x155BdFf407997A090Acd8D3d56B5ACB492f34E7a",
+                            clearingHouse: "0xE17a0424AD921ef4c3F1FbD445Eb3903Ec2EAC40",
                             settlementToken: "0xc778417E063141139Fce010982780140Aa0cD5Ab",
                             quoteToken: "0xCDC9AefE9E78A76e666B48daED81A2022c3e2B86",
                             baseTokens: {

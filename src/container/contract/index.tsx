@@ -2,8 +2,8 @@ import { Connection } from "container/connection"
 import { metadata } from "constant"
 import { useMemo } from "react"
 import {
-    ClearingHousePerpdexNew__factory as ClearingHousePerpdexNewFactory,
-    ClearingHousePerpdexNew,
+    PerpdexExchange__factory as PerpdexExchangeFactory,
+    PerpdexExchange,
     ERC20__factory as Erc20Factory,
     ERC20,
 } from "types/newContracts"
@@ -19,15 +19,17 @@ interface BaseToken {
 
 interface AddressMap {
     clearingHouse: string
+    settlementToken: string
     quoteToken: string
     baseTokens: BaseToken
 }
 
 interface ContractState {
     isInitialized: boolean
-    clearingHousePerpdex?: ClearingHousePerpdexNew
+    perpdexExchange?: PerpdexExchange
     ercToken?: ERC20
     ercTokenAddress: {
+        settlementToken: string
         quoteToken: string
         baseTokens: BaseToken
     }
@@ -46,6 +48,7 @@ function getAddressFromChainId(chainId: number): AddressMap | undefined {
 
     return {
         clearingHouse: contracts.clearingHouse,
+        settlementToken: contracts.settlementToken,
         quoteToken: contracts.quoteToken,
         baseTokens: contracts.baseTokens,
     }
@@ -53,9 +56,10 @@ function getAddressFromChainId(chainId: number): AddressMap | undefined {
 
 const defaultContractInstance: ContractState = {
     isInitialized: false,
-    clearingHousePerpdex: undefined,
+    perpdexExchange: undefined,
     ercToken: undefined,
     ercTokenAddress: {
+        settlementToken: "",
         quoteToken: "",
         baseTokens: {
             usd: "",
@@ -75,12 +79,10 @@ function useContract() {
 
         return {
             isInitialized: true,
-            clearingHousePerpdex: ClearingHousePerpdexNewFactory.connect(
-                contractAddress.clearingHouse,
-                baseNetworkProvider,
-            ),
+            perpdexExchange: PerpdexExchangeFactory.connect(contractAddress.clearingHouse, baseNetworkProvider),
             ercToken: Erc20Factory.connect(constants.AddressZero, baseNetworkProvider),
             ercTokenAddress: {
+                settlementToken: contractAddress.settlementToken,
                 quoteToken: contractAddress.quoteToken,
                 baseTokens: contractAddress.baseTokens,
             },

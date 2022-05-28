@@ -1,16 +1,16 @@
 import { BigNumber, ContractTransaction, Signer } from "ethers"
 
-import { ClearingHousePerpdexNew } from "types/newContracts"
+import { PerpdexExchange } from "types/newContracts"
 
 export class ContractExecutor {
-    constructor(readonly contract: ClearingHousePerpdexNew, readonly signer: Signer | undefined) {
+    constructor(readonly contract: PerpdexExchange, readonly signer: Signer | undefined) {
         if (signer) {
             this.contract = contract.connect(signer)
         }
     }
 
-    deposit(token: string, amountX10_D: BigNumber): Promise<ContractTransaction> {
-        return this.execute("deposit", [token, amountX10_D])
+    deposit(amountX10_D: BigNumber): Promise<ContractTransaction> {
+        return this.execute("deposit", [amountX10_D])
     }
 
     withdraw(token: string, amountX10_D: BigNumber): Promise<ContractTransaction> {

@@ -45,10 +45,10 @@ export const AccountPerpdex = createContainer(useAccount)
 function useAccount() {
     const [state, dispatch] = useReducer(reducer, initialState)
     const { account, signer, chainId } = Connection.useContainer()
-    const { clearingHousePerpdex, ercTokenAddress } = Contract.useContainer()
+    const { perpdexExchange, ercTokenAddress } = Contract.useContainer()
     const { execute } = Transaction.useContainer()
     const { approve, allowance, queryAllowanceBySpender, decimals } = useToken(
-        ercTokenAddress.quoteToken,
+        ercTokenAddress.settlementToken,
         chainId ? chainId : 1,
     )
 
@@ -60,19 +60,19 @@ function useAccount() {
     }, [dispatch])
 
     const executors: Executors | null = useMemo(() => {
-        if (!clearingHousePerpdex || !signer) {
+        if (!perpdexExchange || !signer) {
             return null
         }
         return {
-            [Network.Xdai]: new ContractExecutor(clearingHousePerpdex, signer), // TODO: fix
+            [Network.Xdai]: new ContractExecutor(perpdexExchange, signer), // TODO: fix
         }
-    }, [clearingHousePerpdex, signer])
+    }, [perpdexExchange, signer])
 
     const currentExecutor = useMemo(() => {
         return executors ? executors[Network.Xdai] : null // TODO: fix
     }, [executors])
 
-    const collateralToken = ercTokenAddress.quoteToken
+    const collateralToken = ercTokenAddress.settlementToken
 
     const deposit = useCallback(
         async (amount: Big) => {
@@ -81,10 +81,9 @@ function useAccount() {
                 await queryAllowanceBySpender(spender) // TODO: fix
                 if (!allowance[spender] || amount.gt(allowance[spender])) {
                     await approve(spender, amount)
-                    return
                 }
 
-                await execute(currentExecutor.deposit(collateralToken, big2BigNum(amount, decimals)))
+                await execute(currentExecutor.deposit(big2BigNum(amount, decimals)))
             }
         },
         [currentExecutor, queryAllowanceBySpender, allowance, execute, collateralToken, decimals, approve],
@@ -101,23 +100,23 @@ function useAccount() {
 
     useEffect(() => {
         async function fetchBalance() {
-            if (account && clearingHousePerpdex) {
-                const balance = await clearingHousePerpdex.callStatic.getTotalAccountValue(account) // FIX: balance
+            if (account && perpdexExchange) {
+                const balance = await perpdexExchange.callStatic.getTotalAccountValue(account) // FIX: balance
                 setBalance(bigNum2Big(balance, decimals))
             }
         }
         fetchBalance()
-    }, [account, decimals, clearingHousePerpdex])
+    }, [account, decimals, perpdexExchange])
 
     useEffect(() => {
         async function fetchAccountValue() {
-            if (account && clearingHousePerpdex) {
-                const accountValue = await clearingHousePerpdex.callStatic.getTotalAccountValue(account)
+            if (account && perpdexExchange) {
+                const accountValue = await perpdexExchange.callStatic.getTotalAccountValue(account)
                 setAccountValue(bigNum2Big(accountValue, decimals))
             }
         }
         fetchAccountValue()
-    }, [decimals, account, clearingHousePerpdex])
+    }, [decimals, account, perpdexExchange])
 
     return {
         state,
