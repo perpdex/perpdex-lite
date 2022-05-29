@@ -13,8 +13,8 @@ export class ContractExecutor {
         return this.execute("deposit", [amountX10_D])
     }
 
-    withdraw(token: string, amountX10_D: BigNumber): Promise<ContractTransaction> {
-        return this.execute("withdraw", [token, amountX10_D])
+    withdraw(amountX10_D: BigNumber): Promise<ContractTransaction> {
+        return this.execute("withdraw", [amountX10_D])
     }
 
     async execute(funcName: string, args: any[]) {
