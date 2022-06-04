@@ -1,11 +1,11 @@
 import { BigNumber, ContractTransaction, Signer } from "ethers"
 import { Decimal, Dir } from "constant"
 
-import { ClearingHouse } from "types/contracts"
+import { PerpdexExchange } from "types/newContracts"
 import { ClearingHouseActions } from "./type"
 
 export class ContractExecutor implements ClearingHouseActions {
-    constructor(readonly contract: ClearingHouse, readonly signer: Signer | undefined) {
+    constructor(readonly contract: PerpdexExchange, readonly signer: Signer | undefined) {
         if (signer) {
             this.contract = contract.connect(signer)
         }

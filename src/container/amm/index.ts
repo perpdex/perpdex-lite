@@ -3,8 +3,7 @@ import { useEffect, useState } from "react"
 // import AmmReaderArtifact from "@perp/contract/build/contracts/src/AmmReader.sol/AmmReader.json"
 import { Amm as AmmType } from "constant/amm"
 import { Connection } from "container/connection"
-import { OldContract } from "container/oldContract"
-import { NewContract } from "container/newContract"
+import { Contract } from "container/contract"
 // import { Contract as MulticallContract } from "ethers-multicall"
 // import { bigNum2Big } from "util/format"
 import { createContainer } from "unstated-next"
@@ -14,8 +13,7 @@ import Big from "big.js"
 export const Amm = createContainer(useAmm)
 
 function useAmm() {
-    const { insuranceFund, amm } = OldContract.useContainer()
-    const { addressMap } = NewContract.useContainer()
+    const { ercTokenAddress } = Contract.useContainer()
     const { multicallNetworkProvider } = Connection.useContainer()
     const [ammMap, setAmmMap] = useState<Record<string, AmmType> | null>(null)
     const [selectedAmm, setSelectedAmm] = useState<AmmType | null>(null)
@@ -25,7 +23,7 @@ function useAmm() {
         async function getRawAmmList() {
             // TODO: retrieve from contracts
 
-            if (!addressMap) {
+            if (!ercTokenAddress) {
                 return
             }
 
@@ -34,7 +32,7 @@ function useAmm() {
             /* [quoteAssetReserve, baseAssetReserve, tradeLimitRatio, fundingPeriod, quoteAssetSymbol, baseAssetSymbol, priceFeedKey, priceFeed] */
             _ammMap["USD/ETH"] = {
                 // address: void 0,
-                address: addressMap.baseToken, // mumbai
+                address: ercTokenAddress.baseTokens.usd, // mumbai
                 baseAssetSymbol: "USD",
                 quoteAssetSymbol: "ETH",
                 baseAssetSymbolDisplay: "ETH",
@@ -121,7 +119,7 @@ function useAmm() {
         }
 
         getRawAmmList()
-    }, [addressMap, amm, insuranceFund, multicallNetworkProvider])
+    }, [ercTokenAddress, multicallNetworkProvider])
 
     return {
         isLoading,

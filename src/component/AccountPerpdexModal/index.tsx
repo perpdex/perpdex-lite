@@ -19,23 +19,21 @@ import {
 import { AccountPerpdex } from "container/account"
 import ButtonPerpdex from "component/ButtonPerpdex"
 import SmallFormLabel from "../SmallFormLabel"
-import { formatInput } from "../../util/format"
+import { bigNum2FixedStr, formatInput } from "../../util/format"
 import { USDC_PRECISION } from "../../constant"
 import Big from "big.js"
-import { Amm } from "../../container/amm"
 
 function AccountPerpdexModal() {
     const {
         state: {
             modal: { isAccountModalOpen },
+            collateral,
         },
         actions: { toggleAccountModal },
+        balance,
         deposit,
         withdraw,
-        balance,
-        accountValue,
     } = AccountPerpdex.useContainer()
-    const { selectedAmm } = Amm.useContainer()
 
     const [amount, setAmount] = useState<string>("")
 
@@ -74,12 +72,8 @@ function AccountPerpdexModal() {
                 <ModalCloseButton />
                 <ModalBody pb="1.5rem">
                     <Stack spacing={2}>
-                        <Box>
-                            Deposited balance: {balance?.toString()} {selectedAmm?.quoteAssetSymbol}
-                        </Box>
-                        <Box>
-                            Account value: {accountValue?.toString()} {selectedAmm?.quoteAssetSymbol}
-                        </Box>
+                        <Box>Balance: {balance ? bigNum2FixedStr(balance) : ""}</Box>
+                        <Box>Account value: {collateral ? bigNum2FixedStr(collateral) : ""}</Box>
                         <FormControl id="margin">
                             <SmallFormLabel>Amount</SmallFormLabel>
                             <NumberInput value={amount} onInput={handleOnInput}>
@@ -94,7 +88,7 @@ function AccountPerpdexModal() {
                                             color="blue.500"
                                             textTransform="uppercase"
                                         >
-                                            USDC
+                                            wETH
                                         </Text>
                                     </InputRightElement>
                                 </InputGroup>

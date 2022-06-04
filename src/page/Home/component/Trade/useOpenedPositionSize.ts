@@ -2,12 +2,12 @@ import { isAddress } from "@ethersproject/address"
 import Big from "big.js"
 import { BIG_ZERO } from "constant"
 import { Connection } from "container/connection"
-import { OldContract } from "container/oldContract"
+// import { OldContract } from "container/oldContract"
 import { useCallback, useEffect, useState } from "react"
 
 // address is base token address
 export function useOpenedPositionSize(address: string) {
-    const { addressMap, amm } = OldContract.useContainer()
+    // const { addressMap, amm } = OldContract.useContainer()
     const { account, multicallNetworkProvider } = Connection.useContainer()
 
     const [size, setSize] = useState<Big | null>(null)
@@ -18,9 +18,9 @@ export function useOpenedPositionSize(address: string) {
     const updatePositionSize = useCallback(async () => {
         if (
             multicallNetworkProvider !== null &&
-            amm !== null &&
-            addressMap !== null &&
-            isAddress(addressMap.ClearingHouseViewer) &&
+            // amm !== null &&
+            // addressMap !== null &&
+            // isAddress(addressMap.ClearingHouseViewer) &&
             account !== null &&
             isAddress(address)
         ) {
@@ -53,7 +53,7 @@ export function useOpenedPositionSize(address: string) {
             setUnrealizedPnl(Big(3))
             setOutputPrice(_outputPrice)
         }
-    }, [multicallNetworkProvider, amm, addressMap, account, address])
+    }, [multicallNetworkProvider, account, address])
 
     useEffect(() => {
         updatePositionSize()

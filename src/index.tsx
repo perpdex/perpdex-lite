@@ -9,8 +9,7 @@ import { BrowserRouter } from "react-router-dom"
 import { ChakraProvider } from "@chakra-ui/react"
 import { ClearingHouse } from "container/clearingHouse"
 import { Connection } from "./container/connection"
-import { OldContract } from "./container/oldContract"
-import { NewContract } from "./container/newContract"
+import { Contract } from "./container/contract"
 import { Fonts } from "component/Font"
 import { Global } from "container/global"
 import { OldMetaData } from "./container/metadata"
@@ -52,8 +51,7 @@ const Providers = ((...providers: any[]) => ({ children }: { children: React.Rea
     User.Provider,
     Connection.Provider,
     Transaction.Provider,
-    OldContract.Provider,
-    NewContract.Provider,
+    Contract.Provider,
     Amm.Provider,
     ClearingHouse.Provider,
     Trade.Provider,

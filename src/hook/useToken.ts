@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, useMemo } from "react"
 import { constants } from "ethers"
 import { Big } from "big.js"
-import { NewContract } from "container/newContract"
-import { BIG_ZERO } from "../constant/number"
+import { Contract } from "container/contract"
+import { BIG_NUMBER_ZERO } from "../constant/number"
 import { Connection } from "../container/connection"
 import { Transaction, TransactionAction } from "../container/transaction"
 import { big2BigNum, bigNum2Big } from "../util/format"
@@ -12,17 +12,16 @@ import { useContractEvent } from "./useContractEvent"
 
 export function useToken(address: string, chainId: number) {
     const { account, signer } = Connection.useContainer()
-    // const { erc20: erc20Contract } = OldContract.useContainer()
-    const { erc20 } = NewContract.useContainer()
+    const { ercToken } = Contract.useContainer()
     const { executeWithGasLimit } = Transaction.useContainer()
-    const [balance, setBalance] = useState(BIG_ZERO)
+    const [balance, setBalance] = useState(BIG_NUMBER_ZERO)
     const [decimals, setDecimals] = useState(0)
     const [allowance, setAllowance] = useState<Record<string, Big>>({})
-    const [totalSupply, setTotalSupply] = useState(BIG_ZERO)
+    const [totalSupply, setTotalSupply] = useState(BIG_NUMBER_ZERO)
 
     const contract = useMemo(() => {
-        return isAddress(address) ? erc20?.attach(address) || null : null
-    }, [erc20, address])
+        return ercToken && isAddress(address) ? ercToken.attach(address) || null : null
+    }, [ercToken, address])
 
     useEffect(() => {
         async function fetchToken() {
@@ -30,7 +29,7 @@ export function useToken(address: string, chainId: number) {
                 try {
                     const decimals = await contract.decimals()
                     const totalSupply = await contract.totalSupply()
-                    setTotalSupply(bigNum2Big(totalSupply, decimals))
+                    setTotalSupply(totalSupply)
                     setDecimals(decimals)
                 } catch (err) {
                     console.log(err)
@@ -45,14 +44,14 @@ export function useToken(address: string, chainId: number) {
             if (contract && account) {
                 try {
                     const balance = await contract.balanceOf(account)
-                    setBalance(bigNum2Big(balance, decimals))
+                    setBalance(balance)
                 } catch (err) {
                     console.log(err)
                 }
             }
         }
         fetchBalance()
-    }, [erc20, contract, account, decimals])
+    }, [contract, account, decimals])
 
     const queryAllowanceBySpender = useCallback(
         async (spender: string) => {
@@ -106,7 +105,7 @@ export function useToken(address: string, chainId: number) {
     useContractEvent(contract, "Transfer", async (from: string, to: string) => {
         if (contract && (from === account || to === account)) {
             const balance = await contract.balanceOf(account)
-            setBalance(bigNum2Big(balance, decimals))
+            setBalance(balance)
         }
     })
 

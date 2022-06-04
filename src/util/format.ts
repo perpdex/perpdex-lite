@@ -1,4 +1,4 @@
-import { ERC20_DECIMAL_DIGITS, USDC_PRECISION } from "../constant/number"
+import { ERC20_DECIMAL_DIGITS, USDC_PRECISION, DISPLAY_DIGITS } from "../constant/number"
 
 import Big from "big.js"
 import { BigNumber } from "ethers"
@@ -8,11 +8,15 @@ export interface Decimal {
     d: BigNumber
 }
 
+export function ethFormatUnits(val: BigNumber) {
+    return formatUnits(val, ERC20_DECIMAL_DIGITS)
+}
+
 // Big Number to...
 export function bigNum2FixedStr(
     val: BigNumber,
     decimals: number = ERC20_DECIMAL_DIGITS,
-    digits: number = USDC_PRECISION,
+    digits: number = DISPLAY_DIGITS,
 ): string {
     return Number.parseFloat(formatUnits(val, decimals)).toFixed(digits)
 }
