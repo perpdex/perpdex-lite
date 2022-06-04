@@ -12,7 +12,7 @@ import AccountPerpdexModal from "component/AccountPerpdexModal"
 import LiquidityProviderModal from "component/LiquidityProviderModal"
 
 export const App = () => (
-    <Container maxW="container.lg" pb={20} px={6}>
+    <Container maxW="container.2xl" pb={20} px={6}>
         <Header />
         <Divider />
         <Switch>

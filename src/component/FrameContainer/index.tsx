@@ -6,7 +6,7 @@ interface FrameContainerProps {
 }
 
 function FrameContainer({ children }: FrameContainerProps) {
-    return <Box mt={4}>{children}</Box>
+    return <Box mt={8}>{children}</Box>
 }
 
 export default FrameContainer
