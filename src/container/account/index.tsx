@@ -1,14 +1,14 @@
-import { useCallback, useEffect, useMemo, useReducer, useState } from "react"
+import { useCallback, useEffect, useMemo, useReducer } from "react"
 import { createContainer } from "unstated-next"
-import { Network } from "../../constant"
+import { BIG_NUMBER_ZERO, Network } from "../../constant"
 import { Big } from "big.js"
-import { big2BigNum } from "../../util/format"
+import { big2BigNum, ethFormatUnits } from "../../util/format"
 import { ContractExecutor } from "./ContractExecutor"
 import { Contract } from "../contract"
 import { Connection } from "../connection"
 import { Transaction } from "../transaction"
 import { useToken } from "../../hook/useToken"
-import { getBlance } from "util/ethers"
+import { useContractEvent } from "../../hook/useContractEvent"
 import { BigNumber } from "ethers"
 
 export interface Executors {
@@ -17,14 +17,18 @@ export interface Executors {
 
 enum ACTIONS {
     TOGGLE_ACCOUNT_MODAL = "TOGGLE_ACCOUNT_MODAL",
+    UPDATE_COLLATERAL = "UPDATE_COLLATERAL",
 }
 
-type ActionType = { type: ACTIONS.TOGGLE_ACCOUNT_MODAL }
+type ActionType =
+    | { type: ACTIONS.TOGGLE_ACCOUNT_MODAL }
+    | { type: ACTIONS.UPDATE_COLLATERAL; payload: { collateral: BigNumber } }
 
 const initialState = {
     modal: {
         isAccountModalOpen: false,
     },
+    collateral: BIG_NUMBER_ZERO,
 }
 
 function reducer(state: typeof initialState, action: ActionType) {
@@ -37,6 +41,12 @@ function reducer(state: typeof initialState, action: ActionType) {
                 },
             }
         }
+        case ACTIONS.UPDATE_COLLATERAL: {
+            return {
+                ...state,
+                collateral: action.payload.collateral,
+            }
+        }
         default:
             throw new Error()
     }
@@ -46,20 +56,14 @@ export const AccountPerpdex = createContainer(useAccount)
 
 function useAccount() {
     const [state, dispatch] = useReducer(reducer, initialState)
-    const { account, signer, chainId, baseNetworkProvider } = Connection.useContainer()
+    const { account, signer, chainId } = Connection.useContainer()
     const { perpdexExchange, ercTokenAddress } = Contract.useContainer()
     const { execute } = Transaction.useContainer()
-    const { approve, allowance, queryAllowanceBySpender, decimals } = useToken(
+    const { balance, approve, allowance, queryAllowanceBySpender, decimals } = useToken(
         ercTokenAddress.settlementToken,
         chainId ? chainId : 1,
     )
-
-    const [balance, setBalance] = useState<BigNumber | null>(null)
-    const [accountValue, setAccountValue] = useState<BigNumber | null>(null)
-
-    const toggleAccountModal = useCallback(() => {
-        dispatch({ type: ACTIONS.TOGGLE_ACCOUNT_MODAL })
-    }, [dispatch])
+    const collateralToken = ercTokenAddress.settlementToken
 
     const executors: Executors | null = useMemo(() => {
         if (!perpdexExchange || !signer) {
@@ -74,7 +78,9 @@ function useAccount() {
         return executors ? executors[Network.Xdai] : null // TODO: fix
     }, [executors])
 
-    const collateralToken = ercTokenAddress.settlementToken
+    const toggleAccountModal = useCallback(() => {
+        dispatch({ type: ACTIONS.TOGGLE_ACCOUNT_MODAL })
+    }, [dispatch])
 
     const deposit = useCallback(
         async (amount: Big) => {
@@ -82,7 +88,11 @@ function useAccount() {
                 const spender = currentExecutor.contract.address
                 await queryAllowanceBySpender(spender)
                 if (!allowance[spender] || amount.gt(allowance[spender])) {
-                    await approve(spender, amount)
+                    try {
+                        await approve(spender, amount)
+                    } catch (e) {
+                        console.error(e)
+                    }
                 }
 
                 await execute(currentExecutor.deposit(big2BigNum(amount, decimals)))
@@ -94,27 +104,31 @@ function useAccount() {
     const withdraw = useCallback(
         (amount: Big) => {
             if (currentExecutor && collateralToken) {
-                execute(currentExecutor.withdraw(collateralToken, big2BigNum(amount, decimals)))
+                execute(currentExecutor.withdraw(big2BigNum(amount, decimals)))
             }
         },
         [currentExecutor, execute, collateralToken, decimals],
     )
 
-    useEffect(() => {
-        async function fetchBalance() {
-            if (account && perpdexExchange && baseNetworkProvider) {
-                const balance = await getBlance(baseNetworkProvider, account)
-                setBalance(balance)
-            }
+    useContractEvent(perpdexExchange, "Deposited", (trader, amount) => {
+        if (trader === account) {
+            console.log("Deposited event", ethFormatUnits(amount), state.collateral.add(amount))
+            dispatch({ type: ACTIONS.UPDATE_COLLATERAL, payload: { collateral: state.collateral.add(amount) } })
         }
-        fetchBalance()
-    }, [account, baseNetworkProvider, decimals, perpdexExchange])
+    })
+
+    useContractEvent(perpdexExchange, "Withdrawn", (trader, amount) => {
+        if (trader === account) {
+            console.log("Withdrawn event", ethFormatUnits(amount), state.collateral.add(amount))
+            dispatch({ type: ACTIONS.UPDATE_COLLATERAL, payload: { collateral: state.collateral.sub(amount) } })
+        }
+    })
 
     useEffect(() => {
         async function fetchAccountValue() {
             if (account && perpdexExchange) {
                 const accountValue = await perpdexExchange.callStatic.getTotalAccountValue(account)
-                setAccountValue(accountValue)
+                dispatch({ type: ACTIONS.UPDATE_COLLATERAL, payload: { collateral: accountValue } })
             }
         }
         fetchAccountValue()
@@ -128,6 +142,5 @@ function useAccount() {
         deposit,
         withdraw,
         balance,
-        accountValue,
     }
 }

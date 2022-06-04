@@ -27,12 +27,12 @@ function AccountPerpdexModal() {
     const {
         state: {
             modal: { isAccountModalOpen },
+            collateral,
         },
         actions: { toggleAccountModal },
+        balance,
         deposit,
         withdraw,
-        balance,
-        accountValue,
     } = AccountPerpdex.useContainer()
 
     const [amount, setAmount] = useState<string>("")
@@ -73,7 +73,7 @@ function AccountPerpdexModal() {
                 <ModalBody pb="1.5rem">
                     <Stack spacing={2}>
                         <Box>Balance: {balance ? bigNum2FixedStr(balance) : ""}</Box>
-                        <Box>Account value: {accountValue ? bigNum2FixedStr(accountValue) : ""}</Box>
+                        <Box>Account value: {collateral ? bigNum2FixedStr(collateral) : ""}</Box>
                         <FormControl id="margin">
                             <SmallFormLabel>Amount</SmallFormLabel>
                             <NumberInput value={amount} onInput={handleOnInput}>

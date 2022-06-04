@@ -8,6 +8,10 @@ export interface Decimal {
     d: BigNumber
 }
 
+export function ethFormatUnits(val: BigNumber) {
+    return formatUnits(val, ERC20_DECIMAL_DIGITS)
+}
+
 // Big Number to...
 export function bigNum2FixedStr(
     val: BigNumber,
