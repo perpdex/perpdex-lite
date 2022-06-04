@@ -1,7 +1,7 @@
 import { HStack, Text, VStack } from "@chakra-ui/react"
 
 import React from "react"
-import { Amm } from "../../../../container/amm"
+import { Amm } from "../../container/amm"
 
 function TitleBar() {
     const { selectedAmm } = Amm.useContainer()

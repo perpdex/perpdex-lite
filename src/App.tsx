@@ -2,6 +2,7 @@ import WalletListModal from "component/WalletModal"
 import { Route, Switch } from "react-router-dom"
 import Header from "./component/Header"
 import Home from "./page/Home"
+import Trade from "./page/Trade"
 import "focus-visible/dist/focus-visible"
 import { Container, Divider } from "@chakra-ui/react"
 import ClosePositionModal from "component/ClosePositionModal"
@@ -15,9 +16,9 @@ export const App = () => (
         <Header />
         <Divider />
         <Switch>
-            <Route path="/">
-                <Home />
-            </Route>
+            <Route exact path="/" component={Home} />
+            <Route exact path="/trade" component={Trade} />
+            {/* <Route exact path="/pool" component={Pool} /> */}
         </Switch>
         <LiquidityProviderModal />
         <WalletListModal />

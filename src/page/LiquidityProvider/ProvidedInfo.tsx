@@ -15,13 +15,13 @@ import {
     HStack,
 } from "@chakra-ui/react"
 import { useCallback, useEffect, useState } from "react"
-import { bigNum2Big } from "../../../../util/format"
+import { bigNum2Big } from "../../util/format"
 import { useInterval } from "@chakra-ui/hooks"
-import { Connection } from "../../../../container/connection"
-import { Amm } from "../../../../container/amm"
-import { Contract } from "../../../../container/contract"
+import { Connection } from "../../container/connection"
+import { Amm } from "../../container/amm"
+import { Contract } from "../../container/contract"
 import Big from "big.js"
-import { useRealtimeAmm } from "../../../../hook/useRealtimeAmm"
+import { useRealtimeAmm } from "../../hook/useRealtimeAmm"
 
 export interface MakerPositionInfo {
     unrealizedPnl: Big

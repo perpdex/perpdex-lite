@@ -10,9 +10,10 @@ import PositionUnit from "./PositionUnit"
 import { SimpleGrid } from "@chakra-ui/layout"
 import { bigNum2Big } from "util/format"
 import { useInterval } from "@chakra-ui/hooks"
-import { Contract } from "../../../../container/contract"
-import { useRealtimeAmm } from "../../../../hook/useRealtimeAmm"
+import { Contract } from "../../container/contract"
+import { useRealtimeAmm } from "../../hook/useRealtimeAmm"
 import Big from "big.js"
+import FrameContainer from "component/FrameContainer"
 
 function Position() {
     const { account } = Connection.useContainer()
@@ -83,13 +84,15 @@ function Position() {
     useInterval(getTraderPositionInfo, 5000)
 
     return (
-        <SimpleGrid columns={1} spacing={8}>
-            {!account && <NoWallet />}
-            {account && positionInfo.size.eq(0) && <NoPosition />}
-            {account && !positionInfo.size.eq(0) && (
-                <PositionUnit key={positionInfo.baseAssetSymbol} data={positionInfo} />
-            )}
-        </SimpleGrid>
+        <FrameContainer>
+            <SimpleGrid columns={1} spacing={8}>
+                {!account && <NoWallet />}
+                {account && positionInfo.size.eq(0) && <NoPosition />}
+                {account && !positionInfo.size.eq(0) && (
+                    <PositionUnit key={positionInfo.baseAssetSymbol} data={positionInfo} />
+                )}
+            </SimpleGrid>
+        </FrameContainer>
     )
 }
 

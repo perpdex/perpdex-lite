@@ -5,7 +5,7 @@ import DataUnit from "./DataUnit"
 import { Position } from "container/position"
 import { PositionInfo } from "constant/position"
 import { numberWithCommasUsdc } from "util/format"
-import { Amm } from "../../../../container/amm"
+import { Amm } from "../../container/amm"
 
 interface PositionUnitProps {
     data: PositionInfo
