@@ -14,6 +14,9 @@ const components = {
                 borderRadius: "2xl",
             },
         },
+        defaultProps: {
+            colorScheme: "white",
+        },
     },
     Heading: {
         sizes: {

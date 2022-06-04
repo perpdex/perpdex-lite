@@ -16,29 +16,19 @@ function Header() {
             <Center>
                 <HStack spacing="24px">
                     <Link to="/">
-                        <Button colorScheme="teal" variant="link">
-                            Home
-                        </Button>
+                        <Button variant="link">Home</Button>
                     </Link>
                     <Link to="/trade">
-                        <Button colorScheme="teal" variant="link">
-                            Trade
-                        </Button>
+                        <Button variant="link">Trade</Button>
                     </Link>
                     <Link to="/pool">
-                        <Button colorScheme="teal" variant="link">
-                            Pool
-                        </Button>
+                        <Button variant="link">Pool</Button>
                     </Link>
                     <Link to="/tokens">
-                        <Button colorScheme="teal" variant="link">
-                            Position Tokens
-                        </Button>
+                        <Button variant="link">Position Tokens</Button>
                     </Link>
                     <Link to="/history">
-                        <Button colorScheme="teal" variant="link">
-                            History
-                        </Button>
+                        <Button variant="link">History</Button>
                     </Link>
                 </HStack>
             </Center>
