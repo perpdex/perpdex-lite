@@ -4,7 +4,7 @@ import { Contract } from "container/contract"
 import { useToken } from "hook/useToken"
 import { useCallback } from "react"
 import { numberWithCommasUsdc } from "util/format"
-import { bigNum2Big } from "../../../../util/format"
+import { bigNum2Big } from "../../util/format"
 
 interface MyBalanceProps {
     setCollateral: Function

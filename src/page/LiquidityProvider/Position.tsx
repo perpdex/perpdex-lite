@@ -2,11 +2,11 @@ import { AddIcon, MinusIcon } from "@chakra-ui/icons"
 import { Box, Button, Heading, HStack } from "@chakra-ui/react"
 import { LiquidityProvider } from "container/liquidityProvider"
 import { useCallback } from "react"
-import { Amm } from "../../../../container/amm"
-import { ClearingHouse } from "../../../../container/clearingHouse"
-import { bigNum2Big } from "../../../../util/format"
-import { Contract } from "../../../../container/contract"
-import { Connection } from "../../../../container/connection"
+import { Amm } from "../../container/amm"
+import { ClearingHouse } from "../../container/clearingHouse"
+import { bigNum2Big } from "../../util/format"
+import { Contract } from "../../container/contract"
+import { Connection } from "../../container/connection"
 
 function Position() {
     const { account } = Connection.useContainer()

@@ -1,4 +1,12 @@
 const colors = {
+    black: {
+        base: "rgba(30,30,30,1)",
+        alpha900: "rgba(0,0,0,0.92)",
+        alpha800: "rgba(0,0,0,0.8)",
+    },
+    white: {
+        base: "rgba(255,255,255,1)",
+    },
     red: {
         500: "rgba(229,62,62,1)",
         600: "rgba(215,42,42,1)",

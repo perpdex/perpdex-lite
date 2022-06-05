@@ -1,5 +1,9 @@
 const styles = {
     global: (props: any) => ({
+        body: {
+            bg: "black.alpha900",
+            color: "white.base",
+        },
         ".markdown": {
             h1: {
                 fontSize: "4xl",

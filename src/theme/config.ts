@@ -1,7 +1,7 @@
-import { ColorMode } from "@chakra-ui/react"
+import { ColorMode, ThemeConfig } from "@chakra-ui/react"
 
-const config = {
-    initialColorMode: "light" as ColorMode,
+const config: ThemeConfig = {
+    initialColorMode: "dark" as ColorMode,
     useSystemColorMode: false,
 }
 
