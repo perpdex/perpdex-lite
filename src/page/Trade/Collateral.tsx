@@ -1,9 +1,9 @@
 import { FormControl, InputGroup, InputRightElement, NumberInput, NumberInputField, Text } from "@chakra-ui/react"
 import { useCallback, useEffect, useMemo, useState } from "react"
 
-import { Amm } from "container/amm"
+import { PerpdexMarketContainer } from "container/perpdexMarketContainer"
 import Big from "big.js"
-// import MyBalance from "./MyBalance"
+// import MyBalance from "../../component/MyBalance"
 import SmallFormLabel from "component/SmallFormLabel"
 import { Trade } from "container/trade"
 import { USDC_PRECISION } from "constant"
@@ -11,10 +11,12 @@ import { formatInput } from "util/format"
 import { useDebounce } from "hook/useDebounce"
 
 function Collateral() {
-    const { selectedAmm } = Amm.useContainer()
+    const {
+        state: { currentMarket },
+    } = PerpdexMarketContainer.useContainer()
     const { collateral, setCollateral } = Trade.useContainer()
     const [_collateral, _setCollateral] = useState<string>("")
-    const quoteAssetSymbol = selectedAmm?.quoteAssetSymbol || ""
+    const quoteAssetSymbol = currentMarket
     const debouncedCollateral = useDebounce({ value: _collateral, delay: 500 })
 
     const handleOnInput = useCallback(

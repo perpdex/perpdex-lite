@@ -4,34 +4,49 @@ import { useMemo } from "react"
 import {
     PerpdexExchange__factory as PerpdexExchangeFactory,
     PerpdexExchange,
-    ERC20__factory as Erc20Factory,
-    ERC20,
+    PerpdexMarket__factory as PerpdexMarketFactory,
+    PerpdexMarket,
+    IERC20Metadata__factory as IERC20MetadataFactory,
+    IERC20Metadata,
 } from "types/newContracts"
 import { createContainer } from "unstated-next"
 import { useWeb3React } from "@web3-react/core"
 import { constants } from "ethers"
+import { supportedChains } from "connector"
+import { BaseSymbolType, QuoteSymbolType, supportedBaseSymbol, supportedQuoteSymbol } from "constant/market"
 
 export const Contract = createContainer(useContract)
 
-interface BaseToken {
-    usd: string
+interface AddressMap {
+    perpdexExchange: string
+    perpdexMarket: {
+        usd: string
+        btc: string
+        link: string
+        matic: string
+    }
+    settlementToken: string
 }
 
-interface AddressMap {
-    clearingHouse: string
-    settlementToken: string
-    quoteToken: string
-    baseTokens: BaseToken
+interface PerpdexMarketState {
+    address: string
+    symbol: BaseSymbolType
+    contract: PerpdexMarket
 }
 
 interface ContractState {
     isInitialized: boolean
     perpdexExchange?: PerpdexExchange
-    ercToken?: ERC20
+    quoteSymbol: QuoteSymbolType
+    perpdexMarket?: {
+        usd: PerpdexMarketState
+        btc: PerpdexMarketState
+        link: PerpdexMarketState
+        matic: PerpdexMarketState
+    }
+    ercToken?: IERC20Metadata
     ercTokenAddress: {
         settlementToken: string
-        quoteToken: string
-        baseTokens: BaseToken
     }
 }
 
@@ -47,23 +62,30 @@ function getAddressFromChainId(chainId: number): AddressMap | undefined {
     }
 
     return {
-        clearingHouse: contracts.clearingHouse,
+        perpdexExchange: contracts.perpdexExchange,
+        perpdexMarket: contracts.perpdexMarket,
         settlementToken: contracts.settlementToken,
-        quoteToken: contracts.quoteToken,
-        baseTokens: contracts.baseTokens,
+    }
+}
+
+const getQuoteSymbol = (chinId: number) => {
+    switch (chinId) {
+        case supportedChains.Ethereum:
+            return supportedQuoteSymbol.eth
+        default:
+            // FIX: support ASTR
+            break
     }
 }
 
 const defaultContractInstance: ContractState = {
     isInitialized: false,
+    quoteSymbol: supportedQuoteSymbol.eth as QuoteSymbolType,
     perpdexExchange: undefined,
+    perpdexMarket: undefined,
     ercToken: undefined,
     ercTokenAddress: {
-        settlementToken: "",
-        quoteToken: "",
-        baseTokens: {
-            usd: "",
-        },
+        settlementToken: "0x00",
     },
 }
 
@@ -77,14 +99,37 @@ function useContract() {
         const contractAddress = getAddressFromChainId(chainId)
         if (!contractAddress) return defaultContractInstance
 
+        const quoteSymbol = getQuoteSymbol(chainId)
+
         return {
             isInitialized: true,
-            perpdexExchange: PerpdexExchangeFactory.connect(contractAddress.clearingHouse, baseNetworkProvider),
-            ercToken: Erc20Factory.connect(constants.AddressZero, baseNetworkProvider),
+            perpdexExchange: PerpdexExchangeFactory.connect(contractAddress.perpdexExchange, baseNetworkProvider),
+            quoteSymbol: quoteSymbol,
+            perpdexMarket: {
+                usd: {
+                    address: contractAddress.perpdexMarket.usd,
+                    symbol: supportedBaseSymbol.usd,
+                    contract: PerpdexMarketFactory.connect(contractAddress.perpdexMarket.usd, baseNetworkProvider),
+                },
+                btc: {
+                    address: contractAddress.perpdexMarket.btc,
+                    symbol: supportedBaseSymbol.btc,
+                    contract: PerpdexMarketFactory.connect(contractAddress.perpdexMarket.btc, baseNetworkProvider),
+                },
+                link: {
+                    address: contractAddress.perpdexMarket.link,
+                    symbol: supportedBaseSymbol.link,
+                    contract: PerpdexMarketFactory.connect(contractAddress.perpdexMarket.link, baseNetworkProvider),
+                },
+                matic: {
+                    address: contractAddress.perpdexMarket.matic,
+                    symbol: supportedBaseSymbol.matic,
+                    contract: PerpdexMarketFactory.connect(contractAddress.perpdexMarket.matic, baseNetworkProvider),
+                },
+            },
+            ercToken: IERC20MetadataFactory.connect(constants.AddressZero, baseNetworkProvider),
             ercTokenAddress: {
                 settlementToken: contractAddress.settlementToken,
-                quoteToken: contractAddress.quoteToken,
-                baseTokens: contractAddress.baseTokens,
             },
         }
     }, [chainId, baseNetworkProvider])

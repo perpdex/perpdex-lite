@@ -18,7 +18,7 @@ import {
 } from "@chakra-ui/react"
 import { useCallback, useEffect, useMemo, useState } from "react"
 // import { PnlCalcOption } from "constant/position"
-import { ClearingHouse } from "container/clearingHouse"
+import { PerpdexExchangeContainer } from "container/perpdexExchangeContainer"
 import { Trade } from "container/trade"
 import { Transaction } from "container/transaction"
 import { Connection } from "container/connection"
@@ -30,7 +30,7 @@ import { useInterval } from "hook/useInterval"
 import Big from "big.js"
 import { Position } from "container/position"
 import { useRealtimeAmm } from "../../hook/useRealtimeAmm"
-import { Amm } from "../../container/amm"
+import { PerpdexMarketContainer } from "../../container/perpdexMarketContainer"
 
 interface ClosePositionInfo {
     notional: Big
@@ -48,11 +48,9 @@ function ClosePositionModal() {
     } = Position.useContainer()
     const { account } = Connection.useContainer()
     const { perpdexExchange } = Contract.useContainer()
-    const { closePosition } = ClearingHouse.useContainer()
+    const { closePosition } = PerpdexExchangeContainer.useContainer()
     const { isLoading: isTxLoading } = Transaction.useContainer()
-    const { price } = useRealtimeAmm(address, baseAssetSymbol)
-    const { selectedAmm } = Amm.useContainer() // TODO: refactor (this modal shouldn't depend on global state)
-    const inverse = selectedAmm?.inverse
+    const { getMarkPrice } = PerpdexMarketContainer.useContainer() // TODO: refactor (this modal shouldn't depend on global state)
 
     const { slippage } = Trade.useContainer()
 
@@ -71,7 +69,6 @@ function ClosePositionModal() {
         if (!account) return
         if (!address) return
         if (!perpdexExchange) return
-        if (!price) return
 
         const positionSizeBig = await perpdexExchange.getPositionSize(account, address)
         const positionNotionalBig = await perpdexExchange.getPositionNotional(account, address)
@@ -83,7 +80,10 @@ function ClosePositionModal() {
         if (size.eq(0)) return
 
         const entryPrice = takerOpenNotional.abs().div(size.abs())
-        const unrealizedPnl = price.div(entryPrice).sub(1).mul(takerOpenNotional.mul(-1))
+        const markPrice = await getMarkPrice()
+        if (!markPrice) return
+
+        const unrealizedPnl = markPrice.div(entryPrice).sub(1).mul(takerOpenNotional.mul(-1))
 
         const info = {
             notional: takerOpenNotional,
@@ -94,7 +94,7 @@ function ClosePositionModal() {
         }
 
         setClosePositionInfo(info)
-    }, [account, address, perpdexExchange, price])
+    }, [account, address, getMarkPrice, perpdexExchange])
 
     useEffect(() => {
         getClosePositionInfo()
@@ -115,12 +115,8 @@ function ClosePositionModal() {
         if (notional.eq(0) || size.eq(0)) {
             return "-"
         }
-        if (inverse) {
-            return numberWithCommasUsdc(size.div(notional).abs())
-        } else {
-            return numberWithCommasUsdc(notional.div(size).abs())
-        }
-    }, [closePositionInfo, inverse])
+        return numberWithCommasUsdc(size.div(notional).abs())
+    }, [closePositionInfo])
 
     const pnlStr = useMemo(() => {
         if (closePositionInfo !== null && closePositionInfo.unrealizedPnl) {

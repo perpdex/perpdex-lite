@@ -2,8 +2,7 @@ import { AddIcon, MinusIcon } from "@chakra-ui/icons"
 import { Box, Button, Heading, HStack } from "@chakra-ui/react"
 import { LiquidityProvider } from "container/liquidityProvider"
 import { useCallback } from "react"
-import { Amm } from "../../container/amm"
-import { ClearingHouse } from "../../container/clearingHouse"
+import { PerpdexMarketContainer } from "../../container/perpdexMarketContainer"
 import { bigNum2Big } from "../../util/format"
 import { Contract } from "../../container/contract"
 import { Connection } from "../../container/connection"
@@ -11,9 +10,7 @@ import { Connection } from "../../container/connection"
 function Position() {
     const { account } = Connection.useContainer()
     const { perpdexExchange } = Contract.useContainer()
-    const { selectedAmm } = Amm.useContainer()
-    const baseTokenAddress = selectedAmm?.address
-    const { removeLiquidity } = ClearingHouse.useContainer()
+    const { removeLiquidity } = PerpdexMarketContainer.useContainer()
 
     const { openLiquidityProviderModal } = LiquidityProvider.useContainer()
 
@@ -24,7 +21,6 @@ function Position() {
     const handleOnRemoveLiquidityClick = useCallback(async () => {
         if (!perpdexExchange) return
         if (!account) return
-        if (!baseTokenAddress) return
 
         // FIX
         const tmp = await perpdexExchange.getAccountValue(account)
@@ -46,8 +42,8 @@ function Position() {
         const baseAmount = bigNum2Big(tmp)
         const quoteAmount = bigNum2Big(tmp)
 
-        removeLiquidity(baseTokenAddress, liquidity, baseAmount.mul(0.9), quoteAmount.mul(0.9))
-    }, [perpdexExchange, account, baseTokenAddress, removeLiquidity])
+        // removeLiquidity(baseTokenAddress, liquidity, baseAmount.mul(0.9), quoteAmount.mul(0.9))
+    }, [perpdexExchange, account])
 
     return (
         <>

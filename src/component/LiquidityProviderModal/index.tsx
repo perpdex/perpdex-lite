@@ -15,13 +15,12 @@ import MarketSelector from "./MarketSelector"
 import Collateral from "./Collateral"
 // import Position from "./Position"
 import Slippage from "./Slippage"
-import { useCallback, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import { LiquidityProvider } from "container/liquidityProvider"
 import Big from "big.js"
-import { Amm } from "../../container/amm"
-import { useRealtimeAmm } from "../../hook/useRealtimeAmm"
+import { PerpdexMarketContainer } from "../../container/perpdexMarketContainer"
 import { AddIcon } from "@chakra-ui/icons"
-import { ClearingHouse } from "../../container/clearingHouse"
+// import { PerpdexExchangeContainer } from "../../container/perpdexExchangeContainer"
 
 function LiquidityProviderModal() {
     const {
@@ -29,31 +28,32 @@ function LiquidityProviderModal() {
         closeLiquidityProviderModal,
     } = LiquidityProvider.useContainer()
 
-    const { selectedAmm } = Amm.useContainer()
-    const ammAddress = selectedAmm?.address || ""
-    const ammName = selectedAmm?.baseAssetSymbol || ""
-    const indexPrice = selectedAmm?.indexPrice || Big(0)
-    const { price } = useRealtimeAmm(ammAddress, ammName)
-    const { addLiquidity } = ClearingHouse.useContainer()
+    // const { state: { currentMarket } } = Market.useContainer()
+    // const ammAddress = selectedAmm?.address || ""
+    // const ammName = selectedAmm?.baseAssetSymbol || ""
+    // const indexPrice = selectedAmm?.indexPrice || Big(0)
+    // const { price } = useRealtimeAmm(ammAddress, ammName)
 
     const [collateral, setCollateral] = useState<Big>(Big(0))
 
     const baseAmount = useMemo(() => {
-        if (price && price.gt(0)) {
-            return collateral.div(price)
-        } else if (indexPrice.gt(0)) {
-            return collateral.div(indexPrice)
-        } else {
-            return Big(0)
-        }
-    }, [collateral, price, indexPrice])
+        // if (price && price.gt(0)) {
+        //     return collateral.div(price)
+        // } else if (indexPrice.gt(0)) {
+        //     return collateral.div(indexPrice)
+        // } else {
+        //     return Big(0)
+        // }
+        return Big(0)
+    }, [])
 
-    const handleAddLiquidity = useCallback(
-        e => {
-            addLiquidity(ammAddress, baseAmount, collateral, baseAmount.mul(0.9), collateral.mul(0.9))
-        },
-        [addLiquidity, ammAddress, baseAmount, collateral],
-    )
+    // const handleAddLiquidity = useCallback(
+    //     e => {
+    //         addLiquidity(ammAddress, baseAmount, collateral, baseAmount.mul(0.9), collateral.mul(0.9))
+    //     },
+    //     [addLiquidity, ammAddress, baseAmount, collateral],
+    // )
+    const handleAddLiquidity = () => console.log("FIX")
 
     return (
         <Modal

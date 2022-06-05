@@ -1,13 +1,15 @@
 import { FormControl, Input, InputGroup, InputRightElement, Text } from "@chakra-ui/react"
 
-import { Amm } from "container/amm"
+import { PerpdexMarketContainer } from "container/perpdexMarketContainer"
 import SmallFormLabel from "component/SmallFormLabel"
 import { usePositionSize } from "./usePositionSize"
 
 function Position() {
-    const { selectedAmm } = Amm.useContainer()
+    const {
+        state: { currentMarket },
+    } = PerpdexMarketContainer.useContainer()
     const { positionSize, isCalculating } = usePositionSize()
-    const baseAssetSymbol = selectedAmm?.baseAssetSymbol || ""
+    const baseAssetSymbol = currentMarket
 
     return (
         <FormControl id="position">
