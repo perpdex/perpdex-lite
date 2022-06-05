@@ -16,28 +16,41 @@ export interface Executors {
 }
 
 enum ACTIONS {
-    TOGGLE_ACCOUNT_MODAL = "TOGGLE_ACCOUNT_MODAL",
+    OPEN_ACCOUNT_MODAL = "OPEN_ACCOUNT_MODAL",
+    CLOSE_ACCOUNT_MODAL = "CLOSE_ACCOUNT_MODAL",
     UPDATE_COLLATERAL = "UPDATE_COLLATERAL",
 }
 
 type ActionType =
-    | { type: ACTIONS.TOGGLE_ACCOUNT_MODAL }
+    | { type: ACTIONS.OPEN_ACCOUNT_MODAL; payload: { isDeposit: boolean } }
+    | { type: ACTIONS.CLOSE_ACCOUNT_MODAL }
     | { type: ACTIONS.UPDATE_COLLATERAL; payload: { collateral: BigNumber } }
 
 const initialState = {
     modal: {
         isAccountModalOpen: false,
+        isDeposit: true,
     },
     collateral: BIG_NUMBER_ZERO,
 }
 
 function reducer(state: typeof initialState, action: ActionType) {
     switch (action.type) {
-        case ACTIONS.TOGGLE_ACCOUNT_MODAL: {
+        case ACTIONS.OPEN_ACCOUNT_MODAL: {
             return {
                 ...state,
                 modal: {
-                    isAccountModalOpen: !state.modal.isAccountModalOpen,
+                    isAccountModalOpen: true,
+                    isDeposit: action.payload.isDeposit,
+                },
+            }
+        }
+        case ACTIONS.CLOSE_ACCOUNT_MODAL: {
+            return {
+                ...state,
+                modal: {
+                    ...state.modal,
+                    isAccountModalOpen: false,
                 },
             }
         }
@@ -78,8 +91,15 @@ function useAccount() {
         return executors ? executors[Network.Xdai] : null // TODO: fix
     }, [executors])
 
-    const toggleAccountModal = useCallback(() => {
-        dispatch({ type: ACTIONS.TOGGLE_ACCOUNT_MODAL })
+    const openAccountModal = useCallback(
+        (isDeposit: boolean) => {
+            dispatch({ type: ACTIONS.OPEN_ACCOUNT_MODAL, payload: { isDeposit } })
+        },
+        [dispatch],
+    )
+
+    const closeAccountModal = useCallback(() => {
+        dispatch({ type: ACTIONS.CLOSE_ACCOUNT_MODAL })
     }, [dispatch])
 
     const deposit = useCallback(
@@ -137,7 +157,8 @@ function useAccount() {
     return {
         state,
         actions: {
-            toggleAccountModal,
+            openAccountModal,
+            closeAccountModal,
         },
         deposit,
         withdraw,

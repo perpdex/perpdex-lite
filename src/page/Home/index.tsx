@@ -3,6 +3,7 @@ import { ExternalLink } from "component/ExternalLink"
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 
 import FrameContainer from "component/FrameContainer"
+import AssetInfo from "./AssetInfo"
 
 function Home() {
     return (
@@ -41,6 +42,7 @@ function Home() {
                 {/*    </Text>*/}
                 {/*</Stack>*/}
             </Stack>
+            <AssetInfo />
         </FrameContainer>
     )
 }

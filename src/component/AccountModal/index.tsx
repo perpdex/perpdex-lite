@@ -23,13 +23,13 @@ import { bigNum2FixedStr, formatInput } from "../../util/format"
 import { USDC_PRECISION } from "../../constant"
 import Big from "big.js"
 
-function AccountPerpdexModal() {
+function AccountModal() {
     const {
         state: {
             modal: { isAccountModalOpen },
             collateral,
         },
-        actions: { toggleAccountModal },
+        actions: { closeAccountModal },
         balance,
         deposit,
         withdraw,
@@ -63,7 +63,7 @@ function AccountPerpdexModal() {
     }, [withdraw, amount])
 
     return (
-        <Modal isCentered={true} size="xs" isOpen={isAccountModalOpen} onClose={toggleAccountModal}>
+        <Modal isCentered={true} size="xs" isOpen={isAccountModalOpen} onClose={closeAccountModal}>
             <ModalOverlay />
             <ModalContent bg="gray.800" color="gray.200">
                 <ModalHeader fontWeight="400" fontSize="sm">
@@ -105,4 +105,4 @@ function AccountPerpdexModal() {
     )
 }
 
-export default AccountPerpdexModal
+export default AccountModal
