@@ -1,28 +1,10 @@
 import { ContractTransaction } from "ethers"
-import { Dir, Side, Decimal } from "constant"
+import { Side } from "constant"
 import { BigNumber } from "ethers"
 
 type ReturnType = ContractTransaction | string
 
-export interface ClearingHouseActions {
-    addMargin(ammAddress: string, increaseMargin: Decimal): Promise<ReturnType>
-
-    removeMargin(ammAddress: string, decreaseMargin: Decimal): Promise<ReturnType>
-
-    openPosition(
-        ammAddress: string,
-        dir: Dir,
-        quoteAssetAmount: Decimal,
-        leverage: Decimal,
-        minBaseAssetAmount: Decimal,
-    ): Promise<ReturnType>
-
-    closePosition(ammAddress: string, quoteAssetAmountLimit: Decimal): Promise<ReturnType>
-
-    adjustPosition(ammAddress: string): Promise<ReturnType>
-}
-
-export interface ClearingHousePerpdexActions {
+export interface PerpdexExchangeActions {
     addLiquidity(
         baseToken: string,
         base: BigNumber,

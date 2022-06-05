@@ -1,22 +1,16 @@
 import { Box, Button, FormHelperText, HStack } from "@chakra-ui/react"
-import { Connection } from "container/connection"
-import { Contract } from "container/contract"
-import { useToken } from "hook/useToken"
+import { BigNumber } from "ethers"
 import { useCallback } from "react"
 import { numberWithCommasUsdc } from "util/format"
 import { bigNum2Big } from "../../util/format"
 
 interface MyBalanceProps {
+    account: string
+    balance: BigNumber
     setCollateral: Function
 }
 
-function MyBalance({ setCollateral }: MyBalanceProps) {
-    const { account, chainId } = Connection.useContainer()
-    const { ercTokenAddress } = Contract.useContainer()
-
-    /* prepare balance data  */
-    const { balance } = useToken(ercTokenAddress.baseTokens.usd, chainId ? chainId : 4) // TODO: chainId
-
+function MyBalance({ account, balance, setCollateral }: MyBalanceProps) {
     const handleOnClick = useCallback(() => {
         /* make sure the precision will be controlled */
         const fixedBalance = balance.toNumber()

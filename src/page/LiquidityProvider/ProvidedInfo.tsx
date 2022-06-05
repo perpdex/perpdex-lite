@@ -18,10 +18,9 @@ import { useCallback, useEffect, useState } from "react"
 import { bigNum2Big } from "../../util/format"
 import { useInterval } from "@chakra-ui/hooks"
 import { Connection } from "../../container/connection"
-import { Amm } from "../../container/amm"
+import { PerpdexMarketContainer } from "../../container/perpdexMarketContainer"
 import { Contract } from "../../container/contract"
 import Big from "big.js"
-import { useRealtimeAmm } from "../../hook/useRealtimeAmm"
 
 export interface MakerPositionInfo {
     unrealizedPnl: Big
@@ -35,10 +34,9 @@ export interface MakerPositionInfo {
 function ProvidedInfoTable() {
     const { account } = Connection.useContainer()
     const { perpdexExchange } = Contract.useContainer()
-    const { selectedAmm } = Amm.useContainer()
-    const baseTokenAddress = selectedAmm?.address || ""
-    const ammName = selectedAmm?.baseAssetSymbol || ""
-    const { price } = useRealtimeAmm(baseTokenAddress, ammName)
+    const {
+        state: { currentMarket },
+    } = PerpdexMarketContainer.useContainer()
     const [makerPositionInfo, setMakerPositionInfo] = useState<MakerPositionInfo>({
         unrealizedPnl: Big(0),
         liquidityValue: Big(0),
@@ -51,8 +49,8 @@ function ProvidedInfoTable() {
     const getMakerPositionInfo = useCallback(async () => {
         if (!account) return
         if (!perpdexExchange) return
-        if (!baseTokenAddress) return
-        if (!price) return
+
+        const price = Big(0) // FIX
 
         // FIX
         const tmp = await perpdexExchange.getTotalAccountValue(account)
@@ -85,7 +83,7 @@ function ProvidedInfoTable() {
         }
 
         setMakerPositionInfo(info)
-    }, [account, perpdexExchange, baseTokenAddress, price])
+    }, [account, perpdexExchange])
 
     useEffect(() => {
         getMakerPositionInfo()
@@ -105,7 +103,7 @@ function ProvidedInfoTable() {
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
                         {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.liquidityValue.toFixed(6)}{" "}
-                        {selectedAmm?.quoteAssetSymbol}
+                        {currentMarket}
                     </Text>
                 </Box>
                 <Box>
@@ -124,7 +122,7 @@ function ProvidedInfoTable() {
                     </Text>
                     <Text fontSize="xl" color="green.400" fontWeight="bold" lineHeight="1.4">
                         {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.unrealizedPnl.toFixed(6)}{" "}
-                        {selectedAmm?.quoteAssetSymbol}
+                        {currentMarket}
                     </Text>
                 </Box>
                 <Box>
@@ -133,7 +131,7 @@ function ProvidedInfoTable() {
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
                         {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.baseAmount.toFixed(6)}{" "}
-                        {selectedAmm?.baseAssetSymbol}
+                        {currentMarket}
                     </Text>
                 </Box>
                 <Box>
@@ -142,7 +140,7 @@ function ProvidedInfoTable() {
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
                         {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.quoteAmount.toFixed(6)}{" "}
-                        {selectedAmm?.quoteAssetSymbol}
+                        {currentMarket}
                     </Text>
                 </Box>
                 <Box>
@@ -151,7 +149,7 @@ function ProvidedInfoTable() {
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
                         {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.baseDebt.toFixed(6)}{" "}
-                        {selectedAmm?.baseAssetSymbol}
+                        {currentMarket}
                     </Text>
                 </Box>
                 <Box>
@@ -160,7 +158,7 @@ function ProvidedInfoTable() {
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
                         {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.quoteDebt.toFixed(6)}{" "}
-                        {selectedAmm?.quoteAssetSymbol}
+                        {currentMarket}
                     </Text>
                 </Box>
             </SimpleGrid>

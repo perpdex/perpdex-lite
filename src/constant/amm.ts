@@ -1,7 +1,8 @@
 import Big from "big.js"
+import { PerpdexMarket } from "types/newContracts"
 
 export interface Amm {
-    address: string
+    contract: PerpdexMarket
     baseAssetSymbol: string
     quoteAssetSymbol: string
     baseAssetSymbolDisplay: string

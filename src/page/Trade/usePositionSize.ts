@@ -1,19 +1,22 @@
 import { Dir, Side } from "constant"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
-import { Amm } from "container/amm"
+import { PerpdexMarketContainer } from "container/perpdexMarketContainer"
 import { Trade } from "container/trade"
 import { formatInput } from "util/format"
-import { useRealtimeAmm } from "hook/useRealtimeAmm"
+import Big from "big.js"
 
 export function usePositionSize() {
-    const { selectedAmm } = Amm.useContainer()
+    const {
+        state: { currentMarket },
+    } = PerpdexMarketContainer.useContainer()
     const { collateral, side } = Trade.useContainer()
     const dir = side === Side.Long ? Dir.AddToAmm : Dir.RemoveFromAmm
 
-    const ammAddress = selectedAmm?.address || ""
-    const ammName = selectedAmm?.baseAssetSymbol || ""
-    const { getInputPrice } = useRealtimeAmm(ammAddress, ammName)
+    const ammName = currentMarket
+    // const { getInputPrice } = useRealtimeAmm(ammAddress, ammName)
+
+    const getInputPrice = useCallback(() => Big(0), [])
 
     const [positionSize, setPositionSize] = useState<string>("")
     const [isCalculating, setIsCalculating] = useState<boolean>(false)
@@ -41,7 +44,8 @@ export function usePositionSize() {
 
             /* calculate the position size */
             const notional = collateral.mul(1)
-            const positionReceived = await getInputPrice(dir, notional)
+            // const positionReceived = await getInputPrice(dir, notional)
+            const positionReceived = await getInputPrice()
 
             let formattedValue = ""
             if (positionReceived !== null) {

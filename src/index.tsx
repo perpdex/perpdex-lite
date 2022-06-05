@@ -3,11 +3,11 @@ import * as serviceWorker from "./serviceWorker"
 
 import { createErrorBoundary, setupBugsnag } from "./lib/bugsnag"
 
-import { Amm } from "container/amm"
+import { PerpdexMarketContainer } from "container/perpdexMarketContainer"
 import { App } from "./App"
 import { BrowserRouter } from "react-router-dom"
 import { ChakraProvider } from "@chakra-ui/react"
-import { ClearingHouse } from "container/clearingHouse"
+import { PerpdexExchangeContainer } from "container/perpdexExchangeContainer"
 import { Connection } from "./container/connection"
 import { Contract } from "./container/contract"
 import { Fonts } from "component/Font"
@@ -52,8 +52,8 @@ const Providers = ((...providers: any[]) => ({ children }: { children: React.Rea
     Connection.Provider,
     Transaction.Provider,
     Contract.Provider,
-    Amm.Provider,
-    ClearingHouse.Provider,
+    PerpdexMarketContainer.Provider,
+    PerpdexExchangeContainer.Provider,
     Trade.Provider,
     Position.Provider,
     AccountPerpdex.Provider,

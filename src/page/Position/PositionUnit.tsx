@@ -5,19 +5,21 @@ import DataUnit from "./DataUnit"
 import { Position } from "container/position"
 import { PositionInfo } from "constant/position"
 import { numberWithCommasUsdc } from "util/format"
-import { Amm } from "../../container/amm"
+import { PerpdexMarketContainer } from "../../container/perpdexMarketContainer"
 
 interface PositionUnitProps {
     data: PositionInfo
 }
 
 function PositionUnit({ data }: PositionUnitProps) {
-    const { selectedAmm } = Amm.useContainer()
-    const inverse = selectedAmm?.inverse
+    const {
+        state: { contract },
+    } = PerpdexMarketContainer.useContainer()
+    const inverse = true
     const { openClosePositionModal } = Position.useContainer()
     // const { openClosePositionModal, openAdjustMarginModal } = Position.useContainer()
     const {
-        address,
+        // address,
         baseAssetSymbol,
         quoteAssetSymbol,
         baseAssetSymbolDisplay,
@@ -30,8 +32,10 @@ function PositionUnit({ data }: PositionUnitProps) {
     const isLongSide = size.gte(0)
 
     const handleOnClosePositionClick = useCallback(() => {
-        openClosePositionModal(address, baseAssetSymbol, quoteAssetSymbol)
-    }, [address, baseAssetSymbol, quoteAssetSymbol, openClosePositionModal])
+        if (!contract) return
+
+        openClosePositionModal(contract.address, baseAssetSymbol, quoteAssetSymbol)
+    }, [contract, openClosePositionModal, baseAssetSymbol, quoteAssetSymbol])
 
     // const handleOnAdjustMarginClick = useCallback(() => {
     //     openAdjustMarginModal(address, baseAssetSymbol, quoteAssetSymbol)
@@ -81,17 +85,14 @@ function PositionUnit({ data }: PositionUnitProps) {
             </Box>
         ),
         [
-            absSizeStr,
             baseAssetSymbolDisplay,
             quoteAssetSymbolDisplay,
-            entryPriceStr,
-            // handleOnAdjustMarginClick,
-            handleOnClosePositionClick,
+            inverse,
             isLongSide,
-            // leverageStr,
-            // marginRatioStr,
-            // marginStr,
             pnlStr,
+            absSizeStr,
+            entryPriceStr,
+            handleOnClosePositionClick,
         ],
     )
 }
