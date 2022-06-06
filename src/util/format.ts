@@ -1,11 +1,15 @@
 import { ERC20_DECIMAL_DIGITS, USDC_PRECISION, DISPLAY_DIGITS } from "../constant/number"
 
 import Big from "big.js"
-import { BigNumber } from "ethers"
+import { BigNumber, ethers } from "ethers"
 import { formatUnits } from "ethers/lib/utils"
 
 export interface Decimal {
     d: BigNumber
+}
+
+export function parseEther(val: string) {
+    return ethers.utils.parseUnits(val, "ether")
 }
 
 export function ethFormatUnits(val: BigNumber) {

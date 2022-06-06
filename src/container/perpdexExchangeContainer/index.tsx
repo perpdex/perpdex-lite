@@ -1,5 +1,5 @@
-import { Network, Side } from "../../constant"
-import { big2BigNum } from "util/format"
+import { BIG_NUMBER_ZERO, Network, Side } from "../../constant"
+import { big2BigNum, parseEther } from "util/format"
 import { useCallback, useEffect, useReducer } from "react"
 
 import { Big } from "big.js"
@@ -52,6 +52,24 @@ function usePerpdexExchangeContainer() {
         const contractExecuter = new ContractExecutor(perpdexExchange, signer)
         dispatch({ type: ACTIONS.UPDATE_EXECUTER, payload: { contractExecuter } })
     }, [perpdexExchange, signer])
+
+    const deposit = useCallback(
+        (amount: string) => {
+            if (state.contractExecuter) {
+                execute(state.contractExecuter.deposit(parseEther(amount), BIG_NUMBER_ZERO))
+            }
+        },
+        [execute, state.contractExecuter],
+    )
+
+    const withdraw = useCallback(
+        (amount: string) => {
+            if (state.contractExecuter) {
+                execute(state.contractExecuter.withdraw(parseEther(amount)))
+            }
+        },
+        [execute, state.contractExecuter],
+    )
 
     const closePosition = useCallback(
         (baseToken: string, quoteAmountBound: Big) => {
@@ -112,6 +130,8 @@ function usePerpdexExchangeContainer() {
     )
 
     return {
+        deposit,
+        withdraw,
         openPosition,
         closePosition,
         addLiquidity,

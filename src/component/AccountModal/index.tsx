@@ -19,21 +19,26 @@ import {
 import { AccountPerpdex } from "container/account"
 import ButtonPerpdex from "component/ButtonPerpdex"
 import SmallFormLabel from "../SmallFormLabel"
-import { bigNum2FixedStr, formatInput } from "../../util/format"
-import { USDC_PRECISION } from "../../constant"
-import Big from "big.js"
+import { bigNum2FixedStr, formatInput, parseEther } from "../../util/format"
+import { INPUT_PRECISION } from "../../constant"
+import { PerpdexMarketContainer } from "container/perpdexMarketContainer"
+import { PerpdexExchangeContainer } from "container/perpdexExchangeContainer"
 
 function AccountModal() {
     const {
         state: {
-            modal: { isAccountModalOpen },
+            modal: { isAccountModalOpen, isDeposit },
+            balance,
             collateral,
         },
         actions: { closeAccountModal },
-        balance,
-        deposit,
-        withdraw,
     } = AccountPerpdex.useContainer()
+
+    const {
+        state: { currentMarket },
+    } = PerpdexMarketContainer.useContainer()
+
+    const { deposit, withdraw } = PerpdexExchangeContainer.useContainer()
 
     const [amount, setAmount] = useState<string>("")
 
@@ -41,39 +46,27 @@ function AccountModal() {
         e => {
             const value = e.target.value
             if (value >= 0) {
-                const formattedValue = formatInput(value, USDC_PRECISION)
+                const formattedValue = formatInput(value, INPUT_PRECISION)
                 setAmount(formattedValue)
             }
         },
         [setAmount],
     )
 
-    const handleOnDeposit = useCallback(async () => {
-        const amountNum = Big(amount)
-        if (amountNum.gt(0)) {
-            await deposit(amountNum)
-        }
-    }, [deposit, amount])
-
-    const handleOnWithdraw = useCallback(async () => {
-        const amountNum = Big(amount)
-        if (amountNum.gt(0)) {
-            await withdraw(amountNum)
-        }
-    }, [withdraw, amount])
+    const handleSubmit = useCallback(() => {
+        isDeposit ? deposit(amount) : withdraw(amount)
+    }, [amount, isDeposit, deposit, withdraw])
 
     return (
         <Modal isCentered={true} size="xs" isOpen={isAccountModalOpen} onClose={closeAccountModal}>
             <ModalOverlay />
             <ModalContent bg="gray.800" color="gray.200">
                 <ModalHeader fontWeight="400" fontSize="sm">
-                    Account
+                    {isDeposit ? "Deposit" : "Withdraw"}
                 </ModalHeader>
                 <ModalCloseButton />
                 <ModalBody pb="1.5rem">
                     <Stack spacing={2}>
-                        <Box>Balance: {balance ? bigNum2FixedStr(balance) : ""}</Box>
-                        <Box>Account value: {collateral ? bigNum2FixedStr(collateral) : ""}</Box>
                         <FormControl id="margin">
                             <SmallFormLabel>Amount</SmallFormLabel>
                             <NumberInput value={amount} onInput={handleOnInput}>
@@ -88,15 +81,19 @@ function AccountModal() {
                                             color="blue.500"
                                             textTransform="uppercase"
                                         >
-                                            wETH
+                                            {currentMarket?.quoteAssetSymbol}
                                         </Text>
                                     </InputRightElement>
                                 </InputGroup>
                             </NumberInput>
                         </FormControl>
+                        {isDeposit ? (
+                            <Box>{balance ? bigNum2FixedStr(balance) : ""} available</Box>
+                        ) : (
+                            <Box>{collateral ? bigNum2FixedStr(collateral) : ""} available to withdraw</Box>
+                        )}
                         <ButtonGroup>
-                            <ButtonPerpdex text="Deposit" onClick={handleOnDeposit} />
-                            <ButtonPerpdex text="Withdraw" onClick={handleOnWithdraw} />
+                            <ButtonPerpdex text={isDeposit ? "Deposit" : "Withdraw"} onClick={handleSubmit} />
                         </ButtonGroup>
                     </Stack>
                 </ModalBody>

@@ -72,8 +72,11 @@ const getQuoteSymbol = (chinId: number) => {
     switch (chinId) {
         case supportedChains.Ethereum:
             return supportedQuoteSymbol.eth
+        case supportedChains.Rinkeby:
+            return supportedQuoteSymbol.eth
         default:
             // FIX: support ASTR
+            console.error("Unsupported quote symbol")
             break
     }
 }

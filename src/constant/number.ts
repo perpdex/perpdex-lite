@@ -7,6 +7,8 @@ export const USDC_PRECISION = 4
 
 export const DISPLAY_DIGITS = 9
 
+export const INPUT_PRECISION = 6
+
 export const BIG_ZERO = new Big(0)
 
 export const BIG_NUMBER_ZERO = BigNumber.from("0")
