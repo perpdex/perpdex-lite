@@ -16,7 +16,6 @@ function Collateral({ onChange }: ICollateral) {
         state: { currentMarket },
     } = PerpdexMarketContainer.useContainer()
     const [collateral, setCollateral] = useState<string>("")
-    const quoteAssetSymbol = currentMarket
 
     const handleOnInput = useCallback(
         e => {
@@ -52,14 +51,14 @@ function Collateral({ onChange }: ICollateral) {
                                 color="blue.500"
                                 textTransform="uppercase"
                             >
-                                {quoteAssetSymbol}
+                                {currentMarket?.quoteAssetSymbolDisplay}
                             </Text>
                         </InputRightElement>
                     </InputGroup>
                 </NumberInput>
             </FormControl>
         ),
-        [collateral, handleOnInput, quoteAssetSymbol],
+        [collateral, currentMarket?.quoteAssetSymbolDisplay, handleOnInput],
     )
 }
 

@@ -103,7 +103,7 @@ function ProvidedInfoTable() {
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
                         {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.liquidityValue.toFixed(6)}{" "}
-                        {currentMarket}
+                        {currentMarket?.quoteAssetSymbol}
                     </Text>
                 </Box>
                 <Box>
@@ -122,7 +122,7 @@ function ProvidedInfoTable() {
                     </Text>
                     <Text fontSize="xl" color="green.400" fontWeight="bold" lineHeight="1.4">
                         {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.unrealizedPnl.toFixed(6)}{" "}
-                        {currentMarket}
+                        {currentMarket?.quoteAssetSymbol}
                     </Text>
                 </Box>
                 <Box>
@@ -131,7 +131,7 @@ function ProvidedInfoTable() {
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
                         {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.baseAmount.toFixed(6)}{" "}
-                        {currentMarket}
+                        {currentMarket?.quoteAssetSymbol}
                     </Text>
                 </Box>
                 <Box>
@@ -140,7 +140,7 @@ function ProvidedInfoTable() {
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
                         {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.quoteAmount.toFixed(6)}{" "}
-                        {currentMarket}
+                        {currentMarket?.quoteAssetSymbol}
                     </Text>
                 </Box>
                 <Box>
@@ -149,7 +149,7 @@ function ProvidedInfoTable() {
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
                         {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.baseDebt.toFixed(6)}{" "}
-                        {currentMarket}
+                        {currentMarket?.quoteAssetSymbol}
                     </Text>
                 </Box>
                 <Box>
@@ -158,7 +158,7 @@ function ProvidedInfoTable() {
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
                         {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.quoteDebt.toFixed(6)}{" "}
-                        {currentMarket}
+                        {currentMarket?.quoteAssetSymbol}
                     </Text>
                 </Box>
             </SimpleGrid>

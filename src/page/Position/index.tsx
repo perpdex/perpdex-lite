@@ -18,8 +18,7 @@ function Position() {
     const { account } = Connection.useContainer()
     const { perpdexExchange } = Contract.useContainer()
     const {
-        state: { currentMarket, contract },
-        getMarkPrice,
+        state: { currentMarket, contract, markPrice },
     } = PerpdexMarketContainer.useContainer()
 
     // const baseTokenAddress = selectedAmm?.address || ""
@@ -49,8 +48,6 @@ function Position() {
         if (!account) return
         if (!perpdexExchange) return
         if (!contract) return
-
-        const markPrice = await getMarkPrice()
         if (!markPrice) return
 
         const positionSizeBig = await perpdexExchange.getPositionShare(account, contract.address) // FIX: marke should be address
@@ -74,7 +71,7 @@ function Position() {
         }
 
         // setPositionInfo(info)
-    }, [account, contract, currentMarket, getMarkPrice, perpdexExchange])
+    }, [account, contract, currentMarket, markPrice, perpdexExchange])
 
     useEffect(() => {
         getTraderPositionInfo()

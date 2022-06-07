@@ -12,7 +12,7 @@ function TitleBar() {
         <HStack justifyContent="start">
             <VStack spacing={-2} alignItems="start">
                 <Text fontSize="lg" fontWeight="bold">
-                    {currentMarket}/ETH (inverse)
+                    {currentMarket?.baseAssetSymbol}/{currentMarket?.quoteAssetSymbol}
                 </Text>
                 {/*<Text fontSize="xs" color="gray.500">*/}
                 {/*    ETH*/}

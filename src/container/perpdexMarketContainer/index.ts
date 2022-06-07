@@ -2,11 +2,11 @@ import { useCallback, useEffect, useReducer } from "react"
 import { createContainer } from "unstated-next"
 import { Contract } from "container/contract"
 import { BaseAssetType, BaseSymbolType, InverseMarket, QuoteSymbolType } from "constant/market"
-import { bigNum2Big } from "util/format"
 import { Connection } from "container/connection"
 import { Transaction } from "container/transaction"
 import { ContractExecutor } from "./ContractExecutor"
 import { PerpdexMarket } from "types/newContracts"
+import Big from "big.js"
 
 // import { useContractEvent } from "./useContractEvent"
 
@@ -16,17 +16,21 @@ import { PerpdexMarket } from "types/newContracts"
 
 enum ACTIONS {
     SELECT_MARKET = "SELECT_MARKET",
+    UPDATE_MARK_PRICE = "UPDATE_MARK_PRICE",
 }
 
-type ActionType = {
-    type: ACTIONS.SELECT_MARKET
-    payload: { market?: InverseMarket; contract?: PerpdexMarket; contractExecuter?: ContractExecutor }
-}
+type ActionType =
+    | {
+          type: ACTIONS.SELECT_MARKET
+          payload: { market?: InverseMarket; contract?: PerpdexMarket; contractExecuter?: ContractExecutor }
+      }
+    | { type: ACTIONS.UPDATE_MARK_PRICE; payload: { markPrice: Big } }
 
 const initialState = {
     currentMarket: undefined as InverseMarket | undefined,
     contract: undefined as PerpdexMarket | undefined,
     contractExecuter: undefined as ContractExecutor | undefined,
+    markPrice: undefined as Big | undefined,
 }
 
 function reducer(state: typeof initialState, action: ActionType) {
@@ -37,6 +41,12 @@ function reducer(state: typeof initialState, action: ActionType) {
                 currentMarket: action.payload.market,
                 contract: action.payload.contract,
                 contractExecuter: action.payload.contractExecuter,
+            }
+        }
+        case ACTIONS.UPDATE_MARK_PRICE: {
+            return {
+                ...state,
+                markPrice: action.payload.markPrice,
             }
         }
         default:
@@ -93,11 +103,23 @@ function usePerpdexMarketContainer() {
     )
 
     const getMarkPrice = useCallback(async () => {
-        const currentMarkPrice = await state.contract?.getMarkPriceX96()
+        if (!state.contract) return
+
+        // const currentMarkPrice = state.contract.baseBalancePerShareX96()
+        const currentMarkPrice = new Big(2000) // FIX
         if (!currentMarkPrice) return
 
-        return bigNum2Big(currentMarkPrice)
+        return currentMarkPrice
     }, [state.contract])
+
+    useEffect(() => {
+        ;(async () => {
+            if (isInitialized && state.currentMarket) {
+                const markPrice = await getMarkPrice()
+                markPrice && dispatch({ type: ACTIONS.UPDATE_MARK_PRICE, payload: { markPrice } })
+            }
+        })()
+    }, [getMarkPrice, isInitialized, state.currentMarket])
 
     const removeLiquidity = useCallback(() => {
         console.log("FIX")

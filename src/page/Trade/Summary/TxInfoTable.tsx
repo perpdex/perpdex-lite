@@ -4,10 +4,11 @@ import { PerpdexMarketContainer } from "container/perpdexMarketContainer"
 import Big from "big.js"
 import { Side } from "constant"
 import { Trade } from "container/trade"
-import { numberWithCommasUsdc } from "util/format"
+import { big2BigNum, numberWithCommasUsdc } from "util/format"
 import { useMemo } from "react"
-import { useOpenedPositionSize } from "./useOpenedPositionSize"
-import { usePositionSize } from "./usePositionSize"
+import { useOpenedPositionSize } from "../useOpenedPositionSize"
+import { usePositionSize } from "../usePositionSize"
+import { BigNumber } from "ethers"
 
 function TxInfoTable() {
     const {

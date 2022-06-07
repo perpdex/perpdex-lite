@@ -1,4 +1,4 @@
-import { BIG_NUMBER_ZERO, Network, Side } from "../../constant"
+import { BIG_NUMBER_ZERO, Network } from "../../constant"
 import { big2BigNum, parseEther } from "util/format"
 import { useCallback, useEffect, useReducer } from "react"
 
@@ -9,6 +9,8 @@ import { Contract } from "../contract"
 import { ContractExecutor } from "./ContractExecutor"
 import { Transaction } from "../transaction"
 import { createContainer } from "unstated-next"
+import { PerpdexMarketContainer } from "container/perpdexMarketContainer"
+import { BigNumber } from "ethers"
 
 enum ACTIONS {
     UPDATE_EXECUTER = "UPDATE_EXECUTER",
@@ -42,16 +44,26 @@ export interface Executors {
 
 function usePerpdexExchangeContainer() {
     const [state, dispatch] = useReducer(reducer, initialState)
-    const { signer } = Connection.useContainer()
+    const { account, signer } = Connection.useContainer()
     const { perpdexExchange } = Contract.useContainer()
+    const perpdexMarketState = PerpdexMarketContainer.useContainer()
     const { execute } = Transaction.useContainer()
 
     useEffect(() => {
         if (!perpdexExchange) return
 
         const contractExecuter = new ContractExecutor(perpdexExchange, signer)
+
         dispatch({ type: ACTIONS.UPDATE_EXECUTER, payload: { contractExecuter } })
     }, [perpdexExchange, signer])
+
+    useEffect(() => {
+        if (!perpdexExchange || !account) return
+        ;(async () => {
+            const value = await perpdexExchange.getTotalAccountValue(account)
+            console.log("getTotalAccountValue", value)
+        })()
+    }, [account, perpdexExchange])
 
     const deposit = useCallback(
         (amount: string) => {
@@ -81,19 +93,23 @@ function usePerpdexExchangeContainer() {
     )
 
     const openPosition = useCallback(
-        (baseToken: string, side: Side, baseAmount: Big, quoteAmountBound: Big) => {
-            if (state.contractExecuter) {
+        (isBaseToQuote: boolean, isExactInput: boolean, amount: BigNumber, oppositeAmountBount: BigNumber) => {
+            if (state.contractExecuter && account && perpdexMarketState.state.currentMarket) {
                 execute(
                     state.contractExecuter.openPosition(
-                        baseToken,
-                        side,
-                        big2BigNum(baseAmount),
-                        big2BigNum(quoteAmountBound),
+                        account,
+                        perpdexMarketState.state.currentMarket.baseAddress,
+                        isBaseToQuote,
+                        isExactInput,
+                        amount,
+                        oppositeAmountBount,
+                        // big2BigNum(baseAmount),
+                        // big2BigNum(quoteAmountBound),
                     ),
                 )
             }
         },
-        [execute, state.contractExecuter],
+        [account, execute, perpdexMarketState.state.currentMarket, state.contractExecuter],
     )
 
     const addLiquidity = useCallback(

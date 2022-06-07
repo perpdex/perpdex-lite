@@ -2,17 +2,17 @@ import { PerpdexMarketContainer } from "container/perpdexMarketContainer"
 import Big from "big.js"
 import { Button } from "@chakra-ui/react"
 import { PerpdexExchangeContainer } from "container/perpdexExchangeContainer"
-import { Side } from "constant"
 import { Trade } from "container/trade"
 import { Transaction } from "container/transaction"
 import { useCallback } from "react"
-import { usePositionSize } from "./usePositionSize"
+import { usePositionSize } from "../usePositionSize"
+import { big2BigNum } from "util/format"
 
 function SendTxButton() {
     const {
         state: { currentMarket },
     } = PerpdexMarketContainer.useContainer()
-    const { slippage, side, collateral } = Trade.useContainer()
+    const { slippage, isBaseToQuote, collateral } = Trade.useContainer()
     const { openPosition } = PerpdexExchangeContainer.useContainer()
     const { isLoading: isTxExecuting } = Transaction.useContainer()
     const { positionSize, isCalculating } = usePositionSize()
@@ -21,14 +21,17 @@ function SendTxButton() {
 
     const handleOnTrade = useCallback(async () => {
         if (collateral && currentMarket) {
-            const _positionSize = new Big(positionSize)
-            const _slippage = slippage / 100
-            const quoteAmountBound: Big =
-                side === Side.Long ? collateral.mul(1 + _slippage) : collateral.mul(1 - _slippage)
+            const isExactInput = true
+            const amount = new Big(positionSize)
 
-            openPosition(currentMarket.baseAddress, side, _positionSize, quoteAmountBound)
+            const _slippage = slippage / 100
+            const oppositeAmountBount = isBaseToQuote ? collateral.mul(1 + _slippage) : collateral.mul(1 - _slippage)
+
+            console.log("openPosition", isBaseToQuote, isExactInput, big2BigNum(amount), oppositeAmountBount)
+
+            openPosition(isBaseToQuote, isExactInput, big2BigNum(amount), big2BigNum(oppositeAmountBount))
         }
-    }, [collateral, currentMarket, openPosition, positionSize, side, slippage])
+    }, [collateral, currentMarket, isBaseToQuote, openPosition, positionSize, slippage])
 
     return (
         <Button

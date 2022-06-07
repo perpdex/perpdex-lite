@@ -1,5 +1,5 @@
 import { BigNumber, ContractTransaction, Signer } from "ethers"
-import { BIG_NUMBER_ZERO, Side } from "constant"
+import { BIG_NUMBER_ZERO } from "constant"
 
 import { PerpdexExchange } from "types/newContracts"
 import { PerpdexExchangeActions } from "./type"
@@ -61,22 +61,24 @@ export class ContractExecutor implements PerpdexExchangeActions {
     }
 
     openPosition(
-        baseToken: string,
-        side: Side,
-        baseAmount: BigNumber,
-        quoteAmountBound: BigNumber,
+        trader: string,
+        market: string,
+        isBaseToQuote: boolean,
+        isExactInput: boolean,
+        amount: BigNumber,
+        oppositeAmountBound: BigNumber,
     ): Promise<ContractTransaction> {
-        const isLong = side === Side.Long
+        const deadline = BigNumber.from(2).pow(96)
 
         return this.execute("openPosition", [
             {
-                baseToken: baseToken,
-                isBaseToQuote: !isLong,
-                isExactInput: !isLong,
-                amount: baseAmount,
-                oppositeAmountBound: quoteAmountBound,
-                deadline: getDeadline(),
-                referralCode: constants.HashZero,
+                trader,
+                market,
+                isBaseToQuote,
+                isExactInput,
+                amount,
+                oppositeAmountBound,
+                deadline,
             },
         ])
     }

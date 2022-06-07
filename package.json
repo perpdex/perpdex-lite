@@ -14,7 +14,8 @@
         "generate-type": "ts-node script/generate-type.ts",
         "postinstall": "typesync",
         "prepare": "husky install",
-        "deploy-ipfs": "npx ipfs-deploy@v8.0.1 build"
+        "deploy-ipfs": "npx ipfs-deploy@v8.0.1 build",
+        "clean": "rm -rf src/types"
     },
     "dependencies": {
         "@bugsnag/js": "^7.9.0",

@@ -58,7 +58,7 @@ function PoolInfoTable() {
                         TVL
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
-                        - {currentMarket}
+                        - {currentMarket?.quoteAssetSymbol}
                     </Text>
                 </Box>
                 <Box>
@@ -66,7 +66,7 @@ function PoolInfoTable() {
                         Volume (24h)
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
-                        - {currentMarket}
+                        - {currentMarket?.quoteAssetSymbol}
                     </Text>
                 </Box>
                 <Box>
@@ -74,7 +74,7 @@ function PoolInfoTable() {
                         24h Fees
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
-                        - {currentMarket}
+                        - {currentMarket?.quoteAssetSymbol}
                     </Text>
                 </Box>
             </SimpleGrid>

@@ -1,22 +1,19 @@
-import { Dir, Side } from "constant"
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 
 import { PerpdexMarketContainer } from "container/perpdexMarketContainer"
 import { Trade } from "container/trade"
 import { formatInput } from "util/format"
 import Big from "big.js"
 
+function calcPositionSize(isBaseToQuote: boolean, notional: Big, markPrice: Big) {
+    return isBaseToQuote ? notional.mul(markPrice) : notional
+}
+
 export function usePositionSize() {
     const {
-        state: { currentMarket },
+        state: { markPrice },
     } = PerpdexMarketContainer.useContainer()
-    const { collateral, side } = Trade.useContainer()
-    const dir = side === Side.Long ? Dir.AddToAmm : Dir.RemoveFromAmm
-
-    const ammName = currentMarket
-    // const { getInputPrice } = useRealtimeAmm(ammAddress, ammName)
-
-    const getInputPrice = useCallback(() => Big(0), [])
+    const { collateral, isBaseToQuote } = Trade.useContainer()
 
     const [positionSize, setPositionSize] = useState<string>("")
     const [isCalculating, setIsCalculating] = useState<boolean>(false)
@@ -29,6 +26,8 @@ export function usePositionSize() {
     /* case1: trigger by user */
     useEffect(() => {
         async function updatePositionByUserControl() {
+            if (!markPrice) return
+
             if (collateral === null) {
                 setPositionSize("")
                 return
@@ -45,18 +44,16 @@ export function usePositionSize() {
             /* calculate the position size */
             const notional = collateral.mul(1)
             // const positionReceived = await getInputPrice(dir, notional)
-            const positionReceived = await getInputPrice()
+            const position = calcPositionSize(isBaseToQuote, notional, markPrice)
+            console.log("position", isBaseToQuote, notional, markPrice, position)
 
-            let formattedValue = ""
-            if (positionReceived !== null) {
-                formattedValue = formatInput(positionReceived.toString(), 7)
-            }
+            const positionTest = formatInput(position.toString(), 7)
 
-            setPositionSize(formattedValue)
+            setPositionSize(positionTest)
             setIsCalculating(false)
         }
         updatePositionByUserControl()
-    }, [dir, getInputPrice, collateral])
+    }, [collateral, isBaseToQuote, markPrice])
 
-    return { positionSize, isCalculating, dir }
+    return { positionSize, isCalculating }
 }
