@@ -1,13 +1,10 @@
-import { useCallback, useEffect, useMemo, useReducer } from "react"
+import { useCallback, useEffect, useReducer } from "react"
 import { createContainer } from "unstated-next"
 import { BIG_NUMBER_ZERO, Network } from "../../constant"
-import { Big } from "big.js"
-import { big2BigNum, ethFormatUnits } from "../../util/format"
+import { ethFormatUnits } from "../../util/format"
 import { ContractExecutor } from "./ContractExecutor"
 import { Contract } from "../contract"
 import { Connection } from "../connection"
-import { Transaction } from "../transaction"
-import { useToken } from "../../hook/useToken"
 import { useContractEvent } from "../../hook/useContractEvent"
 import { BigNumber } from "ethers"
 
@@ -16,28 +13,44 @@ export interface Executors {
 }
 
 enum ACTIONS {
-    TOGGLE_ACCOUNT_MODAL = "TOGGLE_ACCOUNT_MODAL",
+    UPDATE_BALANCE = "UPDATE_BALANCE",
+    OPEN_ACCOUNT_MODAL = "OPEN_ACCOUNT_MODAL",
+    CLOSE_ACCOUNT_MODAL = "CLOSE_ACCOUNT_MODAL",
     UPDATE_COLLATERAL = "UPDATE_COLLATERAL",
 }
 
 type ActionType =
-    | { type: ACTIONS.TOGGLE_ACCOUNT_MODAL }
+    | { type: ACTIONS.UPDATE_BALANCE; payload: { balance: BigNumber } }
+    | { type: ACTIONS.OPEN_ACCOUNT_MODAL; payload: { isDeposit: boolean } }
+    | { type: ACTIONS.CLOSE_ACCOUNT_MODAL }
     | { type: ACTIONS.UPDATE_COLLATERAL; payload: { collateral: BigNumber } }
 
 const initialState = {
+    balance: BIG_NUMBER_ZERO,
     modal: {
         isAccountModalOpen: false,
+        isDeposit: true,
     },
     collateral: BIG_NUMBER_ZERO,
 }
 
 function reducer(state: typeof initialState, action: ActionType) {
     switch (action.type) {
-        case ACTIONS.TOGGLE_ACCOUNT_MODAL: {
+        case ACTIONS.OPEN_ACCOUNT_MODAL: {
             return {
                 ...state,
                 modal: {
-                    isAccountModalOpen: !state.modal.isAccountModalOpen,
+                    isAccountModalOpen: true,
+                    isDeposit: action.payload.isDeposit,
+                },
+            }
+        }
+        case ACTIONS.CLOSE_ACCOUNT_MODAL: {
+            return {
+                ...state,
+                modal: {
+                    ...state.modal,
+                    isAccountModalOpen: false,
                 },
             }
         }
@@ -45,6 +58,12 @@ function reducer(state: typeof initialState, action: ActionType) {
             return {
                 ...state,
                 collateral: action.payload.collateral,
+            }
+        }
+        case ACTIONS.UPDATE_BALANCE: {
+            return {
+                ...state,
+                balance: action.payload.balance,
             }
         }
         default:
@@ -56,59 +75,26 @@ export const AccountPerpdex = createContainer(useAccount)
 
 function useAccount() {
     const [state, dispatch] = useReducer(reducer, initialState)
-    const { account, signer, chainId } = Connection.useContainer()
-    const { perpdexExchange, ercTokenAddress } = Contract.useContainer()
-    const { execute } = Transaction.useContainer()
-    const { balance, approve, allowance, queryAllowanceBySpender, decimals } = useToken(
-        ercTokenAddress.settlementToken,
-        chainId ? chainId : 1,
+    const { account, baseNetworkProvider } = Connection.useContainer()
+    const { perpdexExchange } = Contract.useContainer()
+
+    const getBalance = useCallback(async () => {
+        if (account && baseNetworkProvider) {
+            const balance = await baseNetworkProvider.getBalance(account)
+            dispatch({ type: ACTIONS.UPDATE_BALANCE, payload: { balance } })
+        }
+    }, [account, baseNetworkProvider])
+
+    const openAccountModal = useCallback(
+        (isDeposit: boolean) => {
+            dispatch({ type: ACTIONS.OPEN_ACCOUNT_MODAL, payload: { isDeposit } })
+        },
+        [dispatch],
     )
-    const collateralToken = ercTokenAddress.settlementToken
 
-    const executors: Executors | null = useMemo(() => {
-        if (!perpdexExchange || !signer) {
-            return null
-        }
-        return {
-            [Network.Xdai]: new ContractExecutor(perpdexExchange, signer), // TODO: fix
-        }
-    }, [perpdexExchange, signer])
-
-    const currentExecutor = useMemo(() => {
-        return executors ? executors[Network.Xdai] : null // TODO: fix
-    }, [executors])
-
-    const toggleAccountModal = useCallback(() => {
-        dispatch({ type: ACTIONS.TOGGLE_ACCOUNT_MODAL })
+    const closeAccountModal = useCallback(() => {
+        dispatch({ type: ACTIONS.CLOSE_ACCOUNT_MODAL })
     }, [dispatch])
-
-    const deposit = useCallback(
-        async (amount: Big) => {
-            if (currentExecutor && collateralToken) {
-                const spender = currentExecutor.contract.address
-                await queryAllowanceBySpender(spender)
-                if (!allowance[spender] || amount.gt(allowance[spender])) {
-                    try {
-                        await approve(spender, amount)
-                    } catch (e) {
-                        console.error(e)
-                    }
-                }
-
-                await execute(currentExecutor.deposit(big2BigNum(amount, decimals)))
-            }
-        },
-        [currentExecutor, queryAllowanceBySpender, allowance, execute, collateralToken, decimals, approve],
-    )
-
-    const withdraw = useCallback(
-        (amount: Big) => {
-            if (currentExecutor && collateralToken) {
-                execute(currentExecutor.withdraw(big2BigNum(amount, decimals)))
-            }
-        },
-        [currentExecutor, execute, collateralToken, decimals],
-    )
 
     useContractEvent(perpdexExchange, "Deposited", (trader, amount) => {
         if (trader === account) {
@@ -132,15 +118,14 @@ function useAccount() {
             }
         }
         fetchAccountValue()
-    }, [decimals, account, perpdexExchange])
+    }, [account, perpdexExchange])
 
     return {
         state,
         actions: {
-            toggleAccountModal,
+            getBalance,
+            openAccountModal,
+            closeAccountModal,
         },
-        deposit,
-        withdraw,
-        balance,
     }
 }

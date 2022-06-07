@@ -8,7 +8,7 @@ import { Container, Divider } from "@chakra-ui/react"
 import ClosePositionModal from "component/ClosePositionModal"
 import BlockedRegionModal from "component/BlockedRegionModal"
 import UserAgreementModal from "component/UserAgreementModal"
-import AccountPerpdexModal from "component/AccountPerpdexModal"
+import AccountPerpdexModal from "component/AccountModal"
 import LiquidityProviderModal from "component/LiquidityProviderModal"
 
 export const App = () => (

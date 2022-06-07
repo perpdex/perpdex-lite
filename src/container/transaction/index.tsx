@@ -205,6 +205,8 @@ function useTransaction() {
             let receipt: TransactionReceipt | null = null
             const { tx, isRejected, isMetaTx, txHash } = await userConfirmTx(txAction, latestTxMetaData)
 
+            console.log("execute", tx, isRejected, isMetaTx, txHash)
+
             if (isRejected || isMetaTx) {
                 // NOTE: both cases are handled in `userConfirmTx`
                 // TODO: should interleave meta tx and contract tx

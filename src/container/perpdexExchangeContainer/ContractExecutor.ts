@@ -1,5 +1,5 @@
 import { BigNumber, ContractTransaction, Signer } from "ethers"
-import { Side } from "constant"
+import { BIG_NUMBER_ZERO, Side } from "constant"
 
 import { PerpdexExchange } from "types/newContracts"
 import { PerpdexExchangeActions } from "./type"
@@ -14,6 +14,14 @@ export class ContractExecutor implements PerpdexExchangeActions {
         if (signer) {
             this.contract = contract.connect(signer)
         }
+    }
+
+    deposit(etherValue: BigNumber, amount: BigNumber): Promise<ContractTransaction> {
+        return this.execute("deposit", [amount], etherValue)
+    }
+
+    withdraw(amount: BigNumber): Promise<ContractTransaction> {
+        return this.execute("withdraw", [amount])
     }
 
     addLiquidity(
@@ -84,13 +92,14 @@ export class ContractExecutor implements PerpdexExchangeActions {
         ])
     }
 
-    async execute(funcName: string, args: any[]) {
+    async execute(funcName: string, args: any[], etherValue?: BigNumber) {
         const overrides = { from: this.contract.signer.getAddress() }
 
         return this.contract[funcName](...args, {
             ...overrides,
             // NOTE: hard code the gasLimit, until estimateGas function can always return a reasonable number.
             gasLimit: BigNumber.from(3_800_000),
+            value: etherValue ? etherValue : BIG_NUMBER_ZERO,
             // NOTE: Instead of using a lower customized gas price, we use the default gas price which is provided by the metamask.
             // gasPrice: utils.parseUnits("2", "gwei"),
         })
