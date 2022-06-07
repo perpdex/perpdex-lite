@@ -7,12 +7,12 @@ export const metadata = {
                         name: "rinkeby",
                         chainId: 4,
                         contracts: {
-                            perpdexExchange: "0xf5382704abe9252Ae93a37dAeB53324d822b85dF",
+                            perpdexExchange: "0x2aaFC6979b8D18D0d936C86895e84915B50F3569",
                             perpdexMarket: {
-                                usd: "b45cb22f6e0a309d844db62286612428749806cc",
-                                btc: "0xba70da40454be6d5c82ef7c20376ba850260f287",
-                                link: "0x6662ed3a119bff55a40a3cf9ecc0c5eee6b0178b",
-                                matic: "0x30219c1b79d4d996f22ad4030302dd438130afef",
+                                usd: "0x019b61afa0fa435fd427161930d6525bafe32b48",
+                                btc: "0xaf79e952c4a559fb996fbc6f1477c001b9501c09",
+                                link: "0xd51a13554c501b8e657c63871040554ae94e492e",
+                                matic: "0x7b24b8da2f818e23b4fb75d7ce06ab5f627aae10",
                             },
                             settlementToken: "0x0000000000000000000000000000000000000000",
                             // quoteToken: "0xCDC9AefE9E78A76e666B48daED81A2022c3e2B86",
