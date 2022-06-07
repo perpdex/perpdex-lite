@@ -16,8 +16,10 @@ function Collateral() {
     } = PerpdexMarketContainer.useContainer()
     const { collateral, setCollateral } = Trade.useContainer()
     const [_collateral, _setCollateral] = useState<string>("")
-    const quoteAssetSymbol = currentMarket
+    const quoteAssetSymbol = currentMarket?.quoteAssetSymbol
     const debouncedCollateral = useDebounce({ value: _collateral, delay: 500 })
+
+    console.log("currentMarket", currentMarket)
 
     const handleOnInput = useCallback(
         e => {

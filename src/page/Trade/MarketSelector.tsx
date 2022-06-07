@@ -15,11 +15,12 @@ function MarketSelector() {
         <FormControl id="market">
             <SmallFormLabel>Market</SmallFormLabel>
             <Select onChange={handleOnChange} isDisabled={!currentMarket}>
-                {baseSymbolList.map((market: BaseSymbolType, index) => (
-                    <option key={`${market}-${currentMarket?.quoteAssetSymbol}`} value={index}>
-                        {market} / ${currentMarket?.quoteAssetSymbol} (inverse)
-                    </option>
-                ))}
+                {currentMarket &&
+                    baseSymbolList.map((baseSymbol: BaseSymbolType, index) => (
+                        <option key={`${currentMarket?.quoteAssetSymbol}-${baseSymbol}`} value={index}>
+                            {currentMarket?.quoteAssetSymbol} / {baseSymbol} (inverse)
+                        </option>
+                    ))}
             </Select>
         </FormControl>
     )

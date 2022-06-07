@@ -23,7 +23,7 @@ function Trade() {
                         <MarketSelector />
                         <Collateral />
                         <Position />
-                        {/*<Leverage />*/}
+                        {/* <Leverage /> */}
                         <Slippage />
                         <Summary />
                     </VStack>
