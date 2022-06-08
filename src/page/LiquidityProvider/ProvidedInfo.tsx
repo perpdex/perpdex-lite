@@ -14,83 +14,15 @@ import {
     Flex,
     HStack,
 } from "@chakra-ui/react"
-import { useCallback, useEffect, useState } from "react"
-import { bigNum2Big } from "../../util/format"
-import { useInterval } from "@chakra-ui/hooks"
-import { Connection } from "../../container/connection"
-import { PerpdexMarketContainer } from "../../container/perpdexMarketContainer"
-import { Contract } from "../../container/contract"
-import Big from "big.js"
+import { InverseMarket } from "constant/market"
+import { MakerPositionInfo } from "."
 
-export interface MakerPositionInfo {
-    unrealizedPnl: Big
-    liquidityValue: Big
-    baseAmount: Big
-    quoteAmount: Big
-    baseDebt: Big
-    quoteDebt: Big
+interface ProvidedInfoTableProps {
+    marketInfo: InverseMarket
+    makerPositionInfo: MakerPositionInfo
 }
 
-function ProvidedInfoTable() {
-    const { account } = Connection.useContainer()
-    const { perpdexExchange } = Contract.useContainer()
-    const {
-        state: { currentMarket },
-    } = PerpdexMarketContainer.useContainer()
-    const [makerPositionInfo, setMakerPositionInfo] = useState<MakerPositionInfo>({
-        unrealizedPnl: Big(0),
-        liquidityValue: Big(0),
-        baseAmount: Big(0),
-        quoteAmount: Big(0),
-        baseDebt: Big(0),
-        quoteDebt: Big(0),
-    })
-
-    const getMakerPositionInfo = useCallback(async () => {
-        if (!account) return
-        if (!perpdexExchange) return
-
-        const price = Big(0) // FIX
-
-        // FIX
-        const tmp = await perpdexExchange.getTotalAccountValue(account)
-
-        // const [quoteAmountRaw, quotePendingFee] = await orderBook.getTotalTokenAmountInPoolAndPendingFee(
-        //     account,
-        //     baseTokenAddress,
-        //     false,
-        // )
-        // const [baseAmountRaw, basePendingFee] = await orderBook.getTotalTokenAmountInPoolAndPendingFee(
-        //     account,
-        //     baseTokenAddress,
-        //     true,
-        // )
-        // const quoteDebtRaw = await orderBook.getTotalOrderDebt(account, baseTokenAddress, false)
-        // const baseDebtRaw = await orderBook.getTotalOrderDebt(account, baseTokenAddress, true)
-
-        const baseAmount = bigNum2Big(tmp)
-        const quoteAmount = bigNum2Big(tmp)
-        const baseDebt = bigNum2Big(tmp)
-        const quoteDebt = bigNum2Big(tmp)
-
-        const info = {
-            liquidityValue: baseAmount.mul(price).add(quoteAmount),
-            unrealizedPnl: baseAmount.sub(baseDebt).mul(price).add(quoteAmount.sub(quoteDebt)),
-            baseAmount: baseAmount,
-            quoteAmount: quoteAmount,
-            baseDebt: baseDebt,
-            quoteDebt: quoteDebt,
-        }
-
-        setMakerPositionInfo(info)
-    }, [account, perpdexExchange])
-
-    useEffect(() => {
-        getMakerPositionInfo()
-    }, [getMakerPositionInfo])
-
-    useInterval(getMakerPositionInfo, 5000)
-
+function ProvidedInfoTable({ marketInfo, makerPositionInfo }: ProvidedInfoTableProps) {
     return (
         <>
             <Heading w="full" size="sm">
@@ -103,7 +35,7 @@ function ProvidedInfoTable() {
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
                         {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.liquidityValue.toFixed(6)}{" "}
-                        {currentMarket?.quoteAssetSymbol}
+                        {marketInfo?.quoteAssetSymbol}
                     </Text>
                 </Box>
                 <Box>
@@ -122,7 +54,7 @@ function ProvidedInfoTable() {
                     </Text>
                     <Text fontSize="xl" color="green.400" fontWeight="bold" lineHeight="1.4">
                         {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.unrealizedPnl.toFixed(6)}{" "}
-                        {currentMarket?.quoteAssetSymbol}
+                        {marketInfo?.quoteAssetSymbol}
                     </Text>
                 </Box>
                 <Box>
@@ -131,7 +63,7 @@ function ProvidedInfoTable() {
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
                         {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.baseAmount.toFixed(6)}{" "}
-                        {currentMarket?.quoteAssetSymbol}
+                        {marketInfo?.baseAssetSymbol}
                     </Text>
                 </Box>
                 <Box>
@@ -140,7 +72,7 @@ function ProvidedInfoTable() {
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
                         {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.quoteAmount.toFixed(6)}{" "}
-                        {currentMarket?.quoteAssetSymbol}
+                        {marketInfo?.quoteAssetSymbol}
                     </Text>
                 </Box>
                 <Box>
@@ -149,7 +81,7 @@ function ProvidedInfoTable() {
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
                         {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.baseDebt.toFixed(6)}{" "}
-                        {currentMarket?.quoteAssetSymbol}
+                        {marketInfo?.baseAssetSymbol}
                     </Text>
                 </Box>
                 <Box>
@@ -158,7 +90,7 @@ function ProvidedInfoTable() {
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
                         {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.quoteDebt.toFixed(6)}{" "}
-                        {currentMarket?.quoteAssetSymbol}
+                        {marketInfo?.quoteAssetSymbol}
                     </Text>
                 </Box>
             </SimpleGrid>

@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { SimpleGrid, VStack, Box } from "@chakra-ui/react"
 
 import TitleBar from "./TitleBar"
@@ -7,8 +7,93 @@ import ProvidedInfo from "./ProvidedInfo"
 import Position from "./Position"
 import PoolInfo from "./PoolInfo"
 import FrameContainer from "component/FrameContainer"
+import { LiquidityProvider as LiquidityProviderContainer } from "container/liquidityProvider"
+import { useCallback } from "react"
+import { bigNum2Big } from "../../util/format"
+import { PerpdexExchangeContainer } from "container/perpdexExchangeContainer"
+import { PerpdexMarketContainer } from "container/perpdexMarketContainer"
+import { InverseMarket } from "constant/market"
+import Big from "big.js"
+
+export interface MakerPositionInfo {
+    unrealizedPnl: Big
+    liquidityValue: Big
+    liquidity: Big
+    baseAmount: Big
+    quoteAmount: Big
+    baseDebt: Big
+    quoteDebt: Big
+}
 
 function LiquidityProvider() {
+    const { removeLiquidity } = PerpdexExchangeContainer.useContainer()
+    const perpdexMarketState = PerpdexMarketContainer.useContainer()
+    const { openLiquidityProviderModal } = LiquidityProviderContainer.useContainer()
+
+    const [makerPositionInfo, setMakerPositionInfo] = useState<MakerPositionInfo>({
+        unrealizedPnl: Big(0),
+        liquidityValue: Big(0),
+        liquidity: Big(0),
+        baseAmount: Big(0),
+        quoteAmount: Big(0),
+        baseDebt: Big(0),
+        quoteDebt: Big(0),
+    })
+    const [marketInfo, setMarketInfo] = useState<InverseMarket>({
+        baseAddress: "",
+        baseAssetSymbol: "USD",
+        quoteAssetSymbol: "ETH",
+        baseAssetSymbolDisplay: "",
+        quoteAssetSymbolDisplay: "",
+    })
+
+    const makerInfo = perpdexMarketState.state.makerInfo
+    const markPrice = perpdexMarketState.state.markPrice
+    const currentMarket = perpdexMarketState.state.currentMarket
+    const poolInfo = perpdexMarketState.state.poolInfo
+
+    useEffect(() => {
+        if (currentMarket) {
+            console.log("@@@@ currentMarket", currentMarket)
+            setMarketInfo(currentMarket)
+        }
+    }, [currentMarket])
+
+    useEffect(() => {
+        if (!makerInfo || !poolInfo || !markPrice) return
+        const liquidity = bigNum2Big(makerInfo.liquidity)
+
+        const baseAmount = liquidity.mul(bigNum2Big(poolInfo.base, 18)).div(bigNum2Big(poolInfo.totalLiquidity, 18))
+        const quoteAmount = liquidity.mul(bigNum2Big(poolInfo.quote, 18)).div(bigNum2Big(poolInfo.totalLiquidity, 18))
+        const baseDebt = bigNum2Big(makerInfo.baseDebtShare, 18)
+        const quoteDebt = bigNum2Big(makerInfo.quoteDebt, 18)
+
+        const info = {
+            unrealizedPnl: baseAmount.sub(baseDebt).mul(markPrice).add(quoteAmount.sub(quoteDebt)), // FIX: consider funding
+            liquidityValue: baseAmount.mul(markPrice).add(quoteAmount),
+            liquidity,
+            baseAmount,
+            quoteAmount,
+            baseDebt,
+            quoteDebt,
+        }
+        console.log("@@@@ info", info)
+        setMakerPositionInfo(info)
+    }, [makerInfo, markPrice, poolInfo])
+
+    const handleOnAddLiquidityClick = useCallback(() => {
+        openLiquidityProviderModal()
+    }, [openLiquidityProviderModal])
+
+    const handleOnRemoveLiquidityClick = useCallback(async () => {
+        if (!makerPositionInfo) return
+        removeLiquidity(
+            makerPositionInfo.liquidity,
+            makerPositionInfo.baseAmount.mul(0.9),
+            makerPositionInfo.quoteAmount.mul(0.9),
+        )
+    }, [makerPositionInfo, removeLiquidity])
+
     return (
         <FrameContainer>
             <TitleBar />
@@ -21,8 +106,11 @@ function LiquidityProvider() {
                 </Box>
                 <Box borderStyle="solid" borderWidth="1px" borderRadius="12px" p="4">
                     <VStack spacing={6} p={0}>
-                        <ProvidedInfo />
-                        <Position />
+                        <ProvidedInfo marketInfo={marketInfo} makerPositionInfo={makerPositionInfo} />
+                        <Position
+                            handleOnAddLiquidityClick={handleOnAddLiquidityClick}
+                            handleOnRemoveLiquidityClick={handleOnRemoveLiquidityClick}
+                        />
                     </VStack>
                 </Box>
             </SimpleGrid>

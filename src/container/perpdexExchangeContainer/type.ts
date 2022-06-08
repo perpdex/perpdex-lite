@@ -1,12 +1,11 @@
 import { ContractTransaction } from "ethers"
-import { Side } from "constant"
 import { BigNumber } from "ethers"
 
 type ReturnType = ContractTransaction | string
 
 export interface PerpdexExchangeActions {
     addLiquidity(
-        baseToken: string,
+        market: string,
         base: BigNumber,
         quote: BigNumber,
         minBase: BigNumber,
@@ -14,7 +13,8 @@ export interface PerpdexExchangeActions {
     ): Promise<ReturnType>
 
     removeLiquidity(
-        baseToken: string,
+        trader: string,
+        market: string,
         liquidity: BigNumber,
         minBase: BigNumber,
         minQuote: BigNumber,

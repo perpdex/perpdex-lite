@@ -60,10 +60,19 @@ function usePerpdexExchangeContainer() {
     useEffect(() => {
         if (!perpdexExchange || !account) return
         ;(async () => {
-            const value = await perpdexExchange.getTotalAccountValue(account)
-            console.log("getTotalAccountValue", value)
+            if (!perpdexMarketState.state.currentMarket) return
+            const marketAddress = perpdexMarketState.state.currentMarket.baseAddress
+
+            const totalAccountValue = await perpdexExchange.getTotalAccountValue(account)
+
+            const positionNotional = await perpdexExchange.getPositionNotional(account, marketAddress)
+
+            const makerInfo = await perpdexExchange.getMakerInfo(account, marketAddress)
+            console.log("totalAccountValue", totalAccountValue)
+            console.log("positionNotional", positionNotional)
+            console.log("makerInfo", makerInfo)
         })()
-    }, [account, perpdexExchange])
+    }, [account, perpdexExchange, perpdexMarketState.state.currentMarket])
 
     const deposit = useCallback(
         (amount: string) => {
@@ -113,11 +122,11 @@ function usePerpdexExchangeContainer() {
     )
 
     const addLiquidity = useCallback(
-        (baseToken: string, base: Big, quote: Big, minBase: Big, minQuote: Big) => {
-            if (state.contractExecuter) {
+        (base: Big, quote: Big, minBase: Big, minQuote: Big) => {
+            if (state.contractExecuter && account && perpdexMarketState.state.currentMarket) {
                 execute(
                     state.contractExecuter.addLiquidity(
-                        baseToken,
+                        perpdexMarketState.state.currentMarket.baseAddress,
                         big2BigNum(base),
                         big2BigNum(quote),
                         big2BigNum(minBase),
@@ -126,15 +135,16 @@ function usePerpdexExchangeContainer() {
                 )
             }
         },
-        [execute, state.contractExecuter],
+        [account, execute, perpdexMarketState.state.currentMarket, state.contractExecuter],
     )
 
     const removeLiquidity = useCallback(
-        (baseToken: string, liquidity: Big, minBase: Big, minQuote: Big) => {
-            if (state.contractExecuter) {
+        (liquidity: Big, minBase: Big, minQuote: Big) => {
+            if (state.contractExecuter && account && perpdexMarketState.state.currentMarket) {
                 execute(
                     state.contractExecuter.removeLiquidity(
-                        baseToken,
+                        account,
+                        perpdexMarketState.state.currentMarket.baseAddress,
                         big2BigNum(liquidity),
                         big2BigNum(minBase),
                         big2BigNum(minQuote),
@@ -142,8 +152,12 @@ function usePerpdexExchangeContainer() {
                 )
             }
         },
-        [execute, state.contractExecuter],
+        [account, execute, perpdexMarketState.state.currentMarket, state.contractExecuter],
     )
+
+    /**
+     * getter
+     */
 
     return {
         deposit,

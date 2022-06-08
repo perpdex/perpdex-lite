@@ -25,7 +25,7 @@ export class ContractExecutor implements PerpdexExchangeActions {
     }
 
     addLiquidity(
-        baseToken: string,
+        market: string,
         base: BigNumber,
         quote: BigNumber,
         minBase: BigNumber,
@@ -33,7 +33,7 @@ export class ContractExecutor implements PerpdexExchangeActions {
     ): Promise<ContractTransaction> {
         return this.execute("addLiquidity", [
             {
-                baseToken: baseToken,
+                market: market,
                 base: base,
                 quote: quote,
                 minBase: minBase,
@@ -44,14 +44,16 @@ export class ContractExecutor implements PerpdexExchangeActions {
     }
 
     removeLiquidity(
-        baseToken: string,
+        trader: string,
+        market: string,
         liquidity: BigNumber,
         minBase: BigNumber,
         minQuote: BigNumber,
     ): Promise<ContractTransaction> {
         return this.execute("removeLiquidity", [
             {
-                baseToken: baseToken,
+                trader: trader,
+                market: market,
                 liquidity: liquidity,
                 minBase: minBase,
                 minQuote: minQuote,

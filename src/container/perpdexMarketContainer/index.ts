@@ -7,6 +7,8 @@ import { Transaction } from "container/transaction"
 import { ContractExecutor } from "./ContractExecutor"
 import { PerpdexMarket } from "types/newContracts"
 import Big from "big.js"
+import { x96ToBig } from "util/format"
+import { BigNumber } from "ethers"
 
 // import { useContractEvent } from "./useContractEvent"
 
@@ -14,9 +16,28 @@ import Big from "big.js"
 //     return x.div(Big(2).pow(96)).pow(2)
 // }
 
+interface MakerInfo {
+    baseDebtShare: BigNumber
+    cumDeleveragedBaseSharePerLiquidityX96: BigNumber
+    cumDeleveragedQuotePerLiquidityX96: BigNumber
+    liquidity: BigNumber
+    quoteDebt: BigNumber
+}
+
+interface PoolInfo {
+    base: BigNumber
+    quote: BigNumber
+    totalLiquidity: BigNumber
+    cumDeleveragedBasePerLiquidityX96: BigNumber
+    cumDeleveragedQuotePerLiquidityX96: BigNumber
+    baseBalancePerShareX96: BigNumber
+}
+
 enum ACTIONS {
     SELECT_MARKET = "SELECT_MARKET",
     UPDATE_MARK_PRICE = "UPDATE_MARK_PRICE",
+    UPDATE_MAKER_INFO = "UPDATE_MAKER_INFO",
+    UPDATE_POOL_INFO = "UPDATE_POOL_INFO",
 }
 
 type ActionType =
@@ -25,12 +46,16 @@ type ActionType =
           payload: { market?: InverseMarket; contract?: PerpdexMarket; contractExecuter?: ContractExecutor }
       }
     | { type: ACTIONS.UPDATE_MARK_PRICE; payload: { markPrice: Big } }
+    | { type: ACTIONS.UPDATE_MAKER_INFO; payload: { makerInfo: MakerInfo } }
+    | { type: ACTIONS.UPDATE_POOL_INFO; payload: { poolInfo: PoolInfo } }
 
 const initialState = {
     currentMarket: undefined as InverseMarket | undefined,
     contract: undefined as PerpdexMarket | undefined,
     contractExecuter: undefined as ContractExecutor | undefined,
     markPrice: undefined as Big | undefined,
+    makerInfo: undefined as MakerInfo | undefined,
+    poolInfo: undefined as PoolInfo | undefined,
 }
 
 function reducer(state: typeof initialState, action: ActionType) {
@@ -49,6 +74,18 @@ function reducer(state: typeof initialState, action: ActionType) {
                 markPrice: action.payload.markPrice,
             }
         }
+        case ACTIONS.UPDATE_MAKER_INFO: {
+            return {
+                ...state,
+                makerInfo: action.payload.makerInfo,
+            }
+        }
+        case ACTIONS.UPDATE_POOL_INFO: {
+            return {
+                ...state,
+                poolInfo: action.payload.poolInfo,
+            }
+        }
         default:
             throw new Error()
     }
@@ -58,8 +95,8 @@ export const PerpdexMarketContainer = createContainer(usePerpdexMarketContainer)
 
 function usePerpdexMarketContainer() {
     const [state, dispatch] = useReducer(reducer, initialState)
-    const { signer } = Connection.useContainer()
-    const { isInitialized, perpdexMarket, quoteSymbol } = Contract.useContainer()
+    const { account, signer } = Connection.useContainer()
+    const { isInitialized, perpdexMarket, quoteSymbol, perpdexExchange } = Contract.useContainer()
 
     const { execute } = Transaction.useContainer()
 
@@ -80,6 +117,25 @@ function usePerpdexMarketContainer() {
             dispatch({ type: ACTIONS.SELECT_MARKET, payload: { market, contract, contractExecuter } })
         }
     }, [isInitialized, perpdexMarket, quoteSymbol, signer])
+
+    useEffect(() => {
+        ;(async () => {
+            if (isInitialized && account && perpdexExchange && state.currentMarket) {
+                const makerInfo = await perpdexExchange.getMakerInfo(account, state.currentMarket.baseAddress)
+                dispatch({ type: ACTIONS.UPDATE_MAKER_INFO, payload: { makerInfo } })
+            }
+        })()
+    }, [account, isInitialized, perpdexExchange, state.currentMarket])
+
+    useEffect(() => {
+        ;(async () => {
+            if (isInitialized && state.contract) {
+                const poolInfo = await state.contract.poolInfo()
+
+                dispatch({ type: ACTIONS.UPDATE_POOL_INFO, payload: { poolInfo } })
+            }
+        })()
+    }, [isInitialized, state.contract])
 
     const selectMarket = useCallback(
         (assetType: BaseAssetType) => {
@@ -105,11 +161,18 @@ function usePerpdexMarketContainer() {
     const getMarkPrice = useCallback(async () => {
         if (!state.contract) return
 
-        // const currentMarkPrice = state.contract.baseBalancePerShareX96()
-        const currentMarkPrice = new Big(2000) // FIX
-        if (!currentMarkPrice) return
+        const currentMarkPriceX96 = await state.contract.getMarkPriceX96()
 
-        return currentMarkPrice
+        if (!currentMarkPriceX96) return
+
+        const isInverse = false
+        const markPrice = x96ToBig(currentMarkPriceX96, isInverse)
+        console.log("markPrice", markPrice.toString())
+
+        return markPrice
+
+        // const currentMarkPrice = new Big(1845) // FIX
+        // return currentMarkPrice
     }, [state.contract])
 
     useEffect(() => {
@@ -121,15 +184,10 @@ function usePerpdexMarketContainer() {
         })()
     }, [getMarkPrice, isInitialized, state.currentMarket])
 
-    const removeLiquidity = useCallback(() => {
-        console.log("FIX")
-    }, [])
-
     return {
         state,
         selectMarket,
         getMarkPrice,
         execute,
-        removeLiquidity,
     }
 }
