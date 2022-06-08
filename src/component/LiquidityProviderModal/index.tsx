@@ -21,7 +21,6 @@ import Big from "big.js"
 import { PerpdexMarketContainer } from "../../container/perpdexMarketContainer"
 import { AddIcon } from "@chakra-ui/icons"
 import { PerpdexExchangeContainer } from "container/perpdexExchangeContainer"
-// import { PerpdexExchangeContainer } from "../../container/perpdexExchangeContainer"
 
 function LiquidityProviderModal() {
     const {

@@ -45,6 +45,7 @@ function LiquidityProvider() {
         quoteAssetSymbol: "ETH",
         baseAssetSymbolDisplay: "",
         quoteAssetSymbolDisplay: "",
+        inverse: true,
     })
 
     const makerInfo = perpdexMarketState.state.makerInfo
@@ -54,13 +55,15 @@ function LiquidityProvider() {
 
     useEffect(() => {
         if (currentMarket) {
-            console.log("@@@@ currentMarket", currentMarket)
             setMarketInfo(currentMarket)
         }
     }, [currentMarket])
 
     useEffect(() => {
         if (!makerInfo || !poolInfo || !markPrice) return
+
+        const _markPrice = marketInfo.inverse ? Big(0).div(markPrice) : markPrice
+
         const liquidity = bigNum2Big(makerInfo.liquidity)
 
         const baseAmount = liquidity.mul(bigNum2Big(poolInfo.base, 18)).div(bigNum2Big(poolInfo.totalLiquidity, 18))
@@ -69,17 +72,16 @@ function LiquidityProvider() {
         const quoteDebt = bigNum2Big(makerInfo.quoteDebt, 18)
 
         const info = {
-            unrealizedPnl: baseAmount.sub(baseDebt).mul(markPrice).add(quoteAmount.sub(quoteDebt)), // FIX: consider funding
-            liquidityValue: baseAmount.mul(markPrice).add(quoteAmount),
+            unrealizedPnl: baseAmount.sub(baseDebt).mul(_markPrice).add(quoteAmount.sub(quoteDebt)), // FIX: consider funding
+            liquidityValue: baseAmount.mul(_markPrice).add(quoteAmount),
             liquidity,
             baseAmount,
             quoteAmount,
             baseDebt,
             quoteDebt,
         }
-        console.log("@@@@ info", info)
         setMakerPositionInfo(info)
-    }, [makerInfo, markPrice, poolInfo])
+    }, [makerInfo, markPrice, marketInfo.inverse, poolInfo])
 
     const handleOnAddLiquidityClick = useCallback(() => {
         openLiquidityProviderModal()

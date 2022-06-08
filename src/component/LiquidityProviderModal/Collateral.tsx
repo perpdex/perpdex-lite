@@ -22,6 +22,7 @@ function Collateral({ onChange }: ICollateral) {
             const value = e.target.value
             if (value >= 0) {
                 const formattedValue = formatInput(value, USDC_PRECISION)
+                console.log("for", formattedValue)
                 setCollateral(formattedValue)
                 if (onChange) {
                     try {

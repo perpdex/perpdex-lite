@@ -28,10 +28,10 @@ export interface InverseMarket {
     quoteAssetSymbol: QuoteSymbolType
     baseAssetSymbolDisplay: string
     quoteAssetSymbolDisplay: string
+    inverse: boolean
     // tradeLimitRatio: Big
     // tollRatio: Big
     // indexPrice: Big
-    // inverse: boolean
 }
 
 export const baseSymbolList = Object.values(supportedBaseSymbol) as BaseSymbolType[]

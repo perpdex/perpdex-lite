@@ -110,6 +110,7 @@ function usePerpdexMarketContainer() {
                 quoteAssetSymbol: quoteSymbol as QuoteSymbolType,
                 baseAssetSymbolDisplay: defaultBase.symbol as string,
                 quoteAssetSymbolDisplay: quoteSymbol as string,
+                inverse: defaultBase.symbol === "USD" && quoteSymbol === "ETH", // FIX: clean up
             }
             const contract = defaultBase.contract
             const contractExecuter = new ContractExecutor(defaultBase.contract, signer)
@@ -149,6 +150,7 @@ function usePerpdexMarketContainer() {
                 quoteAssetSymbol: quoteSymbol as QuoteSymbolType,
                 baseAssetSymbolDisplay: selectedBase.symbol as string,
                 quoteAssetSymbolDisplay: quoteSymbol as string,
+                inverse: assetType === "usd" && quoteSymbol === "ETH", // FIX: clean up
             }
             const contract = selectedBase.contract
             const contractExecuter = new ContractExecutor(selectedBase.contract, signer)
@@ -159,21 +161,14 @@ function usePerpdexMarketContainer() {
     )
 
     const getMarkPrice = useCallback(async () => {
-        if (!state.contract) return
+        if (!state.contract || !state.currentMarket) return
 
         const currentMarkPriceX96 = await state.contract.getMarkPriceX96()
-
         if (!currentMarkPriceX96) return
 
-        const isInverse = false
-        const markPrice = x96ToBig(currentMarkPriceX96, isInverse)
-        console.log("markPrice", markPrice.toString())
-
+        const markPrice = x96ToBig(currentMarkPriceX96, state.currentMarket.inverse)
         return markPrice
-
-        // const currentMarkPrice = new Big(1845) // FIX
-        // return currentMarkPrice
-    }, [state.contract])
+    }, [state.contract, state.currentMarket])
 
     useEffect(() => {
         ;(async () => {
