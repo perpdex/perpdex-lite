@@ -8,30 +8,58 @@ import { useCallback } from "react"
 import { usePositionSize } from "../usePositionSize"
 import { big2BigNum } from "util/format"
 
+function calcPositionSize(isBaseToQuote: boolean, notional: Big, markPrice: Big) {
+    const basePosition = isBaseToQuote ? notional.mul(markPrice) : notional
+    const oppositPosition = isBaseToQuote ? notional : notional.mul(markPrice)
+    return {
+        basePosition,
+        oppositPosition,
+    }
+}
+
 function SendTxButton() {
     const {
-        state: { currentMarket },
+        state: { currentMarket, markPrice },
     } = PerpdexMarketContainer.useContainer()
     const { slippage, isBaseToQuote, collateral } = Trade.useContainer()
     const { openPosition } = PerpdexExchangeContainer.useContainer()
     const { isLoading: isTxExecuting } = Transaction.useContainer()
-    const { positionSize, isCalculating } = usePositionSize()
+    const { isCalculating } = usePositionSize()
 
     const isDisabled = isTxExecuting || isCalculating || collateral === null || collateral.eq(0)
 
     const handleOnTrade = useCallback(async () => {
-        if (collateral && currentMarket) {
-            const isExactInput = true
-            const amount = new Big(positionSize)
+        if (collateral && currentMarket && markPrice) {
+            const isExactInput = isBaseToQuote
+            // const amount = new Big(positionSize)
+
+            const positions = calcPositionSize(isBaseToQuote, collateral, markPrice)
 
             const _slippage = slippage / 100
-            const oppositeAmountBount = isBaseToQuote ? collateral.mul(1 + _slippage) : collateral.mul(1 - _slippage)
 
-            console.log("openPosition", isBaseToQuote, isExactInput, big2BigNum(amount), oppositeAmountBount)
+            let oppositeAmountBount
+            if (isExactInput) {
+                oppositeAmountBount = positions.oppositPosition.mul(1 - _slippage)
+            } else {
+                oppositeAmountBount = positions.oppositPosition.mul(1 + _slippage)
+            }
 
-            openPosition(isBaseToQuote, isExactInput, big2BigNum(amount), big2BigNum(oppositeAmountBount))
+            console.log(
+                "openPosition",
+                isBaseToQuote,
+                isExactInput,
+                positions.basePosition.toString(),
+                oppositeAmountBount.toString(),
+            )
+
+            openPosition(
+                isBaseToQuote,
+                isExactInput,
+                big2BigNum(positions.basePosition),
+                big2BigNum(oppositeAmountBount),
+            )
         }
-    }, [collateral, currentMarket, isBaseToQuote, openPosition, positionSize, slippage])
+    }, [collateral, currentMarket, isBaseToQuote, markPrice, openPosition, slippage])
 
     return (
         <Button

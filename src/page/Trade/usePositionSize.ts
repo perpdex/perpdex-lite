@@ -47,9 +47,9 @@ export function usePositionSize() {
             const position = calcPositionSize(isBaseToQuote, notional, markPrice)
             console.log("position", isBaseToQuote, notional, markPrice, position)
 
-            const positionTest = formatInput(position.toString(), 7)
+            const positionDisplay = formatInput(position.toString(), 7)
 
-            setPositionSize(positionTest)
+            setPositionSize(positionDisplay)
             setIsCalculating(false)
         }
         updatePositionByUserControl()
