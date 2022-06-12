@@ -2,7 +2,7 @@ import { FormControl, Input, InputGroup, InputRightElement, Text } from "@chakra
 
 import { PerpdexMarketContainer } from "container/perpdexMarketContainer"
 import SmallFormLabel from "component/SmallFormLabel"
-import { usePositionSize } from "./usePositionSize"
+import { usePositionSize } from "../usePositionSize"
 import { Trade } from "container/trade"
 
 function Position() {
