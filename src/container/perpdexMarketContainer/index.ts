@@ -16,14 +16,6 @@ import { BigNumber } from "ethers"
 //     return x.div(Big(2).pow(96)).pow(2)
 // }
 
-interface MakerInfo {
-    baseDebtShare: BigNumber
-    cumDeleveragedBaseSharePerLiquidityX96: BigNumber
-    cumDeleveragedQuotePerLiquidityX96: BigNumber
-    liquidity: BigNumber
-    quoteDebt: BigNumber
-}
-
 interface PoolInfo {
     base: BigNumber
     quote: BigNumber
@@ -36,8 +28,8 @@ interface PoolInfo {
 export const PerpdexMarketContainer = createContainer(usePerpdexMarketContainer)
 
 function usePerpdexMarketContainer() {
-    const { account, signer } = Connection.useContainer()
-    const { isInitialized, perpdexMarket, quoteSymbol, perpdexExchange } = Contract.useContainer()
+    const { signer } = Connection.useContainer()
+    const { isInitialized, perpdexMarket, quoteSymbol } = Contract.useContainer()
     const { execute } = Transaction.useContainer()
 
     /**
@@ -48,7 +40,6 @@ function usePerpdexMarketContainer() {
     const [contractExecuter, setContractExecuter] = useState<ContractExecutor | undefined>(undefined)
     const [markPrice, setMarkPrice] = useState<Big | undefined>(undefined)
     const [poolInfo, setPoolInfo] = useState<PoolInfo | undefined>(undefined)
-    const [makerInfo, setMakerInfo] = useState<MakerInfo | undefined>(undefined)
 
     const selectMarket = useCallback(
         (assetType: BaseAssetType) => {
@@ -102,22 +93,12 @@ function usePerpdexMarketContainer() {
         })()
     }, [contract, isInitialized])
 
-    useEffect(() => {
-        ;(async () => {
-            if (isInitialized && account && perpdexExchange && currentMarketInfo) {
-                const _makerInfo = await perpdexExchange.getMakerInfo(account, currentMarketInfo.baseAddress)
-                setMakerInfo(_makerInfo)
-            }
-        })()
-    }, [account, isInitialized, perpdexExchange, currentMarketInfo])
-
     return {
         state: {
             currentMarketInfo,
             contract,
             markPrice,
             poolInfo,
-            makerInfo,
         },
         selectMarket,
         execute,

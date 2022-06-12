@@ -8,11 +8,6 @@ import FrameContainer from "component/FrameContainer"
 import TradeInput from "./TradeInput.tsx"
 
 function Trade() {
-    // const markPrice,
-    // const priceImpact =
-    // const estimateGasFee = 0
-    // const fundingRatio = ""
-
     return (
         <FrameContainer>
             <Flex>

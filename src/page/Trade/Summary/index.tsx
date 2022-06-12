@@ -5,30 +5,19 @@ import { Trade } from "container/trade"
 import { Transaction } from "container/transaction"
 import { useCallback } from "react"
 import { usePositionSize } from "../usePositionSize"
-import { big2BigNum } from "util/format"
-import { Connection } from "container/connection"
+import { bigNum2Big } from "util/format"
 import { PerpdexExchangeContainer } from "container/perpdexExchangeContainer"
 import { PerpdexMarketContainer } from "container/perpdexMarketContainer"
 import Big from "big.js"
 
-function calcPositionSize(isBaseToQuote: boolean, notional: Big, markPrice: Big) {
-    const basePosition = isBaseToQuote ? notional.mul(markPrice) : notional
-    const oppositPosition = isBaseToQuote ? notional : notional.mul(markPrice)
-    return {
-        basePosition,
-        oppositPosition,
-    }
-}
-
 function Summary() {
     const {
-        state: { currentMarketInfo, markPrice, contract },
+        state: { markPrice },
     } = PerpdexMarketContainer.useContainer()
     const { slippage, isBaseToQuote, collateral, leverage } = Trade.useContainer()
-    const { openPosition } = PerpdexExchangeContainer.useContainer()
+    const { openPosition, preview } = PerpdexExchangeContainer.useContainer()
     const { isLoading } = Transaction.useContainer()
     const { positionSize, isCalculating } = usePositionSize()
-    const { account } = Connection.useContainer()
 
     // const { size: openedSize, margin: openedMargin, unrealizedPnl, outputPrice } = useOpenedPositionSize("")
 
@@ -47,51 +36,16 @@ function Summary() {
     const isDisabled = isLoading || isCalculating || collateral === null || collateral.eq(0)
 
     const handleOnTrade = useCallback(async () => {
-        if (collateral && currentMarketInfo && markPrice && account) {
-            const isExactInput = isBaseToQuote
-            // const amount = new Big(positionSize)
+        if (collateral) {
+            const results = await preview.openPosition(isBaseToQuote, collateral, slippage)
 
-            const positions = calcPositionSize(isBaseToQuote, collateral, markPrice)
-
-            const _slippage = slippage / 100
-
-            let oppositeAmountBount
-            if (isExactInput) {
-                oppositeAmountBount = positions.oppositPosition.mul(1 - _slippage)
-            } else {
-                oppositeAmountBount = positions.oppositPosition.mul(1 + _slippage)
+            if (results?.base && results?.quote) {
+                console.log(bigNum2Big(results?.base, 18).toString(), bigNum2Big(results?.quote, 18).toString())
             }
 
-            console.log(
-                "openPosition",
-                isBaseToQuote,
-                isExactInput,
-                positions.basePosition.toString(),
-                oppositeAmountBount.toString(),
-            )
-
-            // const results = await contractExecuter?.contract.callStatic.openPosition({
-            //     trader: account,
-            //     market: currentMarket.baseAddress,
-            //     isBaseToQuote,
-            //     isExactInput,
-            //     amount: big2BigNum(positions.basePosition),
-            //     oppositeAmountBound: big2BigNum(oppositeAmountBount),
-            //     deadline: BigNumber.from(2).pow(96)
-            // })
-
-            // if (results?.base && results?.quote) {
-            //     console.log(bigNum2Big(results?.base, 18).toString(), bigNum2Big(results?.quote, 18).toString())
-            // }
-
-            openPosition(
-                isBaseToQuote,
-                isExactInput,
-                big2BigNum(positions.basePosition),
-                big2BigNum(oppositeAmountBount),
-            )
+            openPosition(isBaseToQuote, collateral, slippage)
         }
-    }, [account, collateral, currentMarketInfo, isBaseToQuote, markPrice, openPosition, slippage])
+    }, [collateral, isBaseToQuote, openPosition, preview, slippage])
 
     return (
         <>

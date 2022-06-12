@@ -25,7 +25,10 @@ export interface MakerPositionInfo {
 }
 
 function LiquidityProvider() {
-    const { removeLiquidity } = PerpdexExchangeContainer.useContainer()
+    const {
+        state: { makerInfo },
+        removeLiquidity,
+    } = PerpdexExchangeContainer.useContainer()
     const perpdexMarketContainer = PerpdexMarketContainer.useContainer()
 
     const { toggleModal } = LiquidityProviderContainer.useContainer()
@@ -40,7 +43,6 @@ function LiquidityProvider() {
         quoteDebt: Big(0),
     })
 
-    const makerInfo = perpdexMarketContainer.state.makerInfo
     const markPrice = perpdexMarketContainer.state.markPrice
     const currentMarketInfo = perpdexMarketContainer.state.currentMarketInfo
     const poolInfo = perpdexMarketContainer.state.poolInfo
