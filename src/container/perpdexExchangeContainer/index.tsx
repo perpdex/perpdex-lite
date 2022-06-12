@@ -160,6 +160,7 @@ function usePerpdexExchangeContainer() {
      */
 
     return {
+        state,
         deposit,
         withdraw,
         openPosition,

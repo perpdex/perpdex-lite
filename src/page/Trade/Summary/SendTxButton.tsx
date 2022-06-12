@@ -7,6 +7,7 @@ import { Transaction } from "container/transaction"
 import { useCallback } from "react"
 import { usePositionSize } from "../usePositionSize"
 import { big2BigNum } from "util/format"
+import { Connection } from "container/connection"
 
 function calcPositionSize(isBaseToQuote: boolean, notional: Big, markPrice: Big) {
     const basePosition = isBaseToQuote ? notional.mul(markPrice) : notional
@@ -25,11 +26,12 @@ function SendTxButton() {
     const { openPosition } = PerpdexExchangeContainer.useContainer()
     const { isLoading: isTxExecuting } = Transaction.useContainer()
     const { isCalculating } = usePositionSize()
+    const { account } = Connection.useContainer()
 
     const isDisabled = isTxExecuting || isCalculating || collateral === null || collateral.eq(0)
 
     const handleOnTrade = useCallback(async () => {
-        if (collateral && currentMarket && markPrice) {
+        if (collateral && currentMarket && markPrice && account) {
             const isExactInput = isBaseToQuote
             // const amount = new Big(positionSize)
 
@@ -52,6 +54,20 @@ function SendTxButton() {
                 oppositeAmountBount.toString(),
             )
 
+            // const results = await contractExecuter?.contract.callStatic.openPosition({
+            //     trader: account,
+            //     market: currentMarket.baseAddress,
+            //     isBaseToQuote,
+            //     isExactInput,
+            //     amount: big2BigNum(positions.basePosition),
+            //     oppositeAmountBound: big2BigNum(oppositeAmountBount),
+            //     deadline: BigNumber.from(2).pow(96)
+            // })
+
+            // if (results?.base && results?.quote) {
+            //     console.log(bigNum2Big(results?.base, 18).toString(), bigNum2Big(results?.quote, 18).toString())
+            // }
+
             openPosition(
                 isBaseToQuote,
                 isExactInput,
@@ -59,7 +75,7 @@ function SendTxButton() {
                 big2BigNum(oppositeAmountBount),
             )
         }
-    }, [collateral, currentMarket, isBaseToQuote, markPrice, openPosition, slippage])
+    }, [account, collateral, currentMarket, isBaseToQuote, markPrice, openPosition, slippage])
 
     return (
         <Button

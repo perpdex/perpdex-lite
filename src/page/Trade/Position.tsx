@@ -3,12 +3,13 @@ import { FormControl, Input, InputGroup, InputRightElement, Text } from "@chakra
 import { PerpdexMarketContainer } from "container/perpdexMarketContainer"
 import SmallFormLabel from "component/SmallFormLabel"
 import { usePositionSize } from "./usePositionSize"
+import { Trade } from "container/trade"
 
 function Position() {
     const {
         state: { currentMarket },
     } = PerpdexMarketContainer.useContainer()
-    const baseAssetSymbol = currentMarket?.baseAssetSymbol
+    const { isBaseToQuote } = Trade.useContainer()
 
     const { positionSize, isCalculating } = usePositionSize()
 
@@ -26,7 +27,7 @@ function Position() {
                         color="gray.500"
                         textTransform="uppercase"
                     >
-                        {baseAssetSymbol}
+                        {isBaseToQuote ? currentMarket?.baseAssetSymbol : currentMarket?.quoteAssetSymbol}
                     </Text>
                 </InputRightElement>
             </InputGroup>
