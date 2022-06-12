@@ -18,7 +18,7 @@ import { InverseMarket } from "constant/market"
 import { MakerPositionInfo } from "."
 
 interface ProvidedInfoTableProps {
-    marketInfo: InverseMarket
+    marketInfo?: InverseMarket
     makerPositionInfo: MakerPositionInfo
 }
 

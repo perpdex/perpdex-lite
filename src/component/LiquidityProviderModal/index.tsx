@@ -23,10 +23,7 @@ import { AddIcon } from "@chakra-ui/icons"
 import { PerpdexExchangeContainer } from "container/perpdexExchangeContainer"
 
 function LiquidityProviderModal() {
-    const {
-        state: { isLiquidityProviderModalOpen },
-        closeLiquidityProviderModal,
-    } = LiquidityProvider.useContainer()
+    const { isModalOpen, toggleModal } = LiquidityProvider.useContainer()
 
     const perpdexExchageState = PerpdexExchangeContainer.useContainer()
     const perpdexMarketState = PerpdexMarketContainer.useContainer()
@@ -55,12 +52,7 @@ function LiquidityProviderModal() {
     )
 
     return (
-        <Modal
-            isCentered
-            motionPreset="slideInBottom"
-            isOpen={isLiquidityProviderModalOpen}
-            onClose={closeLiquidityProviderModal}
-        >
+        <Modal isCentered motionPreset="slideInBottom" isOpen={isModalOpen} onClose={toggleModal}>
             <ModalOverlay />
             <ModalContent borderRadius="2xl" pb={3}>
                 <ModalHeader>Add Liquidity</ModalHeader>

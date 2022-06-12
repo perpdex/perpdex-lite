@@ -12,7 +12,6 @@ import { useCallback } from "react"
 import { bigNum2Big } from "../../util/format"
 import { PerpdexExchangeContainer } from "container/perpdexExchangeContainer"
 import { PerpdexMarketContainer } from "container/perpdexMarketContainer"
-import { InverseMarket } from "constant/market"
 import Big from "big.js"
 
 export interface MakerPositionInfo {
@@ -28,7 +27,8 @@ export interface MakerPositionInfo {
 function LiquidityProvider() {
     const { removeLiquidity } = PerpdexExchangeContainer.useContainer()
     const perpdexMarketContainer = PerpdexMarketContainer.useContainer()
-    const { openLiquidityProviderModal } = LiquidityProviderContainer.useContainer()
+
+    const { toggleModal } = LiquidityProviderContainer.useContainer()
 
     const [makerPositionInfo, setMakerPositionInfo] = useState<MakerPositionInfo>({
         unrealizedPnl: Big(0),
@@ -39,14 +39,6 @@ function LiquidityProvider() {
         baseDebt: Big(0),
         quoteDebt: Big(0),
     })
-    const [marketInfo, setMarketInfo] = useState<InverseMarket>({
-        baseAddress: "",
-        baseAssetSymbol: "USD",
-        quoteAssetSymbol: "ETH",
-        baseAssetSymbolDisplay: "",
-        quoteAssetSymbolDisplay: "",
-        inverse: true,
-    })
 
     const makerInfo = perpdexMarketContainer.state.makerInfo
     const markPrice = perpdexMarketContainer.state.markPrice
@@ -54,15 +46,9 @@ function LiquidityProvider() {
     const poolInfo = perpdexMarketContainer.state.poolInfo
 
     useEffect(() => {
-        if (currentMarketInfo) {
-            setMarketInfo(currentMarketInfo)
-        }
-    }, [currentMarketInfo])
+        if (!makerInfo || !poolInfo || !markPrice || !currentMarketInfo) return
 
-    useEffect(() => {
-        if (!makerInfo || !poolInfo || !markPrice) return
-
-        const _markPrice = marketInfo.inverse ? Big(0).div(markPrice) : markPrice
+        const _markPrice = currentMarketInfo.inverse ? Big(0).div(markPrice) : markPrice
 
         const liquidity = bigNum2Big(makerInfo.liquidity)
 
@@ -81,11 +67,7 @@ function LiquidityProvider() {
             quoteDebt,
         }
         setMakerPositionInfo(info)
-    }, [makerInfo, markPrice, marketInfo.inverse, poolInfo])
-
-    const handleOnAddLiquidityClick = useCallback(() => {
-        openLiquidityProviderModal()
-    }, [openLiquidityProviderModal])
+    }, [currentMarketInfo, makerInfo, markPrice, poolInfo])
 
     const handleOnRemoveLiquidityClick = useCallback(async () => {
         if (!makerPositionInfo) return
@@ -108,9 +90,9 @@ function LiquidityProvider() {
                 </Box>
                 <Box borderStyle="solid" borderWidth="1px" borderRadius="12px" p="4">
                     <VStack spacing={6} p={0}>
-                        <ProvidedInfo marketInfo={marketInfo} makerPositionInfo={makerPositionInfo} />
+                        <ProvidedInfo marketInfo={currentMarketInfo} makerPositionInfo={makerPositionInfo} />
                         <Position
-                            handleOnAddLiquidityClick={handleOnAddLiquidityClick}
+                            handleOnAddLiquidityClick={toggleModal}
                             handleOnRemoveLiquidityClick={handleOnRemoveLiquidityClick}
                         />
                     </VStack>
