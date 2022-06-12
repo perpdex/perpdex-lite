@@ -12,14 +12,12 @@ import { useDebounce } from "hook/useDebounce"
 
 function Collateral() {
     const {
-        state: { currentMarket },
+        state: { currentMarketInfo },
     } = PerpdexMarketContainer.useContainer()
     const { collateral, setCollateral } = Trade.useContainer()
     const [_collateral, _setCollateral] = useState<string>("")
-    const quoteAssetSymbol = currentMarket?.quoteAssetSymbol
+    const quoteAssetSymbol = currentMarketInfo?.quoteAssetSymbol
     const debouncedCollateral = useDebounce({ value: _collateral, delay: 500 })
-
-    console.log("currentMarket", currentMarket)
 
     const handleOnInput = useCallback(
         e => {

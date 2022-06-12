@@ -27,7 +27,7 @@ export interface MakerPositionInfo {
 
 function LiquidityProvider() {
     const { removeLiquidity } = PerpdexExchangeContainer.useContainer()
-    const perpdexMarketState = PerpdexMarketContainer.useContainer()
+    const perpdexMarketContainer = PerpdexMarketContainer.useContainer()
     const { openLiquidityProviderModal } = LiquidityProviderContainer.useContainer()
 
     const [makerPositionInfo, setMakerPositionInfo] = useState<MakerPositionInfo>({
@@ -48,16 +48,16 @@ function LiquidityProvider() {
         inverse: true,
     })
 
-    const makerInfo = perpdexMarketState.state.makerInfo
-    const markPrice = perpdexMarketState.state.markPrice
-    const currentMarket = perpdexMarketState.state.currentMarket
-    const poolInfo = perpdexMarketState.state.poolInfo
+    const makerInfo = perpdexMarketContainer.state.makerInfo
+    const markPrice = perpdexMarketContainer.state.markPrice
+    const currentMarketInfo = perpdexMarketContainer.state.currentMarketInfo
+    const poolInfo = perpdexMarketContainer.state.poolInfo
 
     useEffect(() => {
-        if (currentMarket) {
-            setMarketInfo(currentMarket)
+        if (currentMarketInfo) {
+            setMarketInfo(currentMarketInfo)
         }
-    }, [currentMarket])
+    }, [currentMarketInfo])
 
     useEffect(() => {
         if (!makerInfo || !poolInfo || !markPrice) return

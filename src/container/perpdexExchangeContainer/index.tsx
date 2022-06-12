@@ -21,7 +21,7 @@ export interface Executors {
 function usePerpdexExchangeContainer() {
     const { account, signer } = Connection.useContainer()
     const { perpdexExchange } = Contract.useContainer()
-    const perpdexMarketState = PerpdexMarketContainer.useContainer()
+    const perpdexMarketContainer = PerpdexMarketContainer.useContainer()
     const { execute } = Transaction.useContainer()
 
     /**
@@ -39,8 +39,8 @@ function usePerpdexExchangeContainer() {
     useEffect(() => {
         if (!perpdexExchange || !account) return
         ;(async () => {
-            if (!perpdexMarketState.state.currentMarket) return
-            const marketAddress = perpdexMarketState.state.currentMarket.baseAddress
+            if (!perpdexMarketContainer.state.currentMarketInfo) return
+            const marketAddress = perpdexMarketContainer.state.currentMarketInfo.baseAddress
 
             const totalAccountValue = await perpdexExchange.getTotalAccountValue(account)
 
@@ -51,7 +51,7 @@ function usePerpdexExchangeContainer() {
             console.log("positionNotional", positionNotional)
             console.log("makerInfo", makerInfo)
         })()
-    }, [account, perpdexExchange, perpdexMarketState.state.currentMarket])
+    }, [account, perpdexExchange, perpdexMarketContainer.state.currentMarketInfo])
 
     const deposit = useCallback(
         (amount: string) => {
@@ -82,11 +82,11 @@ function usePerpdexExchangeContainer() {
 
     const openPosition = useCallback(
         (isBaseToQuote: boolean, isExactInput: boolean, amount: BigNumber, oppositeAmountBount: BigNumber) => {
-            if (contractExecuter && account && perpdexMarketState.state.currentMarket) {
+            if (contractExecuter && account && perpdexMarketContainer.state.currentMarketInfo) {
                 execute(
                     contractExecuter.openPosition(
                         account,
-                        perpdexMarketState.state.currentMarket.baseAddress,
+                        perpdexMarketContainer.state.currentMarketInfo.baseAddress,
                         isBaseToQuote,
                         isExactInput,
                         amount,
@@ -97,15 +97,15 @@ function usePerpdexExchangeContainer() {
                 )
             }
         },
-        [account, contractExecuter, execute, perpdexMarketState.state.currentMarket],
+        [account, contractExecuter, execute, perpdexMarketContainer.state.currentMarketInfo],
     )
 
     const addLiquidity = useCallback(
         (base: Big, quote: Big, minBase: Big, minQuote: Big) => {
-            if (contractExecuter && account && perpdexMarketState.state.currentMarket) {
+            if (contractExecuter && account && perpdexMarketContainer.state.currentMarketInfo) {
                 execute(
                     contractExecuter.addLiquidity(
-                        perpdexMarketState.state.currentMarket.baseAddress,
+                        perpdexMarketContainer.state.currentMarketInfo.baseAddress,
                         big2BigNum(base),
                         big2BigNum(quote),
                         big2BigNum(minBase),
@@ -114,16 +114,16 @@ function usePerpdexExchangeContainer() {
                 )
             }
         },
-        [account, contractExecuter, execute, perpdexMarketState.state.currentMarket],
+        [account, contractExecuter, execute, perpdexMarketContainer.state.currentMarketInfo],
     )
 
     const removeLiquidity = useCallback(
         (liquidity: Big, minBase: Big, minQuote: Big) => {
-            if (contractExecuter && account && perpdexMarketState.state.currentMarket) {
+            if (contractExecuter && account && perpdexMarketContainer.state.currentMarketInfo) {
                 execute(
                     contractExecuter.removeLiquidity(
                         account,
-                        perpdexMarketState.state.currentMarket.baseAddress,
+                        perpdexMarketContainer.state.currentMarketInfo.baseAddress,
                         big2BigNum(liquidity),
                         big2BigNum(minBase),
                         big2BigNum(minQuote),
@@ -131,7 +131,7 @@ function usePerpdexExchangeContainer() {
                 )
             }
         },
-        [account, contractExecuter, execute, perpdexMarketState.state.currentMarket],
+        [account, contractExecuter, execute, perpdexMarketContainer.state.currentMarketInfo],
     )
 
     return {

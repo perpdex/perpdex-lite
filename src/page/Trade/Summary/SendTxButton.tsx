@@ -20,7 +20,7 @@ function calcPositionSize(isBaseToQuote: boolean, notional: Big, markPrice: Big)
 
 function SendTxButton() {
     const {
-        state: { currentMarket, markPrice },
+        state: { currentMarketInfo, markPrice },
     } = PerpdexMarketContainer.useContainer()
     const { slippage, isBaseToQuote, collateral } = Trade.useContainer()
     const { openPosition } = PerpdexExchangeContainer.useContainer()
@@ -31,7 +31,7 @@ function SendTxButton() {
     const isDisabled = isTxExecuting || isCalculating || collateral === null || collateral.eq(0)
 
     const handleOnTrade = useCallback(async () => {
-        if (collateral && currentMarket && markPrice && account) {
+        if (collateral && currentMarketInfo && markPrice && account) {
             const isExactInput = isBaseToQuote
             // const amount = new Big(positionSize)
 
@@ -75,7 +75,7 @@ function SendTxButton() {
                 big2BigNum(oppositeAmountBount),
             )
         }
-    }, [account, collateral, currentMarket, isBaseToQuote, markPrice, openPosition, slippage])
+    }, [account, collateral, currentMarketInfo, isBaseToQuote, markPrice, openPosition, slippage])
 
     return (
         <Button

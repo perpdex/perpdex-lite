@@ -6,7 +6,7 @@ import { usePositionSize } from "./usePositionSize"
 
 function Position() {
     const {
-        state: { currentMarket },
+        state: { currentMarketInfo },
     } = PerpdexMarketContainer.useContainer()
     const { positionSize, isCalculating } = usePositionSize()
 
@@ -24,7 +24,7 @@ function Position() {
                         color="gray.500"
                         textTransform="uppercase"
                     >
-                        {currentMarket?.baseAssetSymbol}
+                        {currentMarketInfo?.baseAssetSymbol}
                     </Text>
                 </InputRightElement>
             </InputGroup>

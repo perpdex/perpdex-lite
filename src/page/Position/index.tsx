@@ -18,7 +18,7 @@ function Position() {
     const { account } = Connection.useContainer()
     const { perpdexExchange } = Contract.useContainer()
     const {
-        state: { currentMarket, contract, markPrice },
+        state: { currentMarketInfo, contract, markPrice },
     } = PerpdexMarketContainer.useContainer()
 
     // const baseTokenAddress = selectedAmm?.address || ""
@@ -57,7 +57,7 @@ function Position() {
         const takerOpenNotional = bigNum2Big(positionNotionalBig)
 
         const info = {
-            ...currentMarket,
+            ...currentMarketInfo,
             unrealizedPnl: Big(0),
             size: takerPositionSize,
             margin: Big(0),
@@ -71,7 +71,7 @@ function Position() {
         }
 
         // setPositionInfo(info)
-    }, [account, contract, currentMarket, markPrice, perpdexExchange])
+    }, [account, contract, currentMarketInfo, markPrice, perpdexExchange])
 
     useEffect(() => {
         getTraderPositionInfo()
