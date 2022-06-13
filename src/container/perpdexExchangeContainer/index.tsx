@@ -19,11 +19,9 @@ export interface Executors {
 }
 
 interface MakerInfo {
-    baseDebtShare: BigNumber
-    cumDeleveragedBaseSharePerLiquidityX96: BigNumber
-    cumDeleveragedQuotePerLiquidityX96: BigNumber
     liquidity: BigNumber
-    quoteDebt: BigNumber
+    cumBaseSharePerLiquidityX96: BigNumber
+    cumQuotePerLiquidityX96: BigNumber
 }
 
 interface TakerInfo {
@@ -148,7 +146,7 @@ function usePerpdexExchangeContainer() {
         [contractExecuter, execute],
     )
 
-    const openPosition = useCallback(
+    const trade = useCallback(
         (isBaseToQuote: boolean, collateral: Big, slippage: number) => {
             if (!perpdexMarketContainer.state.markPrice) return
             const { isExactInput, position, oppositeAmountBound } = calcTrade(
@@ -160,7 +158,7 @@ function usePerpdexExchangeContainer() {
 
             if (contractExecuter && account && perpdexMarketContainer.state.currentMarketInfo) {
                 execute(
-                    contractExecuter.openPosition(
+                    contractExecuter.trade(
                         account,
                         perpdexMarketContainer.state.currentMarketInfo.baseAddress,
                         isBaseToQuote,
@@ -180,7 +178,7 @@ function usePerpdexExchangeContainer() {
         ],
     )
 
-    const previewOpenPosition = useCallback(
+    const previewTrade = useCallback(
         async (isBaseToQuote: boolean, collateral: Big, slippage: number) => {
             if (
                 perpdexExchange &&
@@ -199,7 +197,7 @@ function usePerpdexExchangeContainer() {
                 console.log(bigNum2FixedStr(position, 18), bigNum2FixedStr(oppositeAmountBound, 18))
 
                 try {
-                    const results = await perpdexExchange.callStatic.openPosition({
+                    const results = await perpdexExchange.callStatic.trade({
                         trader: account,
                         market: marketInfo.baseAddress,
                         isBaseToQuote,
@@ -210,7 +208,7 @@ function usePerpdexExchangeContainer() {
                     })
                     return results
                 } catch (err) {
-                    console.error("Error previewOpenPosition", err)
+                    console.error("Error previewTrade", err)
                 }
             }
         },
@@ -263,12 +261,12 @@ function usePerpdexExchangeContainer() {
         },
         deposit,
         withdraw,
-        openPosition,
+        trade,
         closePosition,
         addLiquidity,
         removeLiquidity,
         preview: {
-            openPosition: previewOpenPosition,
+            trade: previewTrade,
         },
     }
 }

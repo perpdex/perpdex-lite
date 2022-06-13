@@ -52,7 +52,7 @@ export class ContractExecutor implements PerpdexMarketActions {
         ])
     }
 
-    openPosition(
+    trade(
         baseToken: string,
         side: Side,
         baseAmount: BigNumber,
@@ -60,7 +60,7 @@ export class ContractExecutor implements PerpdexMarketActions {
     ): Promise<ContractTransaction> {
         const isLong = side === Side.Long
 
-        return this.execute("openPosition", [
+        return this.execute("trade", [
             {
                 baseToken: baseToken,
                 isBaseToQuote: !isLong,

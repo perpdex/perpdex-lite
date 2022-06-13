@@ -20,8 +20,8 @@ interface PoolInfo {
     base: BigNumber
     quote: BigNumber
     totalLiquidity: BigNumber
-    cumDeleveragedBasePerLiquidityX96: BigNumber
-    cumDeleveragedQuotePerLiquidityX96: BigNumber
+    cumBasePerLiquidityX96: BigNumber
+    cumQuotePerLiquidityX96: BigNumber
     baseBalancePerShareX96: BigNumber
 }
 
