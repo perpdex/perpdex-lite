@@ -20,7 +20,7 @@ export interface PerpdexMarketActions {
         minQuote: BigNumber,
     ): Promise<ReturnType>
 
-    openPosition(baseToken: string, side: Side, baseAmount: BigNumber, quoteAmountBound: BigNumber): Promise<ReturnType>
+    trade(baseToken: string, side: Side, baseAmount: BigNumber, quoteAmountBound: BigNumber): Promise<ReturnType>
 
     closePosition(baseToken: string, quoteAmountBound: BigNumber): Promise<ReturnType>
 }

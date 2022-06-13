@@ -62,7 +62,7 @@ export class ContractExecutor implements PerpdexExchangeActions {
         ])
     }
 
-    openPosition(
+    trade(
         trader: string,
         market: string,
         isBaseToQuote: boolean,
@@ -72,7 +72,7 @@ export class ContractExecutor implements PerpdexExchangeActions {
     ): Promise<ContractTransaction> {
         const deadline = BigNumber.from(2).pow(96)
 
-        return this.execute("openPosition", [
+        return this.execute("trade", [
             {
                 trader,
                 market,

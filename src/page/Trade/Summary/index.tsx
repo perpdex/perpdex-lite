@@ -15,7 +15,7 @@ function Summary() {
         state: { markPrice },
     } = PerpdexMarketContainer.useContainer()
     const { slippage, isBaseToQuote, collateral, leverage } = Trade.useContainer()
-    const { openPosition, preview } = PerpdexExchangeContainer.useContainer()
+    const { trade, preview } = PerpdexExchangeContainer.useContainer()
     const { isLoading } = Transaction.useContainer()
     const { positionSize, isCalculating } = usePositionSize()
 
@@ -37,15 +37,15 @@ function Summary() {
 
     const handleOnTrade = useCallback(async () => {
         if (collateral) {
-            const results = await preview.openPosition(isBaseToQuote, collateral, slippage)
+            const results = await preview.trade(isBaseToQuote, collateral, slippage)
 
-            if (results?.base && results?.quote) {
-                console.log(bigNum2Big(results?.base, 18).toString(), bigNum2Big(results?.quote, 18).toString())
+            if (results) {
+                console.log("oppositeAmount", bigNum2Big(results, 18).toString())
             }
 
-            openPosition(isBaseToQuote, collateral, slippage)
+            trade(isBaseToQuote, collateral, slippage)
         }
-    }, [collateral, isBaseToQuote, openPosition, preview, slippage])
+    }, [collateral, isBaseToQuote, trade, preview, slippage])
 
     return (
         <>

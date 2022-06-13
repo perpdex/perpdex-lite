@@ -56,8 +56,9 @@ function LiquidityProvider() {
 
         const baseAmount = liquidity.mul(bigNum2Big(poolInfo.base, 18)).div(bigNum2Big(poolInfo.totalLiquidity, 18))
         const quoteAmount = liquidity.mul(bigNum2Big(poolInfo.quote, 18)).div(bigNum2Big(poolInfo.totalLiquidity, 18))
-        const baseDebt = bigNum2Big(makerInfo.baseDebtShare, 18)
-        const quoteDebt = bigNum2Big(makerInfo.quoteDebt, 18)
+        // TODO:
+        const baseDebt = Big(0)
+        const quoteDebt = Big(0)
 
         const info = {
             unrealizedPnl: baseAmount.sub(baseDebt).mul(_markPrice).add(quoteAmount.sub(quoteDebt)), // FIX: consider funding

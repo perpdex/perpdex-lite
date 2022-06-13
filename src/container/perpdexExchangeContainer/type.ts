@@ -20,7 +20,7 @@ export interface PerpdexExchangeActions {
         minQuote: BigNumber,
     ): Promise<ReturnType>
 
-    openPosition(
+    trade(
         trader: string,
         market: string,
         isBaseToQuote: boolean,
