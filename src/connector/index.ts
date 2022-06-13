@@ -19,26 +19,19 @@ import { WalletConnectConnector } from "@web3-react/walletconnect-connector"
 export const supportedChains = {
     Ethereum: 1,
     Rinkeby: 4,
-    XDai: 100,
     Mumbai: 80001,
 }
 
 // the app cannot connect to network where contracts are not deployed
-const deployedChains = [supportedChains.XDai, supportedChains.Mumbai, supportedChains.Rinkeby]
+const deployedChains = [supportedChains.Mumbai, supportedChains.Rinkeby]
 
 export const supportedChainIds = Object.values(supportedChains)
 
-const {
-    REACT_APP_MAINNET_RPC_URL,
-    REACT_APP_RINKEBY_RPC_URL,
-    REACT_APP_XDAI_RPC_URL,
-    REACT_APP_MUMBAI_RPC_URL,
-} = process.env
+const { REACT_APP_MAINNET_RPC_URL, REACT_APP_RINKEBY_RPC_URL, REACT_APP_MUMBAI_RPC_URL } = process.env
 
 const RPC_URLS = {
     [supportedChains.Ethereum]: REACT_APP_MAINNET_RPC_URL!,
     [supportedChains.Rinkeby]: REACT_APP_RINKEBY_RPC_URL!,
-    [supportedChains.XDai]: REACT_APP_XDAI_RPC_URL!,
     [supportedChains.Mumbai]: REACT_APP_MUMBAI_RPC_URL!,
 }
 
@@ -76,12 +69,7 @@ export function getBaseNetworkLibrary(chainId: number): Web3Provider | undefined
 
 // see all chain ids in https://chainid.network/
 export const injected = new InjectedConnector({
-    supportedChainIds: [
-        supportedChains.Ethereum,
-        supportedChains.Rinkeby,
-        supportedChains.XDai,
-        supportedChains.Mumbai,
-    ],
+    supportedChainIds: [supportedChains.Ethereum, supportedChains.Rinkeby, supportedChains.Mumbai],
 })
 
 export const walletConnect = new WalletConnectConnector({

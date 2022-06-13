@@ -8,10 +8,6 @@ import { Connection } from "../connection"
 import { useContractEvent } from "../../hook/useContractEvent"
 import { BigNumber } from "ethers"
 
-export interface Executors {
-    [Network.Xdai]: ContractExecutor
-}
-
 enum ACTIONS {
     UPDATE_BALANCE = "UPDATE_BALANCE",
     OPEN_ACCOUNT_MODAL = "OPEN_ACCOUNT_MODAL",
