@@ -1,12 +1,14 @@
-import { useCallback, useEffect, useReducer } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { createContainer } from "unstated-next"
 import { Contract } from "container/contract"
 import { BaseAssetType, BaseSymbolType, InverseMarket, QuoteSymbolType } from "constant/market"
-import { bigNum2Big } from "util/format"
 import { Connection } from "container/connection"
 import { Transaction } from "container/transaction"
 import { ContractExecutor } from "./ContractExecutor"
 import { PerpdexMarket } from "types/newContracts"
+import Big from "big.js"
+import { x96ToBig } from "util/format"
+import { BigNumber } from "ethers"
 
 // import { useContractEvent } from "./useContractEvent"
 
@@ -14,62 +16,30 @@ import { PerpdexMarket } from "types/newContracts"
 //     return x.div(Big(2).pow(96)).pow(2)
 // }
 
-enum ACTIONS {
-    SELECT_MARKET = "SELECT_MARKET",
-}
-
-type ActionType = {
-    type: ACTIONS.SELECT_MARKET
-    payload: { market?: InverseMarket; contract?: PerpdexMarket; contractExecuter?: ContractExecutor }
-}
-
-const initialState = {
-    currentMarket: undefined as InverseMarket | undefined,
-    contract: undefined as PerpdexMarket | undefined,
-    contractExecuter: undefined as ContractExecutor | undefined,
-}
-
-function reducer(state: typeof initialState, action: ActionType) {
-    switch (action.type) {
-        case ACTIONS.SELECT_MARKET: {
-            return {
-                ...state,
-                currentMarket: action.payload.market,
-                contract: action.payload.contract,
-                contractExecuter: action.payload.contractExecuter,
-            }
-        }
-        default:
-            throw new Error()
-    }
+interface PoolInfo {
+    base: BigNumber
+    quote: BigNumber
+    totalLiquidity: BigNumber
+    cumBasePerLiquidityX96: BigNumber
+    cumQuotePerLiquidityX96: BigNumber
+    baseBalancePerShareX96: BigNumber
 }
 
 export const PerpdexMarketContainer = createContainer(usePerpdexMarketContainer)
 
 function usePerpdexMarketContainer() {
-    const [state, dispatch] = useReducer(reducer, initialState)
     const { signer } = Connection.useContainer()
     const { isInitialized, perpdexMarket, quoteSymbol } = Contract.useContainer()
-
     const { execute } = Transaction.useContainer()
 
-    useEffect(() => {
-        if (isInitialized && perpdexMarket && perpdexMarket.usd && quoteSymbol) {
-            const defaultBase = perpdexMarket.usd
-
-            const market = {
-                baseAddress: defaultBase.address,
-                baseAssetSymbol: defaultBase.symbol as BaseSymbolType,
-                quoteAssetSymbol: quoteSymbol as QuoteSymbolType,
-                baseAssetSymbolDisplay: defaultBase.symbol as string,
-                quoteAssetSymbolDisplay: quoteSymbol as string,
-            }
-            const contract = defaultBase.contract
-            const contractExecuter = new ContractExecutor(defaultBase.contract, signer)
-
-            dispatch({ type: ACTIONS.SELECT_MARKET, payload: { market, contract, contractExecuter } })
-        }
-    }, [isInitialized, perpdexMarket, quoteSymbol, signer])
+    /**
+     * states of perpdexMarketContainer
+     */
+    const [currentMarketInfo, setCurrentMarketInfo] = useState<InverseMarket | undefined>(undefined)
+    const [contract, setContract] = useState<PerpdexMarket | undefined>(undefined)
+    const [contractExecuter, setContractExecuter] = useState<ContractExecutor | undefined>(undefined)
+    const [markPrice, setMarkPrice] = useState<Big | undefined>(undefined)
+    const [poolInfo, setPoolInfo] = useState<PoolInfo | undefined>(undefined)
 
     const selectMarket = useCallback(
         (assetType: BaseAssetType) => {
@@ -77,37 +47,60 @@ function usePerpdexMarketContainer() {
 
             const selectedBase = perpdexMarket[assetType]
 
-            const market = {
+            const _market = {
                 baseAddress: selectedBase.address,
                 baseAssetSymbol: selectedBase.symbol as BaseSymbolType,
                 quoteAssetSymbol: quoteSymbol as QuoteSymbolType,
                 baseAssetSymbolDisplay: selectedBase.symbol as string,
                 quoteAssetSymbolDisplay: quoteSymbol as string,
+                inverse: assetType === "usd" && quoteSymbol === "ETH", // FIX: clean up
             }
-            const contract = selectedBase.contract
-            const contractExecuter = new ContractExecutor(selectedBase.contract, signer)
 
-            dispatch({ type: ACTIONS.SELECT_MARKET, payload: { market, contract, contractExecuter } })
+            const _contract = selectedBase.contract
+            const _contractExecuter = new ContractExecutor(selectedBase.contract, signer)
+
+            setCurrentMarketInfo(_market)
+            setContract(_contract)
+            setContractExecuter(_contractExecuter)
         },
         [perpdexMarket, quoteSymbol, signer],
     )
 
-    const getMarkPrice = useCallback(async () => {
-        const currentMarkPrice = await state.contract?.getMarkPriceX96()
-        if (!currentMarkPrice) return
+    // select usd as default
+    useEffect(() => {
+        if (isInitialized && perpdexMarket && perpdexMarket.usd && quoteSymbol) {
+            const defaultBase = "usd"
+            selectMarket(defaultBase)
+        }
+    }, [isInitialized, perpdexMarket, quoteSymbol, selectMarket, signer])
 
-        return bigNum2Big(currentMarkPrice)
-    }, [state.contract])
+    useEffect(() => {
+        ;(async () => {
+            if (isInitialized && contract && currentMarketInfo) {
+                const currentMarkPriceX96 = await contract.getMarkPriceX96()
+                const _markPrice = x96ToBig(currentMarkPriceX96, currentMarketInfo.inverse)
+                setMarkPrice(_markPrice)
+            }
+        })()
+    }, [contract, currentMarketInfo, isInitialized])
 
-    const removeLiquidity = useCallback(() => {
-        console.log("FIX")
-    }, [])
+    useEffect(() => {
+        ;(async () => {
+            if (isInitialized && contract) {
+                const _poolInfo = await contract.poolInfo()
+                setPoolInfo(_poolInfo)
+            }
+        })()
+    }, [contract, isInitialized])
 
     return {
-        state,
+        state: {
+            currentMarketInfo,
+            contract,
+            markPrice,
+            poolInfo,
+        },
         selectMarket,
-        getMarkPrice,
         execute,
-        removeLiquidity,
     }
 }

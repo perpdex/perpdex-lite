@@ -9,6 +9,8 @@ function useTrade() {
     /* long = 1, short = 0 */
     const [side, setSide] = useState<Side>(Side.Long)
 
+    const [isBaseToQuote, setIsBaseToQuote] = useState<boolean>(true)
+
     /* min: 1, max: 10 */
     const [leverage, setLeverage] = useState<number>(1)
 
@@ -21,6 +23,8 @@ function useTrade() {
         () => ({
             side,
             setSide,
+            isBaseToQuote,
+            setIsBaseToQuote,
             leverage,
             setLeverage,
             slippage,
@@ -28,6 +32,6 @@ function useTrade() {
             collateral,
             setCollateral,
         }),
-        [leverage, collateral, side, slippage],
+        [side, isBaseToQuote, leverage, slippage, collateral],
     )
 }

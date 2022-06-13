@@ -6,10 +6,9 @@ import { usePositionSize } from "./usePositionSize"
 
 function Position() {
     const {
-        state: { currentMarket },
+        state: { currentMarketInfo },
     } = PerpdexMarketContainer.useContainer()
     const { positionSize, isCalculating } = usePositionSize()
-    const baseAssetSymbol = currentMarket
 
     return (
         <FormControl id="position">
@@ -25,7 +24,7 @@ function Position() {
                         color="gray.500"
                         textTransform="uppercase"
                     >
-                        {baseAssetSymbol}
+                        {currentMarketInfo?.baseAssetSymbol}
                     </Text>
                 </InputRightElement>
             </InputGroup>

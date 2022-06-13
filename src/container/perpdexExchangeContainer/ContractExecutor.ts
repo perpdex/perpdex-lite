@@ -1,5 +1,5 @@
 import { BigNumber, ContractTransaction, Signer } from "ethers"
-import { BIG_NUMBER_ZERO, Side } from "constant"
+import { BIG_NUMBER_ZERO } from "constant"
 
 import { PerpdexExchange } from "types/newContracts"
 import { PerpdexExchangeActions } from "./type"
@@ -25,7 +25,7 @@ export class ContractExecutor implements PerpdexExchangeActions {
     }
 
     addLiquidity(
-        baseToken: string,
+        market: string,
         base: BigNumber,
         quote: BigNumber,
         minBase: BigNumber,
@@ -33,7 +33,7 @@ export class ContractExecutor implements PerpdexExchangeActions {
     ): Promise<ContractTransaction> {
         return this.execute("addLiquidity", [
             {
-                baseToken: baseToken,
+                market: market,
                 base: base,
                 quote: quote,
                 minBase: minBase,
@@ -44,14 +44,16 @@ export class ContractExecutor implements PerpdexExchangeActions {
     }
 
     removeLiquidity(
-        baseToken: string,
+        trader: string,
+        market: string,
         liquidity: BigNumber,
         minBase: BigNumber,
         minQuote: BigNumber,
     ): Promise<ContractTransaction> {
         return this.execute("removeLiquidity", [
             {
-                baseToken: baseToken,
+                trader: trader,
+                market: market,
                 liquidity: liquidity,
                 minBase: minBase,
                 minQuote: minQuote,
@@ -60,23 +62,25 @@ export class ContractExecutor implements PerpdexExchangeActions {
         ])
     }
 
-    openPosition(
-        baseToken: string,
-        side: Side,
-        baseAmount: BigNumber,
-        quoteAmountBound: BigNumber,
+    trade(
+        trader: string,
+        market: string,
+        isBaseToQuote: boolean,
+        isExactInput: boolean,
+        amount: BigNumber,
+        oppositeAmountBound: BigNumber,
     ): Promise<ContractTransaction> {
-        const isLong = side === Side.Long
+        const deadline = BigNumber.from(2).pow(96)
 
-        return this.execute("openPosition", [
+        return this.execute("trade", [
             {
-                baseToken: baseToken,
-                isBaseToQuote: !isLong,
-                isExactInput: !isLong,
-                amount: baseAmount,
-                oppositeAmountBound: quoteAmountBound,
-                deadline: getDeadline(),
-                referralCode: constants.HashZero,
+                trader,
+                market,
+                isBaseToQuote,
+                isExactInput,
+                amount,
+                oppositeAmountBound,
+                deadline,
             },
         ])
     }

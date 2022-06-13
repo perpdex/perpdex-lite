@@ -1,39 +1,21 @@
 import { Table, Tbody, Td, Tr } from "@chakra-ui/react"
-
-import { PerpdexMarketContainer } from "container/perpdexMarketContainer"
 import Big from "big.js"
-import { Side } from "constant"
-import { Trade } from "container/trade"
-import { numberWithCommasUsdc } from "util/format"
-import { useMemo } from "react"
-import { useOpenedPositionSize } from "./useOpenedPositionSize"
-import { usePositionSize } from "./usePositionSize"
+// import { Side } from "constant"
+// import { Trade } from "container/trade"
+// import { big2BigNum, numberWithCommasUsdc } from "util/format"
+// import { useMemo } from "react"
+// import { useOpenedPositionSize } from "../useOpenedPositionSize"
+// import { usePositionSize } from "../usePositionSize"
+// import { BigNumber } from "ethers"
 
-function TxInfoTable() {
-    const {
-        state: { contract },
-    } = PerpdexMarketContainer.useContainer()
-    const { collateral, leverage, side } = Trade.useContainer()
-    const { positionSize, isCalculating } = usePositionSize()
+interface TransactionInfo {
+    markPrice?: Big
+    priceImpact?: string
+    estimateGasFee?: Big
+    fundingRatio?: string
+}
 
-    // const ammAddress = selectedAmm?.address || ""
-    // const ammName = selectedAmm?.baseAssetSymbol || ""
-    // const inverse = selectedAmm?.inverse
-    // const { price } = useRealtimeAmm(ammAddress, ammName)
-    const { size: openedSize, margin: openedMargin, unrealizedPnl, outputPrice } = useOpenedPositionSize("")
-
-    /* prepare data for UI */
-    const entryPrice: Big | null = useMemo(() => {
-        if (!isCalculating && positionSize !== "" && collateral !== null) {
-            const b_positionSize = new Big(positionSize)
-            if (b_positionSize.eq(0) || collateral.mul(leverage).eq(0)) {
-                return null
-            }
-            return collateral.mul(leverage).div(b_positionSize)
-        }
-        return null
-    }, [collateral, isCalculating, leverage, positionSize])
-
+function TxInfoTable(transactionInfo: TransactionInfo) {
     // // const fee: Big | null = useMemo(() => {
     // //     if (collateral !== null && selectedAmm !== null) {
     // //         const { tollRatio } = selectedAmm
@@ -120,24 +102,20 @@ function TxInfoTable() {
         <Table size="sm" borderRadius="12px" overflow="hidden" w="100%" variant="simple">
             <Tbody>
                 <Tr>
-                    <Td>Entry Price</Td>
-                    <Td isNumeric>entryPriceStr</Td>
+                    <Td>Mark Price</Td>
+                    <Td isNumeric>{transactionInfo.markPrice?.toString()}</Td>
                 </Tr>
                 <Tr>
                     <Td>Price Impact</Td>
-                    <Td isNumeric>priceImpactStr%</Td>
+                    <Td isNumeric>{transactionInfo.priceImpact}</Td>
                 </Tr>
-                {/* <Tr>
-                    <Td>Liquidation Price</Td>
-                    <Td isNumeric>47.28</Td>
-                </Tr> */}
                 <Tr>
-                    <Td>Transaction Fee</Td>
-                    <Td isNumeric>feeStr</Td>
+                    <Td>Estimate Gas Fee</Td>
+                    <Td isNumeric>{transactionInfo.estimateGasFee?.toString()}</Td>
                 </Tr>
                 <Tr fontWeight="bold">
-                    <Td>Total Cost</Td>
-                    <Td isNumeric>totalStr</Td>
+                    <Td>Funding Ratio</Td>
+                    <Td isNumeric>{transactionInfo?.fundingRatio}</Td>
                 </Tr>
             </Tbody>
         </Table>

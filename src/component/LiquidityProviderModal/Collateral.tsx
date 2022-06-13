@@ -13,16 +13,16 @@ interface ICollateral {
 
 function Collateral({ onChange }: ICollateral) {
     const {
-        state: { currentMarket },
+        state: { currentMarketInfo },
     } = PerpdexMarketContainer.useContainer()
     const [collateral, setCollateral] = useState<string>("")
-    const quoteAssetSymbol = currentMarket
 
     const handleOnInput = useCallback(
         e => {
             const value = e.target.value
             if (value >= 0) {
                 const formattedValue = formatInput(value, USDC_PRECISION)
+                console.log("for", formattedValue)
                 setCollateral(formattedValue)
                 if (onChange) {
                     try {
@@ -52,14 +52,14 @@ function Collateral({ onChange }: ICollateral) {
                                 color="blue.500"
                                 textTransform="uppercase"
                             >
-                                {quoteAssetSymbol}
+                                {currentMarketInfo?.quoteAssetSymbolDisplay}
                             </Text>
                         </InputRightElement>
                     </InputGroup>
                 </NumberInput>
             </FormControl>
         ),
-        [collateral, handleOnInput, quoteAssetSymbol],
+        [collateral, currentMarketInfo?.quoteAssetSymbolDisplay, handleOnInput],
     )
 }
 

@@ -1,22 +1,22 @@
 import { ButtonGroup, Button } from "@chakra-ui/react"
 import { useCallback } from "react"
 import { Trade } from "container/trade"
-import { Side } from "constant"
 
 function SideSwitcher() {
-    const { side, setSide } = Trade.useContainer()
+    // isBaseToQuote is true => short
+    const { isBaseToQuote, setIsBaseToQuote } = Trade.useContainer()
 
     const handleLongOnClick = useCallback(() => {
-        if (side !== Side.Long) {
-            setSide(Side.Long)
+        if (isBaseToQuote) {
+            setIsBaseToQuote(false)
         }
-    }, [setSide, side])
+    }, [isBaseToQuote, setIsBaseToQuote])
 
     const handleShortOnClick = useCallback(() => {
-        if (side !== Side.Short) {
-            setSide(Side.Short)
+        if (!isBaseToQuote) {
+            setIsBaseToQuote(true)
         }
-    }, [setSide, side])
+    }, [isBaseToQuote, setIsBaseToQuote])
 
     return (
         <ButtonGroup w="100%" isAttached variant="solid">
@@ -24,14 +24,14 @@ function SideSwitcher() {
                 size="sm"
                 isFullWidth
                 onClick={handleLongOnClick}
-                colorScheme={side === 1 ? "green" : "gray"}
+                colorScheme={!isBaseToQuote ? "green" : "gray"}
                 mr="-px"
                 variant="solid"
             >
-                Long
+                Buy / Long
             </Button>
-            <Button size="sm" isFullWidth onClick={handleShortOnClick} colorScheme={side === 0 ? "red" : "gray"}>
-                Short
+            <Button size="sm" isFullWidth onClick={handleShortOnClick} colorScheme={isBaseToQuote ? "red" : "gray"}>
+                Sell / Short
             </Button>
         </ButtonGroup>
     )

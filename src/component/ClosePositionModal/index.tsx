@@ -29,7 +29,6 @@ import { numberWithCommasUsdc, bigNum2Big } from "util/format"
 import { useInterval } from "hook/useInterval"
 import Big from "big.js"
 import { Position } from "container/position"
-import { useRealtimeAmm } from "../../hook/useRealtimeAmm"
 import { PerpdexMarketContainer } from "../../container/perpdexMarketContainer"
 
 interface ClosePositionInfo {
@@ -50,7 +49,9 @@ function ClosePositionModal() {
     const { perpdexExchange } = Contract.useContainer()
     const { closePosition } = PerpdexExchangeContainer.useContainer()
     const { isLoading: isTxLoading } = Transaction.useContainer()
-    const { getMarkPrice } = PerpdexMarketContainer.useContainer() // TODO: refactor (this modal shouldn't depend on global state)
+    const {
+        state: { markPrice },
+    } = PerpdexMarketContainer.useContainer() // TODO: refactor (this modal shouldn't depend on global state)
 
     const { slippage } = Trade.useContainer()
 
@@ -80,7 +81,6 @@ function ClosePositionModal() {
         if (size.eq(0)) return
 
         const entryPrice = takerOpenNotional.abs().div(size.abs())
-        const markPrice = await getMarkPrice()
         if (!markPrice) return
 
         const unrealizedPnl = markPrice.div(entryPrice).sub(1).mul(takerOpenNotional.mul(-1))
@@ -94,7 +94,7 @@ function ClosePositionModal() {
         }
 
         setClosePositionInfo(info)
-    }, [account, address, getMarkPrice, perpdexExchange])
+    }, [account, address, markPrice, perpdexExchange])
 
     useEffect(() => {
         getClosePositionInfo()
