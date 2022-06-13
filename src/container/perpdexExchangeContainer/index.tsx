@@ -1,9 +1,8 @@
-import { BIG_NUMBER_ZERO, Network } from "../../constant"
+import { BIG_NUMBER_ZERO } from "../../constant"
 import { big2BigNum, bigNum2FixedStr, parseEther } from "util/format"
 import { useCallback, useEffect, useState } from "react"
 
 import { Big } from "big.js"
-import { PerpdexExchangeActions } from "./type"
 import { Connection } from "../connection"
 import { Contract } from "../contract"
 import { ContractExecutor } from "./ContractExecutor"
@@ -13,10 +12,6 @@ import { PerpdexMarketContainer } from "container/perpdexMarketContainer"
 import { BigNumber } from "ethers"
 
 export const PerpdexExchangeContainer = createContainer(usePerpdexExchangeContainer)
-
-export interface Executors {
-    [Network.Mumbai]: PerpdexExchangeActions // FIX: support chains
-}
 
 interface MakerInfo {
     liquidity: BigNumber
