@@ -34,17 +34,6 @@ export function validateSupportedChainId(chainId: number) {
     return !!networkConfigs[chainId]
 }
 
-// TODO: remove
-export function getEthereumNetworkLibrary(): Web3Provider {
-    const chainId = IS_MAINNET ? 1 : 4
-    const rpcUrl = RPC_URLS[chainId]!
-    if (isWebsocket(rpcUrl)) {
-        return (new providers.WebSocketProvider(rpcUrl, chainId) as unknown) as Web3Provider
-    } else {
-        return (new providers.JsonRpcProvider(rpcUrl, chainId) as unknown) as Web3Provider
-    }
-}
-
 export function getBaseNetworkLibrary(chainId: number): Web3Provider | undefined {
     if (validateSupportedChainId(chainId)) {
         const rpcUrl = RPC_URLS[chainId]
