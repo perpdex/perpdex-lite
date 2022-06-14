@@ -14,6 +14,7 @@ import { getEtherscanTxLink } from "util/link"
 import { logger } from "lib/bugsnag/logger"
 import { useLocalStorage } from "hook/useLocalStorage"
 import { useNotification } from "../../hook/useNotification"
+import { useWeb3React } from "@web3-react/core"
 
 export const Transaction = createContainer(useTransaction)
 
@@ -54,6 +55,7 @@ const { LATEST_TX_DATA } = STORAGE_KEY
 const MAX_RETRY_TIMES = 5
 
 function useTransaction() {
+    const { chainId } = useWeb3React()
     const [error, setError] = useState<any>(null)
     const [isLoading, setIsLoading] = useState(false)
     const [receipts, setReceipts] = useState<TransactionReceipt[]>([])
@@ -84,7 +86,7 @@ function useTransaction() {
                 if (receipt) {
                     resetTxStatus()
                     notifySuccess({
-                        title: <ExternalLink href={getEtherscanTxLink(txHash)}>{successTitle}</ExternalLink>,
+                        title: <ExternalLink href={getEtherscanTxLink(chainId, txHash)}>{successTitle}</ExternalLink>,
                         description: successDesc,
                     })
                 } else if (triedTimes < MAX_RETRY_TIMES) {
@@ -95,7 +97,11 @@ function useTransaction() {
                 } else {
                     resetTxStatus()
                     notifyError({
-                        title: <ExternalLink href={getEtherscanTxLink(txHash)}>Latest Receipt Not Found</ExternalLink>,
+                        title: (
+                            <ExternalLink href={getEtherscanTxLink(chainId, txHash)}>
+                                Latest Receipt Not Found
+                            </ExternalLink>
+                        ),
                         description: "",
                     })
                 }
@@ -111,7 +117,16 @@ function useTransaction() {
                 checkReceipt(0)
             }
         }
-    }, [resetTxStatus, isInitialized, latestTxData, notifyError, notifySuccess, baseNetworkProvider, setLatestTxData])
+    }, [
+        resetTxStatus,
+        isInitialized,
+        latestTxData,
+        notifyError,
+        notifySuccess,
+        baseNetworkProvider,
+        setLatestTxData,
+        chainId,
+    ])
 
     const preExecute = useCallback((option?: LatestTx) => {
         const infoTitle = option?.infoMsg?.title || defaultOption.infoMsg.title
@@ -158,12 +173,12 @@ function useTransaction() {
                 )
                 if (!isMetaTx) {
                     notifyInfo({
-                        title: <ExternalLink href={getEtherscanTxLink(txHash)}>{infoTitle}</ExternalLink>,
+                        title: <ExternalLink href={getEtherscanTxLink(chainId, txHash)}>{infoTitle}</ExternalLink>,
                         description: infoDesc,
                     })
                 } else {
                     notifySuccess({
-                        title: <ExternalLink href={getEtherscanTxLink(txHash)}>{successTitle}</ExternalLink>,
+                        title: <ExternalLink href={getEtherscanTxLink(chainId, txHash)}>{successTitle}</ExternalLink>,
                         description: successDesc,
                     })
                 }
@@ -194,7 +209,7 @@ function useTransaction() {
                 txHash,
             }
         },
-        [notifyInfo, notifySuccess, notifyError, setLatestTxData, resetTxStatus],
+        [notifyInfo, notifySuccess, notifyError, setLatestTxData, resetTxStatus, chainId],
     )
 
     const execute = useCallback(
@@ -217,21 +232,21 @@ function useTransaction() {
                 receipt = await (tx as ContractTransaction).wait()
                 setReceipts(prev => [...prev, receipt as TransactionReceipt])
                 notifySuccess({
-                    title: <ExternalLink href={getEtherscanTxLink(txHash)}>{successTitle}</ExternalLink>,
+                    title: <ExternalLink href={getEtherscanTxLink(chainId, txHash)}>{successTitle}</ExternalLink>,
                     description: successDesc,
                 })
             } catch (err) {
                 logger.error(err)
                 setError(err)
                 notifyError({
-                    title: <ExternalLink href={getEtherscanTxLink(txHash)}>{errorTitle}</ExternalLink>,
+                    title: <ExternalLink href={getEtherscanTxLink(chainId, txHash)}>{errorTitle}</ExternalLink>,
                     description: errorDesc,
                 })
             }
             resetTxStatus()
             return receipt
         },
-        [notifyError, notifySuccess, preExecute, resetTxStatus, userConfirmTx],
+        [notifyError, notifySuccess, preExecute, resetTxStatus, userConfirmTx, chainId],
     )
 
     const executeWithGasLimit = useCallback(

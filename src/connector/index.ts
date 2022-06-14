@@ -1,5 +1,4 @@
 import { Web3Provider } from "@ethersproject/providers"
-import { IS_MAINNET } from "../constant/stage"
 import { InjectedConnector } from "@web3-react/injected-connector"
 import { NetworkConnector } from "@web3-react/network-connector"
 import { providers } from "ethers"
