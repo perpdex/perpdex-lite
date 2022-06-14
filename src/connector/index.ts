@@ -5,6 +5,9 @@ import { NetworkConnector } from "@web3-react/network-connector"
 import { providers } from "ethers"
 import { isWebsocket } from "util/is"
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector"
+import { networkConfigs } from "../constant/network"
+import _ from "lodash"
+
 // import { WalletLinkConnector } from '@web3-react/walletlink-connector'
 // import { LedgerConnector } from '@web3-react/ledger-connector'
 // import { TrezorConnector } from '@web3-react/trezor-connector'
@@ -16,36 +19,24 @@ import { WalletConnectConnector } from "@web3-react/walletconnect-connector"
 // import { PortisConnector } from '@web3-react/portis-connector'
 // import { TorusConnector } from '@web3-react/torus-connector'
 
-export const supportedChains = {
-    Ethereum: 1,
-    Rinkeby: 4,
-    Mumbai: 80001,
-}
+const RPC_URLS = _.mapValues(networkConfigs, "rpcUrl")
 
-// the app cannot connect to network where contracts are not deployed
-const deployedChains = [supportedChains.Mumbai, supportedChains.Rinkeby]
-
-export const supportedChainIds = Object.values(supportedChains)
-
-const { REACT_APP_MAINNET_RPC_URL, REACT_APP_RINKEBY_RPC_URL, REACT_APP_MUMBAI_RPC_URL } = process.env
-
-const RPC_URLS = {
-    [supportedChains.Ethereum]: REACT_APP_MAINNET_RPC_URL!,
-    [supportedChains.Rinkeby]: REACT_APP_RINKEBY_RPC_URL!,
-    [supportedChains.Mumbai]: REACT_APP_MUMBAI_RPC_URL!,
-}
+console.log(networkConfigs)
+console.log(RPC_URLS)
+console.log(_.min(_.map(_.keys(networkConfigs), _.toNumber)))
 
 export const network = new NetworkConnector({
     urls: RPC_URLS,
-    defaultChainId: IS_MAINNET ? supportedChains.Ethereum : supportedChains.Rinkeby,
+    defaultChainId: _.min(_.map(_.keys(networkConfigs), _.toNumber)),
 })
 
 export function validateSupportedChainId(chainId: number) {
-    return deployedChains.includes(chainId)
+    return !!networkConfigs[chainId]
 }
 
+// TODO: remove
 export function getEthereumNetworkLibrary(): Web3Provider {
-    const chainId = IS_MAINNET ? supportedChains.Ethereum : supportedChains.Rinkeby
+    const chainId = IS_MAINNET ? 1 : 4
     const rpcUrl = RPC_URLS[chainId]!
     if (isWebsocket(rpcUrl)) {
         return (new providers.WebSocketProvider(rpcUrl, chainId) as unknown) as Web3Provider
@@ -69,16 +60,11 @@ export function getBaseNetworkLibrary(chainId: number): Web3Provider | undefined
 
 // see all chain ids in https://chainid.network/
 export const injected = new InjectedConnector({
-    supportedChainIds: [supportedChains.Ethereum, supportedChains.Rinkeby, supportedChains.Mumbai],
+    supportedChainIds: _.map(_.keys(networkConfigs), _.toNumber),
 })
 
 export const walletConnect = new WalletConnectConnector({
-    rpc: IS_MAINNET
-        ? {
-              [supportedChains.Ethereum]: RPC_URLS[supportedChains.Ethereum],
-          }
-        : { [supportedChains.Rinkeby]: RPC_URLS[supportedChains.Rinkeby] },
+    // TODO: multiple rpc urls
+    rpc: { [_.keys(RPC_URLS)[0]]: _.values(RPC_URLS)[0] },
     pollingInterval: 15000,
 })
-
-export class LedgerProvider {}

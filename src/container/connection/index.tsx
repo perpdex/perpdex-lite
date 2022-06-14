@@ -7,6 +7,7 @@ import { getEthereumNetworkLibrary, getBaseNetworkLibrary } from "connector"
 
 export const Connection = createContainer(useConnection)
 
+// TODO: remove
 // The ethereum provider is needed all the time
 const ethProvider = getEthereumNetworkLibrary()
 const multipleEthProvider = new MulticallProvider(ethProvider)

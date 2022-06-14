@@ -12,8 +12,8 @@ import {
 import { createContainer } from "unstated-next"
 import { useWeb3React } from "@web3-react/core"
 import { constants } from "ethers"
-import { supportedChains } from "connector"
 import { BaseSymbolType, QuoteSymbolType, supportedBaseSymbol, supportedQuoteSymbol } from "constant/market"
+import { networkConfigs } from "../../constant/network"
 
 export const Contract = createContainer(useContract)
 
@@ -68,17 +68,8 @@ function getAddressFromChainId(chainId: number): AddressMap | undefined {
     }
 }
 
-const getQuoteSymbol = (chinId: number) => {
-    switch (chinId) {
-        case supportedChains.Ethereum:
-            return supportedQuoteSymbol.eth
-        case supportedChains.Rinkeby:
-            return supportedQuoteSymbol.eth
-        default:
-            // FIX: support ASTR
-            console.error("Unsupported quote symbol")
-            break
-    }
+const getQuoteSymbol = (chainId: number) => {
+    return networkConfigs[chainId].nativeTokenSymbol
 }
 
 const defaultContractInstance: ContractState = {
