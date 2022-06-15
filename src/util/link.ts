@@ -1,6 +1,5 @@
-import { IS_MAINNET } from "../constant"
+import { networkConfigs } from "../constant/network"
 
-export function getEtherscanTxLink(txId: string = "") {
-    const prefix = IS_MAINNET ? "" : "rinkeby."
-    return `https://${prefix}etherscan.io/tx/${txId}`
+export function getEtherscanTxLink(chainId?: number, txId: string = "") {
+    return `${networkConfigs[chainId || ""].etherscanUrl}/tx/${txId}`
 }

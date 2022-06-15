@@ -1,16 +1,11 @@
 import { useCallback, useEffect, useReducer } from "react"
 import { createContainer } from "unstated-next"
-import { BIG_NUMBER_ZERO, Network } from "../../constant"
+import { BIG_NUMBER_ZERO } from "../../constant"
 import { ethFormatUnits } from "../../util/format"
-import { ContractExecutor } from "./ContractExecutor"
 import { Contract } from "../contract"
 import { Connection } from "../connection"
 import { useContractEvent } from "../../hook/useContractEvent"
 import { BigNumber } from "ethers"
-
-export interface Executors {
-    [Network.Xdai]: ContractExecutor
-}
 
 enum ACTIONS {
     UPDATE_BALANCE = "UPDATE_BALANCE",

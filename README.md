@@ -24,7 +24,6 @@ check `.env.local.example`.
 REACT_APP_STAGE= /* "production" or "staging" */
 REACT_APP_MAINNET_RPC_URL= /* mainnet rpc url */
 REACT_APP_RINKEBY_RPC_URL= /* rinkeby rpc url */
-REACT_APP_XDAI_RPC_URL= /* xDai rpc url */
 ```
 
 #### Optional
