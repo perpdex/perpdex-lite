@@ -29,7 +29,7 @@ export const PerpdexMarketContainer = createContainer(usePerpdexMarketContainer)
 
 function usePerpdexMarketContainer() {
     const { signer } = Connection.useContainer()
-    const { isInitialized, perpdexMarket, quoteSymbol } = Contract.useContainer()
+    const { isInitialized, perpdexMarkets, quoteSymbol } = Contract.useContainer()
     const { execute } = Transaction.useContainer()
 
     /**
@@ -43,7 +43,7 @@ function usePerpdexMarketContainer() {
 
     const selectMarket = useCallback(
         (assetType: BaseAssetType) => {
-            if (!perpdexMarket) return
+            if (perpdexMarkets.length === 0) return
 
             const selectedBase = perpdexMarket[assetType]
 
