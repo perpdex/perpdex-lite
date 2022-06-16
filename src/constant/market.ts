@@ -22,16 +22,4 @@ export const supportedQuoteSymbol: SymbolType = {
     astr: "ASTR",
 }
 
-export interface InverseMarket {
-    baseAddress: string
-    baseAssetSymbol: BaseSymbolType
-    quoteAssetSymbol: QuoteSymbolType
-    baseAssetSymbolDisplay: string
-    quoteAssetSymbolDisplay: string
-    inverse: boolean
-    // tradeLimitRatio: Big
-    // tollRatio: Big
-    // indexPrice: Big
-}
-
 export const baseSymbolList = Object.values(supportedBaseSymbol) as BaseSymbolType[]

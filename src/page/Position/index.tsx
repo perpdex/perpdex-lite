@@ -2,7 +2,6 @@
 import { useCallback, useEffect } from "react"
 
 import { PerpdexMarketContainer } from "container/perpdexMarketContainer"
-// import ClearingHouseViewerArtifact from "@perp/contract/build/contracts/src/ClearingHouseViewer.sol/ClearingHouseViewer.json"
 import { Connection } from "container/connection"
 // import NoPosition from "./NoPosition"
 import NoWallet from "./NoWallet"
@@ -17,9 +16,8 @@ import FrameContainer from "component/FrameContainer"
 function Position() {
     const { account } = Connection.useContainer()
     const { perpdexExchange } = Contract.useContainer()
-    const {
-        state: { currentMarketInfo, contract, markPrice },
-    } = PerpdexMarketContainer.useContainer()
+    const { currentState, currentMarket } = PerpdexMarketContainer.useContainer()
+    const markPrice = currentState.markPrice
 
     // const baseTokenAddress = selectedAmm?.address || ""
     // const baseAssetSymbol = selectedAmm?.baseAssetSymbol || ""
@@ -47,17 +45,17 @@ function Position() {
     const getTraderPositionInfo = useCallback(async () => {
         if (!account) return
         if (!perpdexExchange) return
-        if (!contract) return
+        if (!currentMarket) return
         if (!markPrice) return
 
-        const positionSizeBig = await perpdexExchange.getPositionShare(account, contract.address) // FIX: marke should be address
-        const positionNotionalBig = await perpdexExchange.getPositionNotional(account, contract.address)
+        const positionSizeBig = await perpdexExchange.getPositionShare(account, currentMarket)
+        const positionNotionalBig = await perpdexExchange.getPositionNotional(account, currentMarket)
 
         const takerPositionSize = bigNum2Big(positionSizeBig)
         const takerOpenNotional = bigNum2Big(positionNotionalBig)
 
         const info = {
-            ...currentMarketInfo,
+            ...currentState,
             unrealizedPnl: Big(0),
             size: takerPositionSize,
             margin: Big(0),
@@ -71,7 +69,7 @@ function Position() {
         }
 
         // setPositionInfo(info)
-    }, [account, contract, currentMarketInfo, markPrice, perpdexExchange])
+    }, [account, currentMarket, currentState, markPrice, perpdexExchange])
 
     useEffect(() => {
         getTraderPositionInfo()

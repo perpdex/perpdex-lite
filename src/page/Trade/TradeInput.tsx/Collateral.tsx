@@ -12,11 +12,10 @@ import { useDebounce } from "hook/useDebounce"
 
 function Collateral() {
     const {
-        state: { currentMarketInfo },
+        currentState: { quoteSymbol },
     } = PerpdexMarketContainer.useContainer()
     const { collateral, setCollateral } = Trade.useContainer()
     const [_collateral, _setCollateral] = useState<string>("")
-    const quoteAssetSymbol = currentMarketInfo?.quoteAssetSymbol
     const debouncedCollateral = useDebounce({ value: _collateral, delay: 500 })
 
     const handleOnInput = useCallback(
@@ -59,7 +58,7 @@ function Collateral() {
                                 color="blue.500"
                                 textTransform="uppercase"
                             >
-                                {quoteAssetSymbol}
+                                {quoteSymbol}
                             </Text>
                         </InputRightElement>
                     </InputGroup>
@@ -67,7 +66,7 @@ function Collateral() {
                 {/*<MyBalance setCollateral={_setCollateral} />*/}
             </FormControl>
         ),
-        [_collateral, handleOnInput, quoteAssetSymbol],
+        [_collateral, handleOnInput, quoteSymbol],
     )
 }
 

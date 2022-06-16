@@ -14,11 +14,11 @@ import {
     Flex,
     HStack,
 } from "@chakra-ui/react"
-import { InverseMarket } from "constant/market"
+import { MarketState } from "../../constant/types"
 import { MakerPositionInfo } from "."
 
 interface ProvidedInfoTableProps {
-    marketInfo?: InverseMarket
+    marketInfo?: MarketState
     makerPositionInfo: MakerPositionInfo
 }
 
@@ -35,7 +35,7 @@ function ProvidedInfoTable({ marketInfo, makerPositionInfo }: ProvidedInfoTableP
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
                         {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.liquidityValue.toFixed(6)}{" "}
-                        {marketInfo?.quoteAssetSymbol}
+                        {marketInfo?.quoteSymbol}
                     </Text>
                 </Box>
                 <Box>
@@ -54,7 +54,7 @@ function ProvidedInfoTable({ marketInfo, makerPositionInfo }: ProvidedInfoTableP
                     </Text>
                     <Text fontSize="xl" color="green.400" fontWeight="bold" lineHeight="1.4">
                         {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.unrealizedPnl.toFixed(6)}{" "}
-                        {marketInfo?.quoteAssetSymbol}
+                        {marketInfo?.quoteSymbol}
                     </Text>
                 </Box>
                 <Box>
@@ -63,7 +63,7 @@ function ProvidedInfoTable({ marketInfo, makerPositionInfo }: ProvidedInfoTableP
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
                         {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.baseAmount.toFixed(6)}{" "}
-                        {marketInfo?.baseAssetSymbol}
+                        {marketInfo?.baseSymbol}
                     </Text>
                 </Box>
                 <Box>
@@ -72,7 +72,7 @@ function ProvidedInfoTable({ marketInfo, makerPositionInfo }: ProvidedInfoTableP
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
                         {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.quoteAmount.toFixed(6)}{" "}
-                        {marketInfo?.quoteAssetSymbol}
+                        {marketInfo?.quoteSymbol}
                     </Text>
                 </Box>
                 <Box>
@@ -81,7 +81,7 @@ function ProvidedInfoTable({ marketInfo, makerPositionInfo }: ProvidedInfoTableP
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
                         {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.baseDebt.toFixed(6)}{" "}
-                        {marketInfo?.baseAssetSymbol}
+                        {marketInfo?.baseSymbol}
                     </Text>
                 </Box>
                 <Box>
@@ -90,7 +90,7 @@ function ProvidedInfoTable({ marketInfo, makerPositionInfo }: ProvidedInfoTableP
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
                         {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.quoteDebt.toFixed(6)}{" "}
-                        {marketInfo?.quoteAssetSymbol}
+                        {marketInfo?.quoteSymbol}
                     </Text>
                 </Box>
             </SimpleGrid>

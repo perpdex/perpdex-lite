@@ -3,6 +3,8 @@ import { Contract } from "../container/contract"
 
 export function useContractCall(fn: Function, deps: any[]) {
     const savedCallback = useRef<Function>()
+    // TODO: remove this dependency
+    // because hooks should not depend on container
     const { isInitialized } = Contract.useContainer()
 
     useEffect(() => {

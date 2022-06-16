@@ -5,9 +5,7 @@ import SmallFormLabel from "component/SmallFormLabel"
 import { usePositionSize } from "./usePositionSize"
 
 function Position() {
-    const {
-        state: { currentMarketInfo },
-    } = PerpdexMarketContainer.useContainer()
+    const { currentState } = PerpdexMarketContainer.useContainer()
     const { positionSize, isCalculating } = usePositionSize()
 
     return (
@@ -24,7 +22,7 @@ function Position() {
                         color="gray.500"
                         textTransform="uppercase"
                     >
-                        {currentMarketInfo?.baseAssetSymbol}
+                        {currentState?.baseSymbol}
                     </Text>
                 </InputRightElement>
             </InputGroup>

@@ -29,7 +29,7 @@ function LiquidityProvider() {
         state: { makerInfo },
         removeLiquidity,
     } = PerpdexExchangeContainer.useContainer()
-    const perpdexMarketContainer = PerpdexMarketContainer.useContainer()
+    const { currentState } = PerpdexMarketContainer.useContainer()
 
     const { toggleModal } = LiquidityProviderContainer.useContainer()
 
@@ -43,19 +43,19 @@ function LiquidityProvider() {
         quoteDebt: Big(0),
     })
 
-    const markPrice = perpdexMarketContainer.state.markPrice
-    const currentMarketInfo = perpdexMarketContainer.state.currentMarketInfo
-    const poolInfo = perpdexMarketContainer.state.poolInfo
+    const markPrice = currentState.markPrice
+    const poolInfo = currentState.poolInfo
 
     useEffect(() => {
-        if (!makerInfo || !poolInfo || !markPrice || !currentMarketInfo) return
+        if (!makerInfo || !poolInfo || !markPrice || !currentState) return
+        if (poolInfo.totalLiquidity.eq(0)) return
 
-        const _markPrice = currentMarketInfo.inverse ? Big(0).div(markPrice) : markPrice
+        const _markPrice = currentState.inverse ? Big(0).div(markPrice) : markPrice
 
         const liquidity = bigNum2Big(makerInfo.liquidity)
 
-        const baseAmount = liquidity.mul(bigNum2Big(poolInfo.base, 18)).div(bigNum2Big(poolInfo.totalLiquidity, 18))
-        const quoteAmount = liquidity.mul(bigNum2Big(poolInfo.quote, 18)).div(bigNum2Big(poolInfo.totalLiquidity, 18))
+        const baseAmount = liquidity.mul(poolInfo.base).div(poolInfo.totalLiquidity)
+        const quoteAmount = liquidity.mul(poolInfo.quote).div(poolInfo.totalLiquidity)
         // TODO:
         const baseDebt = Big(0)
         const quoteDebt = Big(0)
@@ -70,7 +70,7 @@ function LiquidityProvider() {
             quoteDebt,
         }
         setMakerPositionInfo(info)
-    }, [currentMarketInfo, makerInfo, markPrice, poolInfo])
+    }, [currentState, makerInfo, markPrice, poolInfo])
 
     const handleOnRemoveLiquidityClick = useCallback(async () => {
         if (!makerPositionInfo) return
@@ -93,7 +93,7 @@ function LiquidityProvider() {
                 </Box>
                 <Box borderStyle="solid" borderWidth="1px" borderRadius="12px" p="4">
                     <VStack spacing={6} p={0}>
-                        <ProvidedInfo marketInfo={currentMarketInfo} makerPositionInfo={makerPositionInfo} />
+                        <ProvidedInfo marketInfo={currentState} makerPositionInfo={makerPositionInfo} />
                         <Position
                             handleOnAddLiquidityClick={toggleModal}
                             handleOnRemoveLiquidityClick={handleOnRemoveLiquidityClick}

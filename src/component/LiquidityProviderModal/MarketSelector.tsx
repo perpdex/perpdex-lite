@@ -5,19 +5,17 @@ import { PerpdexMarketContainer } from "container/perpdexMarketContainer"
 import { baseSymbolList, BaseSymbolType } from "constant/market"
 
 function MarketSelector() {
-    const {
-        state: { currentMarketInfo },
-    } = PerpdexMarketContainer.useContainer()
+    const { currentState } = PerpdexMarketContainer.useContainer()
 
     const handleOnChange = () => console.log("FIX")
 
     return (
         <FormControl id="market">
             <SmallFormLabel>Market</SmallFormLabel>
-            <Select onChange={handleOnChange} isDisabled={!currentMarketInfo}>
+            <Select onChange={handleOnChange} isDisabled={!currentState}>
                 {baseSymbolList.map((base: BaseSymbolType, index) => (
-                    <option key={`${base}-${currentMarketInfo?.quoteAssetSymbol}`} value={index}>
-                        {base} / ${currentMarketInfo?.quoteAssetSymbol} (inverse)
+                    <option key={`${base}-${currentState?.quoteSymbol}`} value={index}>
+                        {base} / ${currentState?.quoteSymbol} (inverse)
                     </option>
                 ))}
             </Select>

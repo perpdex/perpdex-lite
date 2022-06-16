@@ -52,7 +52,7 @@ function calcTrade(isBaseToQuote: boolean, collateral: Big, slippage: number, ma
 function usePerpdexExchangeContainer() {
     const { account, signer } = Connection.useContainer()
     const { isInitialized, perpdexExchange } = Contract.useContainer()
-    const perpdexMarketContainer = PerpdexMarketContainer.useContainer()
+    const { currentState, currentMarket } = PerpdexMarketContainer.useContainer()
     const { execute } = Transaction.useContainer()
 
     /**
@@ -70,41 +70,30 @@ function usePerpdexExchangeContainer() {
     }, [perpdexExchange, signer])
 
     useEffect(() => {
-        if (!perpdexExchange || !account) return
+        if (!perpdexExchange || !account || !currentMarket) return
         ;(async () => {
-            if (!perpdexMarketContainer.state.currentMarketInfo) return
-            const marketAddress = perpdexMarketContainer.state.currentMarketInfo.baseAddress
-
             const totalAccountValue = await perpdexExchange.getTotalAccountValue(account)
-
-            const positionNotional = await perpdexExchange.getPositionNotional(account, marketAddress)
-
-            const makerInfo = await perpdexExchange.getMakerInfo(account, marketAddress)
+            const positionNotional = await perpdexExchange.getPositionNotional(account, currentMarket)
+            const makerInfo = await perpdexExchange.getMakerInfo(account, currentMarket)
             console.log("totalAccountValue", totalAccountValue)
             console.log("positionNotional", positionNotional)
             console.log("makerInfo", makerInfo)
         })()
-    }, [account, perpdexExchange, perpdexMarketContainer.state.currentMarketInfo])
+    }, [account, perpdexExchange, currentMarket])
 
     useEffect(() => {
         ;(async () => {
-            if (isInitialized && account && perpdexExchange && perpdexMarketContainer.state.currentMarketInfo) {
-                const _makerInfo = await perpdexExchange.getMakerInfo(
-                    account,
-                    perpdexMarketContainer.state.currentMarketInfo.baseAddress,
-                )
+            if (isInitialized && account && perpdexExchange && currentMarket) {
+                const _makerInfo = await perpdexExchange.getMakerInfo(account, currentMarket)
                 setMakerInfo(_makerInfo)
             }
         })()
-    }, [account, isInitialized, perpdexExchange, perpdexMarketContainer.state.currentMarketInfo])
+    }, [account, isInitialized, perpdexExchange, currentMarket])
 
     useEffect(() => {
         ;(async () => {
-            if (isInitialized && account && perpdexExchange && perpdexMarketContainer.state.currentMarketInfo) {
-                const _takerInfo = await perpdexExchange.getTakerInfo(
-                    account,
-                    perpdexMarketContainer.state.currentMarketInfo.baseAddress,
-                )
+            if (isInitialized && account && perpdexExchange && currentMarket) {
+                const _takerInfo = await perpdexExchange.getTakerInfo(account, currentMarket)
                 console.log(
                     bigNum2FixedStr(_takerInfo.baseBalanceShare, 18),
                     bigNum2FixedStr(_takerInfo.quoteBalance, 18),
@@ -112,7 +101,7 @@ function usePerpdexExchangeContainer() {
                 setTakerInfo(_takerInfo)
             }
         })()
-    }, [account, isInitialized, perpdexExchange, perpdexMarketContainer.state.currentMarketInfo])
+    }, [account, isInitialized, perpdexExchange, currentMarket])
 
     const deposit = useCallback(
         (amount: string) => {
@@ -143,19 +132,19 @@ function usePerpdexExchangeContainer() {
 
     const trade = useCallback(
         (isBaseToQuote: boolean, collateral: Big, slippage: number) => {
-            if (!perpdexMarketContainer.state.markPrice) return
+            if (!currentState || !currentState.markPrice) return
             const { isExactInput, position, oppositeAmountBound } = calcTrade(
                 isBaseToQuote,
                 collateral,
                 slippage,
-                perpdexMarketContainer.state.markPrice,
+                currentState.markPrice,
             )
 
-            if (contractExecuter && account && perpdexMarketContainer.state.currentMarketInfo) {
+            if (contractExecuter && account && currentMarket) {
                 execute(
                     contractExecuter.trade(
                         account,
-                        perpdexMarketContainer.state.currentMarketInfo.baseAddress,
+                        currentMarket,
                         isBaseToQuote,
                         isExactInput,
                         position,
@@ -164,37 +153,25 @@ function usePerpdexExchangeContainer() {
                 )
             }
         },
-        [
-            account,
-            contractExecuter,
-            execute,
-            perpdexMarketContainer.state.currentMarketInfo,
-            perpdexMarketContainer.state.markPrice,
-        ],
+        [account, contractExecuter, execute, currentState?.markPrice, currentMarket],
     )
 
     const previewTrade = useCallback(
         async (isBaseToQuote: boolean, collateral: Big, slippage: number) => {
-            if (
-                perpdexExchange &&
-                account &&
-                perpdexMarketContainer.state.currentMarketInfo &&
-                perpdexMarketContainer.state.markPrice
-            ) {
+            if (perpdexExchange && account && currentState && currentState.markPrice) {
                 const { isExactInput, position, oppositeAmountBound } = calcTrade(
                     isBaseToQuote,
                     collateral,
                     slippage,
-                    perpdexMarketContainer.state.markPrice,
+                    currentState.markPrice,
                 )
-                const marketInfo = perpdexMarketContainer.state.currentMarketInfo
 
                 console.log(bigNum2FixedStr(position, 18), bigNum2FixedStr(oppositeAmountBound, 18))
 
                 try {
                     const results = await perpdexExchange.callStatic.trade({
                         trader: account,
-                        market: marketInfo.baseAddress,
+                        market: currentMarket,
                         isBaseToQuote,
                         isExactInput,
                         amount: position,
@@ -207,20 +184,15 @@ function usePerpdexExchangeContainer() {
                 }
             }
         },
-        [
-            account,
-            perpdexExchange,
-            perpdexMarketContainer.state.currentMarketInfo,
-            perpdexMarketContainer.state.markPrice,
-        ],
+        [account, perpdexExchange, currentState, currentMarket],
     )
 
     const addLiquidity = useCallback(
         (base: Big, quote: Big, minBase: Big, minQuote: Big) => {
-            if (contractExecuter && account && perpdexMarketContainer.state.currentMarketInfo) {
+            if (contractExecuter && account && currentMarket) {
                 execute(
                     contractExecuter.addLiquidity(
-                        perpdexMarketContainer.state.currentMarketInfo.baseAddress,
+                        currentMarket,
                         big2BigNum(base),
                         big2BigNum(quote),
                         big2BigNum(minBase),
@@ -229,16 +201,16 @@ function usePerpdexExchangeContainer() {
                 )
             }
         },
-        [account, contractExecuter, execute, perpdexMarketContainer.state.currentMarketInfo],
+        [account, contractExecuter, execute, currentMarket],
     )
 
     const removeLiquidity = useCallback(
         (liquidity: Big, minBase: Big, minQuote: Big) => {
-            if (contractExecuter && account && perpdexMarketContainer.state.currentMarketInfo) {
+            if (contractExecuter && account && currentMarket) {
                 execute(
                     contractExecuter.removeLiquidity(
                         account,
-                        perpdexMarketContainer.state.currentMarketInfo.baseAddress,
+                        currentMarket,
                         big2BigNum(liquidity),
                         big2BigNum(minBase),
                         big2BigNum(minQuote),
@@ -246,7 +218,7 @@ function usePerpdexExchangeContainer() {
                 )
             }
         },
-        [account, contractExecuter, execute, perpdexMarketContainer.state.currentMarketInfo],
+        [account, contractExecuter, execute, currentMarket],
     )
 
     return {

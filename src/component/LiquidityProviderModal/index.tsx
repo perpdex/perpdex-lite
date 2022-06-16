@@ -26,8 +26,9 @@ function LiquidityProviderModal() {
     const { isModalOpen, toggleModal } = LiquidityProvider.useContainer()
 
     const perpdexExchageState = PerpdexExchangeContainer.useContainer()
-    const perpdexMarketState = PerpdexMarketContainer.useContainer()
-    const markPrice = perpdexMarketState.state.markPrice
+    const {
+        currentState: { markPrice },
+    } = PerpdexMarketContainer.useContainer()
 
     // const indexPrice = selectedAmm?.indexPrice || Big(0)
 

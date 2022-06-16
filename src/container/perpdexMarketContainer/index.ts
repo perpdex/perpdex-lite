@@ -1,106 +1,113 @@
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import { createContainer } from "unstated-next"
-import { Contract } from "container/contract"
-import { BaseAssetType, BaseSymbolType, InverseMarket, QuoteSymbolType } from "constant/market"
 import { Connection } from "container/connection"
-import { Transaction } from "container/transaction"
-import { ContractExecutor } from "./ContractExecutor"
-import { PerpdexMarket } from "types/newContracts"
+import { PerpdexMarket__factory, PerpdexExchange__factory, IERC20Metadata__factory } from "types/newContracts"
+import { bigNum2Big, x96ToBig } from "util/format"
+import { useWeb3React } from "@web3-react/core"
+import { contractConfigs } from "../../constant/contract"
+import { networkConfigs } from "../../constant/network"
+import _ from "lodash"
+import { BigNumber, constants } from "ethers"
+import { MarketState, PoolInfo } from "../../constant/types"
 import Big from "big.js"
-import { x96ToBig } from "util/format"
-import { BigNumber } from "ethers"
 
-// import { useContractEvent } from "./useContractEvent"
+const createContract = (address: string, signer: any) => {
+    return PerpdexMarket__factory.connect(address, signer)
+}
 
-// function sqrtPriceX96ToPrice(x: Big): Big {
-//     return x.div(Big(2).pow(96)).pow(2)
-// }
+const createExchangeContract = (address: string, signer: any) => {
+    return PerpdexExchange__factory.connect(address, signer)
+}
 
-interface PoolInfo {
-    base: BigNumber
-    quote: BigNumber
-    totalLiquidity: BigNumber
-    cumBasePerLiquidityX96: BigNumber
-    cumQuotePerLiquidityX96: BigNumber
-    baseBalancePerShareX96: BigNumber
+const createERC20Contract = (address: string, signer: any) => {
+    return IERC20Metadata__factory.connect(address, signer)
+}
+
+const nullMarketState: MarketState = {
+    exchangeAddress: constants.AddressZero,
+    baseSymbol: "",
+    quoteSymbol: "",
+    poolInfo: {
+        base: Big(0),
+        quote: Big(0),
+        totalLiquidity: Big(0),
+    },
+    markPrice: Big(0),
+    inverse: false,
 }
 
 export const PerpdexMarketContainer = createContainer(usePerpdexMarketContainer)
 
 function usePerpdexMarketContainer() {
     const { signer } = Connection.useContainer()
-    const { isInitialized, perpdexMarkets, quoteSymbol } = Contract.useContainer()
-    const { execute } = Transaction.useContainer()
+    const { chainId } = useWeb3React()
 
-    /**
-     * states of perpdexMarketContainer
-     */
-    const [currentMarketInfo, setCurrentMarketInfo] = useState<InverseMarket | undefined>(undefined)
-    const [contract, setContract] = useState<PerpdexMarket | undefined>(undefined)
-    const [contractExecuter, setContractExecuter] = useState<ContractExecutor | undefined>(undefined)
-    const [markPrice, setMarkPrice] = useState<Big | undefined>(undefined)
-    const [poolInfo, setPoolInfo] = useState<PoolInfo | undefined>(undefined)
+    // core
+    const [marketStates, setMarketStates] = useState<{ [key: string]: MarketState }>({})
 
-    const selectMarket = useCallback(
-        (assetType: BaseAssetType) => {
-            if (perpdexMarkets.length === 0) return
-
-            const selectedBase = perpdexMarket[assetType]
-
-            const _market = {
-                baseAddress: selectedBase.address,
-                baseAssetSymbol: selectedBase.symbol as BaseSymbolType,
-                quoteAssetSymbol: quoteSymbol as QuoteSymbolType,
-                baseAssetSymbolDisplay: selectedBase.symbol as string,
-                quoteAssetSymbolDisplay: quoteSymbol as string,
-                inverse: assetType === "usd" && quoteSymbol === "ETH", // FIX: clean up
-            }
-
-            const _contract = selectedBase.contract
-            const _contractExecuter = new ContractExecutor(selectedBase.contract, signer)
-
-            setCurrentMarketInfo(_market)
-            setContract(_contract)
-            setContractExecuter(_contractExecuter)
-        },
-        [perpdexMarket, quoteSymbol, signer],
-    )
-
-    // select usd as default
-    useEffect(() => {
-        if (isInitialized && perpdexMarket && perpdexMarket.usd && quoteSymbol) {
-            const defaultBase = "usd"
-            selectMarket(defaultBase)
-        }
-    }, [isInitialized, perpdexMarket, quoteSymbol, selectMarket, signer])
+    // utils (this can be separated into other container)
+    const [currentMarket, setCurrentMarket] = useState<string>("")
+    const currentState: MarketState = useMemo(() => {
+        return marketStates[currentMarket] || nullMarketState
+    }, [marketStates, currentMarket])
 
     useEffect(() => {
         ;(async () => {
-            if (isInitialized && contract && currentMarketInfo) {
-                const currentMarkPriceX96 = await contract.getMarkPriceX96()
-                const _markPrice = x96ToBig(currentMarkPriceX96, currentMarketInfo.inverse)
-                setMarkPrice(_markPrice)
-            }
-        })()
-    }, [contract, currentMarketInfo, isInitialized])
+            if (!chainId) return
 
-    useEffect(() => {
-        ;(async () => {
-            if (isInitialized && contract) {
-                const _poolInfo = await contract.poolInfo()
-                setPoolInfo(_poolInfo)
-            }
-        })()
-    }, [contract, isInitialized])
+            const marketAddresses = _.flatten(
+                _.map(contractConfigs[chainId].exchanges, exchange => {
+                    return _.map(exchange.markets, "address")
+                }),
+            )
 
+            const newMarketStates: { [key: string]: MarketState } = {}
+
+            for (let i = 0; i < marketAddresses.length; i++) {
+                const address = marketAddresses[i]
+                const contract = createContract(address, signer)
+                const exchangeAddress = await contract.exchange()
+                const exchangeContract = createExchangeContract(exchangeAddress, signer)
+                const poolInfo = await contract.poolInfo()
+                const baseSymbol = await contract.symbol()
+                const settlementToken = await exchangeContract.settlementToken()
+                const quoteSymbol =
+                    settlementToken === constants.AddressZero
+                        ? networkConfigs[chainId].nativeTokenSymbol
+                        : await createERC20Contract(settlementToken, signer).symbol()
+                const inverse = baseSymbol === "USD"
+                let markPrice = Big(0)
+                try {
+                    const currentMarkPriceX96 = await contract.getMarkPriceX96()
+                    markPrice = x96ToBig(currentMarkPriceX96, inverse)
+                } catch (err) {
+                    console.error(err)
+                }
+                newMarketStates[address] = {
+                    exchangeAddress,
+                    baseSymbol,
+                    quoteSymbol,
+                    poolInfo: {
+                        base: bigNum2Big(poolInfo.base),
+                        quote: bigNum2Big(poolInfo.quote),
+                        totalLiquidity: bigNum2Big(poolInfo.totalLiquidity),
+                    },
+                    markPrice: markPrice,
+                    inverse: inverse,
+                }
+            }
+            setMarketStates(newMarketStates)
+            setCurrentMarket(marketAddresses[0])
+        })()
+    }, [chainId, signer])
+
+    // do not expose raw interface like contract and BigNumber
     return {
-        state: {
-            currentMarketInfo,
-            contract,
-            markPrice,
-            poolInfo,
-        },
-        selectMarket,
-        execute,
+        // core functions
+        marketStates,
+        // utils
+        currentMarket,
+        setCurrentMarket,
+        currentState,
     }
 }

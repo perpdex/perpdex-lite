@@ -4,15 +4,13 @@ import React from "react"
 import { PerpdexMarketContainer } from "../../container/perpdexMarketContainer"
 
 function TitleBar() {
-    const {
-        state: { currentMarketInfo },
-    } = PerpdexMarketContainer.useContainer()
+    const { currentState } = PerpdexMarketContainer.useContainer()
 
     return (
         <HStack justifyContent="start">
             <VStack spacing={-2} alignItems="start">
                 <Text fontSize="lg" fontWeight="bold">
-                    {currentMarketInfo?.baseAssetSymbol}/{currentMarketInfo?.quoteAssetSymbol}
+                    {currentState?.baseSymbol}/{currentState?.quoteSymbol}
                 </Text>
                 {/*<Text fontSize="xs" color="gray.500">*/}
                 {/*    ETH*/}

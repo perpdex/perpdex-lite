@@ -6,9 +6,7 @@ import { usePositionSize } from "../usePositionSize"
 import { Trade } from "container/trade"
 
 function Position() {
-    const {
-        state: { currentMarketInfo },
-    } = PerpdexMarketContainer.useContainer()
+    const { currentState } = PerpdexMarketContainer.useContainer()
     const { isBaseToQuote } = Trade.useContainer()
 
     const { positionSize, isCalculating } = usePositionSize()
@@ -27,7 +25,7 @@ function Position() {
                         color="gray.500"
                         textTransform="uppercase"
                     >
-                        {isBaseToQuote ? currentMarketInfo?.baseAssetSymbol : currentMarketInfo?.quoteAssetSymbol}
+                        {isBaseToQuote ? currentState?.baseSymbol : currentState?.quoteSymbol}
                     </Text>
                 </InputRightElement>
             </InputGroup>
