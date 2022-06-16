@@ -1,26 +1,22 @@
 import { FormControl, Select } from "@chakra-ui/react"
 import SmallFormLabel from "component/SmallFormLabel"
-// import React, { useCallback, useEffect, useMemo } from "react"
 import { PerpdexMarketContainer } from "container/perpdexMarketContainer"
-import { baseSymbolList, BaseSymbolType } from "constant/market"
+import _ from "lodash"
 
 function MarketSelector() {
-    const { currentState } = PerpdexMarketContainer.useContainer()
+    const { marketStates } = PerpdexMarketContainer.useContainer()
 
     const handleOnChange = () => console.log("FIX")
-
-    // TODO: replace baseSymbolList
 
     return (
         <FormControl id="market">
             <SmallFormLabel>Market</SmallFormLabel>
-            <Select onChange={handleOnChange} isDisabled={!currentState}>
-                {currentState &&
-                    baseSymbolList.map((baseSymbol: BaseSymbolType, index) => (
-                        <option key={`${currentState?.quoteSymbol}-${baseSymbol}`} value={index}>
-                            {currentState?.quoteSymbol} / {baseSymbol} (inverse)
-                        </option>
-                    ))}
+            <Select onChange={handleOnChange}>
+                {_.map(marketStates, (marketState, marketAddress) => (
+                    <option key={marketAddress} value={marketAddress}>
+                        {marketState.quoteSymbol} / {marketState.baseSymbol} (inverse)
+                    </option>
+                ))}
             </Select>
         </FormControl>
     )

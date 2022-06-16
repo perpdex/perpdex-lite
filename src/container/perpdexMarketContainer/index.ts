@@ -7,8 +7,8 @@ import { useWeb3React } from "@web3-react/core"
 import { contractConfigs } from "../../constant/contract"
 import { networkConfigs } from "../../constant/network"
 import _ from "lodash"
-import { BigNumber, constants } from "ethers"
-import { MarketState, PoolInfo } from "../../constant/types"
+import { constants } from "ethers"
+import { MarketState } from "../../constant/types"
 import Big from "big.js"
 
 const createContract = (address: string, signer: any) => {
