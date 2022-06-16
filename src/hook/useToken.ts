@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react"
 import { constants } from "ethers"
 import { Big } from "big.js"
-import { Contract } from "container/contract"
 import { BIG_NUMBER_ZERO } from "../constant/number"
 import { Connection } from "../container/connection"
 import { Transaction, TransactionAction } from "../container/transaction"
@@ -9,12 +8,10 @@ import { big2BigNum, bigNum2Big } from "../util/format"
 import { useContractCall } from "./useContractCall"
 import { isAddress } from "@ethersproject/address"
 import { useContractEvent } from "./useContractEvent"
+import { IERC20Metadata__factory } from "types/newContracts"
 
 export function useToken(address: string, chainId: number) {
-    const { account, signer } = Connection.useContainer()
-    // TODO: remove contract container dependency
-    // because hook shouldn't depend container
-    const { ercToken } = Contract.useContainer()
+    const { account, signer, baseNetworkProvider } = Connection.useContainer()
     const { executeWithGasLimit } = Transaction.useContainer()
     const [balance, setBalance] = useState(BIG_NUMBER_ZERO)
     const [decimals, setDecimals] = useState(0)
@@ -22,8 +19,10 @@ export function useToken(address: string, chainId: number) {
     const [totalSupply, setTotalSupply] = useState(BIG_NUMBER_ZERO)
 
     const contract = useMemo(() => {
-        return ercToken && isAddress(address) ? ercToken.attach(address) || null : null
-    }, [ercToken, address])
+        return baseNetworkProvider && isAddress(address)
+            ? IERC20Metadata__factory.connect(address, baseNetworkProvider)
+            : void 0
+    }, [address, baseNetworkProvider])
 
     useEffect(() => {
         async function fetchToken() {

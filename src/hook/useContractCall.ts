@@ -1,11 +1,7 @@
 import { useEffect, useCallback, useRef } from "react"
-import { Contract } from "../container/contract"
 
 export function useContractCall(fn: Function, deps: any[]) {
     const savedCallback = useRef<Function>()
-    // TODO: remove this dependency
-    // because hooks should not depend on container
-    const { isInitialized } = Contract.useContainer()
 
     useEffect(() => {
         savedCallback.current = fn
@@ -13,7 +9,7 @@ export function useContractCall(fn: Function, deps: any[]) {
 
     const memoizedCallback = useCallback(
         (...args) => {
-            if (isInitialized && savedCallback.current) {
+            if (savedCallback.current) {
                 const _fn = savedCallback.current
                 return _fn(...args)
             }
@@ -21,7 +17,7 @@ export function useContractCall(fn: Function, deps: any[]) {
         // TODO: if we do `...deps` here, eslint won't help us find missing deps statically,
         // we might need to find a way to fix it
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [isInitialized, ...deps],
+        [...deps],
     )
 
     return memoizedCallback

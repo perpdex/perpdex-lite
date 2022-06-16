@@ -15,6 +15,7 @@ import { contractConfigs } from "../../constant/contract"
 import { useWeb3React } from "@web3-react/core"
 import { PerpdexExchange__factory } from "types/newContracts"
 import { ExchangeState, MakerInfo } from "../../constant/types"
+import produce from "immer"
 
 export const PerpdexExchangeContainer = createContainer(usePerpdexExchangeContainer)
 
@@ -62,8 +63,7 @@ function calcTrade(isBaseToQuote: boolean, collateral: Big, slippage: number, ma
 
 function usePerpdexExchangeContainer() {
     const { account, signer } = Connection.useContainer()
-    const { perpdexExchange } = Contract.useContainer()
-    const { currentMarketState, currentMarket } = PerpdexMarketContainer.useContainer()
+    const { marketStates, currentMarketState, currentMarket } = PerpdexMarketContainer.useContainer()
     const { execute } = Transaction.useContainer()
     const { chainId } = useWeb3React()
 
@@ -79,6 +79,9 @@ function usePerpdexExchangeContainer() {
     // }, [exchangeStates, currentExchange])
     const contractExecuter: ContractExecutor = useMemo(() => {
         return createExchangeExecutor(currentExchange, signer)
+    }, [currentExchange, signer])
+    const perpdexExchange = useMemo(() => {
+        return createExchangeContract(currentExchange, signer)
     }, [currentExchange, signer])
     const currentMyMakerInfo: MakerInfo | undefined = useMemo(() => {
         return exchangeStates[currentExchange]?.myAccountInfo.makerInfos[currentMarket]
@@ -249,10 +252,33 @@ function usePerpdexExchangeContainer() {
         [account, contractExecuter, execute, currentMarket],
     )
 
+    const fetchTakerInfo = useCallback(
+        async (options: { trader?: string; market?: string } = {}) => {
+            const trader = options.trader || account
+            if (!trader) return
+            const market = options.market || currentMarket
+            const exchange = marketStates[market].exchangeAddress
+
+            const contract = createExchangeContract(exchange, signer)
+            const takerInfo = await contract.getTakerInfo(trader, market)
+
+            setExchangeStates(
+                produce(draft => {
+                    draft[exchange].myAccountInfo.takerInfos[market] = {
+                        baseBalanceShare: bigNum2Big(takerInfo.baseBalanceShare),
+                        quoteBalance: bigNum2Big(takerInfo.quoteBalance),
+                    }
+                }),
+            )
+        },
+        [account, marketStates, signer],
+    )
+
     return {
         // core functions
         exchangeStates,
-        // utils
+        fetchTakerInfo,
+        // utils (my account of current market)
         currentMyMakerInfo,
         deposit,
         withdraw,
