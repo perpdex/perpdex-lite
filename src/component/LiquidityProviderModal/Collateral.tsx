@@ -12,7 +12,7 @@ interface ICollateral {
 }
 
 function Collateral({ onChange }: ICollateral) {
-    const { currentState } = PerpdexMarketContainer.useContainer()
+    const { currentMarketState } = PerpdexMarketContainer.useContainer()
     const [collateral, setCollateral] = useState<string>("")
 
     const handleOnInput = useCallback(
@@ -50,14 +50,14 @@ function Collateral({ onChange }: ICollateral) {
                                 color="blue.500"
                                 textTransform="uppercase"
                             >
-                                {currentState?.quoteSymbol}
+                                {currentMarketState?.quoteSymbol}
                             </Text>
                         </InputRightElement>
                     </InputGroup>
                 </NumberInput>
             </FormControl>
         ),
-        [collateral, currentState?.quoteSymbol, handleOnInput],
+        [collateral, currentMarketState?.quoteSymbol, handleOnInput],
     )
 }
 

@@ -25,9 +25,9 @@ import { PerpdexExchangeContainer } from "container/perpdexExchangeContainer"
 function LiquidityProviderModal() {
     const { isModalOpen, toggleModal } = LiquidityProvider.useContainer()
 
-    const perpdexExchageState = PerpdexExchangeContainer.useContainer()
+    const { addLiquidity } = PerpdexExchangeContainer.useContainer()
     const {
-        currentState: { markPrice },
+        currentMarketState: { markPrice },
     } = PerpdexMarketContainer.useContainer()
 
     // const indexPrice = selectedAmm?.indexPrice || Big(0)
@@ -47,9 +47,9 @@ function LiquidityProviderModal() {
     const handleAddLiquidity = useCallback(
         e => {
             console.log("test", collateral, markPrice, baseAmount)
-            perpdexExchageState.addLiquidity(baseAmount, collateral, baseAmount.mul(0.9), collateral.mul(0.9))
+            addLiquidity(baseAmount, collateral, baseAmount.mul(0.9), collateral.mul(0.9))
         },
-        [baseAmount, collateral, markPrice, perpdexExchageState],
+        [baseAmount, collateral, markPrice, addLiquidity],
     )
 
     return (

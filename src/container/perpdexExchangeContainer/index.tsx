@@ -1,6 +1,6 @@
 import { BIG_NUMBER_ZERO } from "../../constant"
-import { big2BigNum, bigNum2FixedStr, parseEther } from "util/format"
-import { useCallback, useEffect, useState } from "react"
+import { big2BigNum, bigNum2Big, bigNum2FixedStr, parseEther, x96ToBig } from "util/format"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
 import { Big } from "big.js"
 import { Connection } from "../connection"
@@ -10,18 +10,29 @@ import { Transaction } from "../transaction"
 import { createContainer } from "unstated-next"
 import { PerpdexMarketContainer } from "container/perpdexMarketContainer"
 import { BigNumber } from "ethers"
+import _ from "lodash"
+import { contractConfigs } from "../../constant/contract"
+import { useWeb3React } from "@web3-react/core"
+import { PerpdexExchange__factory } from "types/newContracts"
+import { ExchangeState, MakerInfo } from "../../constant/types"
 
 export const PerpdexExchangeContainer = createContainer(usePerpdexExchangeContainer)
 
-interface MakerInfo {
-    liquidity: BigNumber
-    cumBaseSharePerLiquidityX96: BigNumber
-    cumQuotePerLiquidityX96: BigNumber
+const nullExchangeState: ExchangeState = {
+    myAccountInfo: {
+        takerInfos: {},
+        makerInfos: {},
+        collateralBalance: Big(0),
+        totalAccountValue: Big(0),
+    },
 }
 
-interface TakerInfo {
-    baseBalanceShare: BigNumber
-    quoteBalance: BigNumber
+const createExchangeContract = (address: string, signer: any) => {
+    return PerpdexExchange__factory.connect(address, signer)
+}
+
+const createExchangeExecutor = (address: string, signer: any) => {
+    return new ContractExecutor(createExchangeContract(address, signer), signer)
 }
 
 function calcPositionSize(isBaseToQuote: boolean, notional: Big, markPrice: Big) {
@@ -51,57 +62,74 @@ function calcTrade(isBaseToQuote: boolean, collateral: Big, slippage: number, ma
 
 function usePerpdexExchangeContainer() {
     const { account, signer } = Connection.useContainer()
-    const { isInitialized, perpdexExchange } = Contract.useContainer()
-    const { currentState, currentMarket } = PerpdexMarketContainer.useContainer()
+    const { perpdexExchange } = Contract.useContainer()
+    const { currentMarketState, currentMarket } = PerpdexMarketContainer.useContainer()
     const { execute } = Transaction.useContainer()
+    const { chainId } = useWeb3React()
 
-    /**
-     * state of perpdexExchangeContiner
-     */
-    const [contractExecuter, setContractExecuter] = useState<ContractExecutor | undefined>(undefined)
-    const [makerInfo, setMakerInfo] = useState<MakerInfo | undefined>(undefined)
-    const [takerInfo, setTakerInfo] = useState<TakerInfo | undefined>(undefined)
+    // core
+    const [exchangeStates, setExchangeStates] = useState<{ [key: string]: ExchangeState }>({})
 
-    useEffect(() => {
-        if (perpdexExchange) {
-            const _contractExecuter = new ContractExecutor(perpdexExchange, signer)
-            setContractExecuter(_contractExecuter)
-        }
-    }, [perpdexExchange, signer])
+    // utils (this can be separated into other container)
+    const currentExchange: string = useMemo(() => {
+        return currentMarketState?.exchangeAddress
+    }, [currentMarketState?.exchangeAddress])
+    // const currentExchangeState: ExchangeState = useMemo(() => {
+    //     return exchangeStates[currentExchange] || nullExchangeState
+    // }, [exchangeStates, currentExchange])
+    const contractExecuter: ContractExecutor = useMemo(() => {
+        return createExchangeExecutor(currentExchange, signer)
+    }, [currentExchange, signer])
+    const currentMyMakerInfo: MakerInfo | undefined = useMemo(() => {
+        return exchangeStates[currentExchange]?.myAccountInfo.makerInfos[currentMarket]
+    }, [exchangeStates, currentExchange, currentMarket])
 
-    useEffect(() => {
-        if (!perpdexExchange || !account || !currentMarket) return
-        ;(async () => {
-            const totalAccountValue = await perpdexExchange.getTotalAccountValue(account)
-            const positionNotional = await perpdexExchange.getPositionNotional(account, currentMarket)
-            const makerInfo = await perpdexExchange.getMakerInfo(account, currentMarket)
-            console.log("totalAccountValue", totalAccountValue)
-            console.log("positionNotional", positionNotional)
-            console.log("makerInfo", makerInfo)
-        })()
-    }, [account, perpdexExchange, currentMarket])
+    // const [contractExecuter, setContractExecuter] = useState<ContractExecutor | undefined>(undefined)
+    // const [makerInfo, setMakerInfo] = useState<MakerInfo | undefined>(undefined)
+    // const [takerInfo, setTakerInfo] = useState<TakerInfo | undefined>(undefined)
 
     useEffect(() => {
         ;(async () => {
-            if (isInitialized && account && perpdexExchange && currentMarket) {
-                const _makerInfo = await perpdexExchange.getMakerInfo(account, currentMarket)
-                setMakerInfo(_makerInfo)
+            if (!chainId) return
+            if (!account) return
+            if (!currentMarket) return
+
+            const exchangeAddresses = _.map(contractConfigs[chainId].exchanges, "address")
+
+            const newExchangeStates: { [key: string]: ExchangeState } = {}
+
+            for (let i = 0; i < exchangeAddresses.length; i++) {
+                const address = exchangeAddresses[i]
+                const contract = createExchangeContract(address, signer)
+
+                const collateralBalance = (await contract.accountInfos(account)).collateralBalance
+                const totalAccountValue = await contract.getTotalAccountValue(account)
+                const makerInfo = await contract.getMakerInfo(account, currentMarket)
+                const takerInfo = await contract.getTakerInfo(account, currentMarket)
+
+                newExchangeStates[address] = {
+                    myAccountInfo: {
+                        takerInfos: {
+                            [currentMarket]: {
+                                baseBalanceShare: bigNum2Big(takerInfo.baseBalanceShare),
+                                quoteBalance: bigNum2Big(takerInfo.quoteBalance),
+                            },
+                        },
+                        makerInfos: {
+                            [currentMarket]: {
+                                liquidity: bigNum2Big(makerInfo.liquidity),
+                                cumBaseSharePerLiquidity: x96ToBig(makerInfo.cumBaseSharePerLiquidityX96),
+                                cumQuotePerLiquidity: x96ToBig(makerInfo.cumQuotePerLiquidityX96),
+                            },
+                        },
+                        collateralBalance: bigNum2Big(collateralBalance),
+                        totalAccountValue: bigNum2Big(totalAccountValue),
+                    },
+                }
             }
+            setExchangeStates(newExchangeStates)
         })()
-    }, [account, isInitialized, perpdexExchange, currentMarket])
-
-    useEffect(() => {
-        ;(async () => {
-            if (isInitialized && account && perpdexExchange && currentMarket) {
-                const _takerInfo = await perpdexExchange.getTakerInfo(account, currentMarket)
-                console.log(
-                    bigNum2FixedStr(_takerInfo.baseBalanceShare, 18),
-                    bigNum2FixedStr(_takerInfo.quoteBalance, 18),
-                )
-                setTakerInfo(_takerInfo)
-            }
-        })()
-    }, [account, isInitialized, perpdexExchange, currentMarket])
+    }, [chainId, signer, currentMarket, account])
 
     const deposit = useCallback(
         (amount: string) => {
@@ -132,12 +160,12 @@ function usePerpdexExchangeContainer() {
 
     const trade = useCallback(
         (isBaseToQuote: boolean, collateral: Big, slippage: number) => {
-            if (!currentState || !currentState.markPrice) return
+            if (!currentMarketState || !currentMarketState.markPrice) return
             const { isExactInput, position, oppositeAmountBound } = calcTrade(
                 isBaseToQuote,
                 collateral,
                 slippage,
-                currentState.markPrice,
+                currentMarketState.markPrice,
             )
 
             if (contractExecuter && account && currentMarket) {
@@ -153,17 +181,17 @@ function usePerpdexExchangeContainer() {
                 )
             }
         },
-        [account, contractExecuter, execute, currentState?.markPrice, currentMarket],
+        [account, contractExecuter, execute, currentMarketState?.markPrice, currentMarket],
     )
 
     const previewTrade = useCallback(
         async (isBaseToQuote: boolean, collateral: Big, slippage: number) => {
-            if (perpdexExchange && account && currentState && currentState.markPrice) {
+            if (perpdexExchange && account && currentMarketState && currentMarketState.markPrice) {
                 const { isExactInput, position, oppositeAmountBound } = calcTrade(
                     isBaseToQuote,
                     collateral,
                     slippage,
-                    currentState.markPrice,
+                    currentMarketState.markPrice,
                 )
 
                 console.log(bigNum2FixedStr(position, 18), bigNum2FixedStr(oppositeAmountBound, 18))
@@ -184,7 +212,7 @@ function usePerpdexExchangeContainer() {
                 }
             }
         },
-        [account, perpdexExchange, currentState, currentMarket],
+        [account, perpdexExchange, currentMarketState, currentMarket],
     )
 
     const addLiquidity = useCallback(
@@ -222,10 +250,10 @@ function usePerpdexExchangeContainer() {
     )
 
     return {
-        state: {
-            makerInfo,
-            takerInfo,
-        },
+        // core functions
+        exchangeStates,
+        // utils
+        currentMyMakerInfo,
         deposit,
         withdraw,
         trade,

@@ -25,11 +25,8 @@ export interface MakerPositionInfo {
 }
 
 function LiquidityProvider() {
-    const {
-        state: { makerInfo },
-        removeLiquidity,
-    } = PerpdexExchangeContainer.useContainer()
-    const { currentState } = PerpdexMarketContainer.useContainer()
+    const { currentMyMakerInfo, removeLiquidity } = PerpdexExchangeContainer.useContainer()
+    const { currentMarketState } = PerpdexMarketContainer.useContainer()
 
     const { toggleModal } = LiquidityProviderContainer.useContainer()
 
@@ -43,16 +40,16 @@ function LiquidityProvider() {
         quoteDebt: Big(0),
     })
 
-    const markPrice = currentState.markPrice
-    const poolInfo = currentState.poolInfo
+    const markPrice = currentMarketState.markPrice
+    const poolInfo = currentMarketState.poolInfo
 
     useEffect(() => {
-        if (!makerInfo || !poolInfo || !markPrice || !currentState) return
+        if (!currentMyMakerInfo || !poolInfo || !markPrice || !currentMarketState) return
         if (poolInfo.totalLiquidity.eq(0)) return
 
-        const _markPrice = currentState.inverse ? Big(0).div(markPrice) : markPrice
+        const _markPrice = currentMarketState.inverse ? Big(0).div(markPrice) : markPrice
 
-        const liquidity = bigNum2Big(makerInfo.liquidity)
+        const liquidity = currentMyMakerInfo.liquidity
 
         const baseAmount = liquidity.mul(poolInfo.base).div(poolInfo.totalLiquidity)
         const quoteAmount = liquidity.mul(poolInfo.quote).div(poolInfo.totalLiquidity)
@@ -70,7 +67,7 @@ function LiquidityProvider() {
             quoteDebt,
         }
         setMakerPositionInfo(info)
-    }, [currentState, makerInfo, markPrice, poolInfo])
+    }, [currentMarketState, currentMyMakerInfo, markPrice, poolInfo])
 
     const handleOnRemoveLiquidityClick = useCallback(async () => {
         if (!makerPositionInfo) return
@@ -93,7 +90,7 @@ function LiquidityProvider() {
                 </Box>
                 <Box borderStyle="solid" borderWidth="1px" borderRadius="12px" p="4">
                     <VStack spacing={6} p={0}>
-                        <ProvidedInfo marketInfo={currentState} makerPositionInfo={makerPositionInfo} />
+                        <ProvidedInfo marketInfo={currentMarketState} makerPositionInfo={makerPositionInfo} />
                         <Position
                             handleOnAddLiquidityClick={toggleModal}
                             handleOnRemoveLiquidityClick={handleOnRemoveLiquidityClick}

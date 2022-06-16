@@ -12,7 +12,7 @@ import Big from "big.js"
 
 function Summary() {
     const {
-        currentState: { markPrice },
+        currentMarketState: { markPrice },
     } = PerpdexMarketContainer.useContainer()
     const { slippage, isBaseToQuote, collateral, leverage } = Trade.useContainer()
     const { trade, preview } = PerpdexExchangeContainer.useContainer()

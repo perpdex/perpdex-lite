@@ -11,7 +11,7 @@ function calcPositionSize(isBaseToQuote: boolean, notional: Big, markPrice: Big)
 
 export function usePositionSize() {
     const {
-        currentState: { markPrice },
+        currentMarketState: { markPrice },
     } = PerpdexMarketContainer.useContainer()
     const { collateral, isBaseToQuote } = Trade.useContainer()
 

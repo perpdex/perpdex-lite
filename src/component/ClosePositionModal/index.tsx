@@ -50,7 +50,7 @@ function ClosePositionModal() {
     const { closePosition } = PerpdexExchangeContainer.useContainer()
     const { isLoading: isTxLoading } = Transaction.useContainer()
     const {
-        currentState: { markPrice },
+        currentMarketState: { markPrice },
     } = PerpdexMarketContainer.useContainer() // TODO: refactor (this modal shouldn't depend on global state)
 
     const { slippage } = Trade.useContainer()

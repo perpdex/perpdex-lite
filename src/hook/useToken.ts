@@ -12,6 +12,8 @@ import { useContractEvent } from "./useContractEvent"
 
 export function useToken(address: string, chainId: number) {
     const { account, signer } = Connection.useContainer()
+    // TODO: remove contract container dependency
+    // because hook shouldn't depend container
     const { ercToken } = Contract.useContainer()
     const { executeWithGasLimit } = Transaction.useContainer()
     const [balance, setBalance] = useState(BIG_NUMBER_ZERO)

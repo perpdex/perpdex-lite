@@ -12,7 +12,7 @@ import { useDebounce } from "hook/useDebounce"
 
 function Collateral() {
     const {
-        currentState: { quoteSymbol },
+        currentMarketState: { quoteSymbol },
     } = PerpdexMarketContainer.useContainer()
     const { collateral, setCollateral } = Trade.useContainer()
     const [_collateral, _setCollateral] = useState<string>("")

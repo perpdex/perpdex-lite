@@ -11,7 +11,7 @@ import { constants } from "ethers"
 import { MarketState } from "../../constant/types"
 import Big from "big.js"
 
-const createContract = (address: string, signer: any) => {
+const createMarketContract = (address: string, signer: any) => {
     return PerpdexMarket__factory.connect(address, signer)
 }
 
@@ -47,7 +47,7 @@ function usePerpdexMarketContainer() {
 
     // utils (this can be separated into other container)
     const [currentMarket, setCurrentMarket] = useState<string>("")
-    const currentState: MarketState = useMemo(() => {
+    const currentMarketState: MarketState = useMemo(() => {
         return marketStates[currentMarket] || nullMarketState
     }, [marketStates, currentMarket])
 
@@ -65,7 +65,7 @@ function usePerpdexMarketContainer() {
 
             for (let i = 0; i < marketAddresses.length; i++) {
                 const address = marketAddresses[i]
-                const contract = createContract(address, signer)
+                const contract = createMarketContract(address, signer)
                 const exchangeAddress = await contract.exchange()
                 const exchangeContract = createExchangeContract(exchangeAddress, signer)
                 const poolInfo = await contract.poolInfo()
@@ -108,6 +108,6 @@ function usePerpdexMarketContainer() {
         // utils
         currentMarket,
         setCurrentMarket,
-        currentState,
+        currentMarketState,
     }
 }

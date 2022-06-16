@@ -3,7 +3,7 @@ import { Box, Heading, Popover, PopoverBody, PopoverContent, PopoverTrigger, Sim
 import { PerpdexMarketContainer } from "../../container/perpdexMarketContainer"
 
 function PoolInfoTable() {
-    const { currentState } = PerpdexMarketContainer.useContainer()
+    const { currentMarketState } = PerpdexMarketContainer.useContainer()
 
     return (
         <>
@@ -56,7 +56,7 @@ function PoolInfoTable() {
                         TVL
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
-                        - {currentState?.quoteSymbol}
+                        - {currentMarketState?.quoteSymbol}
                     </Text>
                 </Box>
                 <Box>
@@ -64,7 +64,7 @@ function PoolInfoTable() {
                         Volume (24h)
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
-                        - {currentState?.quoteSymbol}
+                        - {currentMarketState?.quoteSymbol}
                     </Text>
                 </Box>
                 <Box>
@@ -72,7 +72,7 @@ function PoolInfoTable() {
                         24h Fees
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
-                        - {currentState?.quoteSymbol}
+                        - {currentMarketState?.quoteSymbol}
                     </Text>
                 </Box>
             </SimpleGrid>

@@ -16,8 +16,8 @@ import FrameContainer from "component/FrameContainer"
 function Position() {
     const { account } = Connection.useContainer()
     const { perpdexExchange } = Contract.useContainer()
-    const { currentState, currentMarket } = PerpdexMarketContainer.useContainer()
-    const markPrice = currentState.markPrice
+    const { currentMarketState, currentMarket } = PerpdexMarketContainer.useContainer()
+    const markPrice = currentMarketState.markPrice
 
     // const baseTokenAddress = selectedAmm?.address || ""
     // const baseAssetSymbol = selectedAmm?.baseAssetSymbol || ""
@@ -55,7 +55,7 @@ function Position() {
         const takerOpenNotional = bigNum2Big(positionNotionalBig)
 
         const info = {
-            ...currentState,
+            ...currentMarketState,
             unrealizedPnl: Big(0),
             size: takerPositionSize,
             margin: Big(0),
@@ -69,7 +69,7 @@ function Position() {
         }
 
         // setPositionInfo(info)
-    }, [account, currentMarket, currentState, markPrice, perpdexExchange])
+    }, [account, currentMarket, currentMarketState, markPrice, perpdexExchange])
 
     useEffect(() => {
         getTraderPositionInfo()

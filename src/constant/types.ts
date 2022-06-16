@@ -14,3 +14,25 @@ export interface MarketState {
     markPrice: Big
     inverse: Boolean
 }
+
+export interface MakerInfo {
+    liquidity: Big
+    cumBaseSharePerLiquidity: Big
+    cumQuotePerLiquidity: Big
+}
+
+interface TakerInfo {
+    baseBalanceShare: Big
+    quoteBalance: Big
+}
+
+interface AccountInfo {
+    takerInfos: { [key: string]: TakerInfo }
+    makerInfos: { [key: string]: MakerInfo }
+    collateralBalance: Big
+    totalAccountValue: Big
+}
+
+export interface ExchangeState {
+    myAccountInfo: AccountInfo
+}

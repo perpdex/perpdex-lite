@@ -16,7 +16,7 @@ export function ethFormatUnits(val: BigNumber) {
     return formatUnits(val, ERC20_DECIMAL_DIGITS)
 }
 
-export function x96ToBig(val: BigNumber, isInverse: boolean) {
+export function x96ToBig(val: BigNumber, isInverse: boolean = false) {
     const X96 = BigNumber.from(2).pow(96)
     const valBN = isInverse ? X96.div(val) : val.div(X96)
     return bigNum2Big(valBN, 0)

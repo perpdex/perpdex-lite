@@ -34,7 +34,7 @@ function AccountModal() {
         actions: { closeAccountModal },
     } = AccountPerpdex.useContainer()
 
-    const { currentState } = PerpdexMarketContainer.useContainer()
+    const { currentMarketState } = PerpdexMarketContainer.useContainer()
 
     const { deposit, withdraw } = PerpdexExchangeContainer.useContainer()
 
@@ -79,7 +79,7 @@ function AccountModal() {
                                             color="blue.500"
                                             textTransform="uppercase"
                                         >
-                                            {currentState?.quoteSymbol}
+                                            {currentMarketState?.quoteSymbol}
                                         </Text>
                                     </InputRightElement>
                                 </InputGroup>
