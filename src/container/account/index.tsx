@@ -20,6 +20,7 @@ type ActionType =
     | { type: ACTIONS.CLOSE_ACCOUNT_MODAL }
     | { type: ACTIONS.UPDATE_COLLATERAL; payload: { collateral: BigNumber } }
 
+// TODO: do not manage contract data outside contract container
 const initialState = {
     balance: BIG_NUMBER_ZERO,
     modal: {

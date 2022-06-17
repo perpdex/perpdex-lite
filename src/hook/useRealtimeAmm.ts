@@ -14,6 +14,7 @@ function sqrtPriceX96ToPrice(x: Big): Big {
 
 // address: base token address
 // export function useRealtimeAmm(address: string, name: string) {
+// TODO: do not depend on contract from hook
 //     const { perpdexExchange } = Contract.useContainer()
 //     const [price, setPrice] = useState<Big | null>(null)
 //

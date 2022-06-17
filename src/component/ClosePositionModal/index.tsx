@@ -46,6 +46,7 @@ function ClosePositionModal() {
         closeClosePositionModal,
     } = Position.useContainer()
     const { account } = Connection.useContainer()
+    // TODO: do not depend on contract directly from component
     const { perpdexExchange } = Contract.useContainer()
     const { closePosition } = PerpdexExchangeContainer.useContainer()
     const { isLoading: isTxLoading } = Transaction.useContainer()

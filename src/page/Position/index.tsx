@@ -14,6 +14,7 @@ import FrameContainer from "component/FrameContainer"
 
 function Position() {
     const { account } = Connection.useContainer()
+    // TODO: do not depend on contract directly from page
     // const { perpdexExchange } = Contract.useContainer()
     const { currentMarketState, currentMarket } = PerpdexMarketContainer.useContainer()
     const markPrice = currentMarketState.markPrice
