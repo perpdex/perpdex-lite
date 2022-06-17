@@ -17,20 +17,37 @@ interface PerpdexExchange extends Contract {
 }
 
 interface ContractConfig {
+    multicall: Contract
     weth: Contract
     exchanges: PerpdexExchange[]
 }
 
 export const contractConfigs: { [key: string]: ContractConfig } = {
     4: {
+        multicall: {
+            address: "0x42ad527de7d4e9d9d011ac45b31d8551f8fe9821",
+        },
         weth: {
             address: "0xc778417E063141139Fce010982780140Aa0cD5Ab",
         },
         exchanges: [],
     },
     81: {
+        multicall: {
+            address: "", // TODO:
+        },
         weth: {
             address: "0x9Af480478974a2fda7d5aE667541639164D2858B",
+        },
+        exchanges: [],
+    },
+    592: {
+        multicall: {
+            // https://github.com/makerdao/multicall/pull/42/files
+            address: "0x7D6046156df81EF335E7e765d3bc714960B73207",
+        },
+        weth: {
+            address: "0xaeaaf0e2c81af264101b9129c00f4440ccf0f720",
         },
         exchanges: [],
     },
