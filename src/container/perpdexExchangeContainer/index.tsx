@@ -14,7 +14,7 @@ import _ from "lodash"
 import { contractConfigs } from "../../constant/contract"
 import { useWeb3React } from "@web3-react/core"
 import { PerpdexExchange__factory } from "types/newContracts"
-import { ExchangeState, MakerInfo } from "../../constant/types"
+import { ExchangeState, MakerInfo, TakerInfo } from "../../constant/types"
 import produce from "immer"
 
 export const PerpdexExchangeContainer = createContainer(usePerpdexExchangeContainer)
@@ -85,6 +85,9 @@ function usePerpdexExchangeContainer() {
     }, [currentExchange, signer])
     const currentMyMakerInfo: MakerInfo | undefined = useMemo(() => {
         return exchangeStates[currentExchange]?.myAccountInfo.makerInfos[currentMarket]
+    }, [exchangeStates, currentExchange, currentMarket])
+    const currentMyTakerInfo: TakerInfo | undefined = useMemo(() => {
+        return exchangeStates[currentExchange]?.myAccountInfo.takerInfos[currentMarket]
     }, [exchangeStates, currentExchange, currentMarket])
 
     // const [contractExecuter, setContractExecuter] = useState<ContractExecutor | undefined>(undefined)
@@ -280,6 +283,7 @@ function usePerpdexExchangeContainer() {
         fetchTakerInfo,
         // utils (my account of current market)
         currentMyMakerInfo,
+        currentMyTakerInfo,
         deposit,
         withdraw,
         trade,

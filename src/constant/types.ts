@@ -21,7 +21,7 @@ export interface MakerInfo {
     cumQuotePerLiquidity: Big
 }
 
-interface TakerInfo {
+export interface TakerInfo {
     baseBalanceShare: Big
     quoteBalance: Big
 }
