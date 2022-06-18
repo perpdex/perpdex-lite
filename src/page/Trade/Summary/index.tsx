@@ -1,13 +1,13 @@
 import { Box, Heading, Text, VStack } from "@chakra-ui/react"
 import SendTxButton from "./SendTxButton"
 import TxInfoTable from "./TxInfoTable"
-import { Trade } from "container/trade"
-import { Transaction } from "container/transaction"
+import { Trade } from "container/perpetual/trade"
+import { Transaction } from "container/connection/transaction"
 import { useCallback } from "react"
 import { usePositionSize } from "../usePositionSize"
 import { bigNum2Big } from "util/format"
-import { PerpdexExchangeContainer } from "container/perpdexExchangeContainer"
-import { PerpdexMarketContainer } from "container/perpdexMarketContainer"
+import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
+import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import Big from "big.js"
 
 function Summary() {

@@ -14,7 +14,7 @@ import {
 import React, { useCallback, useMemo } from "react"
 
 import SmallFormLabel from "component/SmallFormLabel"
-import { Trade } from "container/trade"
+import { Trade } from "container/perpetual/trade"
 import { QuestionOutlineIcon } from "@chakra-ui/icons"
 
 function Slippage() {

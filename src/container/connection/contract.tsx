@@ -2,7 +2,6 @@ import { Connection } from "container/connection"
 import { useMemo } from "react"
 import { PerpdexExchange__factory as PerpdexExchangeFactory, PerpdexExchange } from "types/newContracts"
 import { createContainer } from "unstated-next"
-import { useWeb3React } from "@web3-react/core"
 import { contractConfigs } from "../../constant/contract"
 
 export const Contract = createContainer(useContract)
@@ -16,8 +15,7 @@ const defaultContractInstance: ContractState = {
 }
 
 function useContract() {
-    const { baseNetworkProvider } = Connection.useContainer()
-    const { chainId } = useWeb3React()
+    const { baseNetworkProvider, chainId } = Connection.useContainer()
 
     return useMemo(() => {
         if (!chainId || !baseNetworkProvider) return defaultContractInstance

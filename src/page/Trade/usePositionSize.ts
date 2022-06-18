@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 
-import { PerpdexMarketContainer } from "container/perpdexMarketContainer"
-import { Trade } from "container/trade"
+import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
+import { Trade } from "container/perpetual/trade"
 import { formatInput } from "util/format"
 import Big from "big.js"
 

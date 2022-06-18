@@ -1,6 +1,6 @@
 import { ButtonGroup, Button } from "@chakra-ui/react"
 import { useCallback } from "react"
-import { Trade } from "container/trade"
+import { Trade } from "container/perpetual/trade"
 
 function SideSwitcher() {
     // isBaseToQuote is true => short

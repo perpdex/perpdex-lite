@@ -1,7 +1,7 @@
 import React, { useCallback } from "react"
 import { Button } from "@chakra-ui/react"
-import { User } from "container/user"
-import { Global } from "container/global"
+import { User } from "container/connection/user"
+import { Modal } from "container/modal"
 
 function DisconnectButton() {
     const {
@@ -10,7 +10,7 @@ function DisconnectButton() {
 
     const {
         actions: { toggleWalletModal },
-    } = Global.useContainer()
+    } = Modal.useContainer()
 
     const handleOnClick = useCallback(() => {
         logout()

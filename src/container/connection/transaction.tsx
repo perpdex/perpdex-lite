@@ -1,4 +1,3 @@
-import { BiconomyError, TxRejectError } from "../../util/error"
 import React, { useEffect } from "react"
 import { useCallback, useState } from "react"
 
@@ -8,13 +7,13 @@ import { ContractTransaction } from "@ethersproject/contracts"
 import { ExternalLink } from "component/ExternalLink"
 import { STORAGE_KEY } from "constant/storage"
 import { TransactionReceipt } from "@ethersproject/providers"
-import { User } from "../user"
+import { User } from "./user"
 import { createContainer } from "unstated-next"
 import { getEtherscanTxLink } from "util/link"
 import { logger } from "lib/bugsnag/logger"
 import { useLocalStorage } from "hook/useLocalStorage"
-import { useNotification } from "../../hook/useNotification"
-import { useWeb3React } from "@web3-react/core"
+import { useNotification } from "hook/useNotification"
+import { BiconomyError, TxRejectError } from "util/error"
 
 export const Transaction = createContainer(useTransaction)
 
@@ -55,7 +54,7 @@ const { LATEST_TX_DATA } = STORAGE_KEY
 const MAX_RETRY_TIMES = 5
 
 function useTransaction() {
-    const { chainId } = useWeb3React()
+    const { baseNetworkProvider, chainId } = Connection.useContainer()
     const [error, setError] = useState<any>(null)
     const [isLoading, setIsLoading] = useState(false)
     const [receipts, setReceipts] = useState<TransactionReceipt[]>([])
@@ -66,8 +65,6 @@ function useTransaction() {
     const {
         state: { address },
     } = User.useContainer()
-
-    const { baseNetworkProvider } = Connection.useContainer()
 
     const resetTxStatus = useCallback(() => {
         setIsLoading(false)

@@ -1,6 +1,6 @@
 import { QuestionOutlineIcon } from "@chakra-ui/icons"
 import { Box, Heading, Popover, PopoverBody, PopoverContent, PopoverTrigger, SimpleGrid, Text } from "@chakra-ui/react"
-import { PerpdexMarketContainer } from "../../container/perpdexMarketContainer"
+import { PerpdexMarketContainer } from "../../container/connection/perpdexMarketContainer"
 
 function PoolInfoTable() {
     const { currentMarketState } = PerpdexMarketContainer.useContainer()

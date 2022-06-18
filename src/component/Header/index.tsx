@@ -1,8 +1,8 @@
+import React from "react"
+import { Link } from "react-router-dom"
 import { Flex, Heading, Spacer, Box, Button, HStack, Center } from "@chakra-ui/react"
 
 import ConnectBtn from "./ConnectBtn"
-import { Link } from "react-router-dom"
-import React from "react"
 
 function Header() {
     return (

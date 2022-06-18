@@ -1,7 +1,5 @@
 // import { PositionInfo } from "constant/position"
-import { useCallback, useEffect } from "react"
-
-import { PerpdexMarketContainer } from "container/perpdexMarketContainer"
+import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import { Connection } from "container/connection"
 // import NoPosition from "./NoPosition"
 import NoWallet from "./NoWallet"
