@@ -9,11 +9,13 @@ import { Transaction } from "../transaction"
 import { createContainer } from "unstated-next"
 import { PerpdexMarketContainer } from "../perpdexMarketContainer"
 import { BigNumber } from "ethers"
-import _, { chain } from "lodash"
+import _ from "lodash"
 import { contractConfigs } from "../../../constant/contract"
-import { PerpdexExchange__factory } from "types/newContracts"
 import { ExchangeState, MakerInfo, TakerInfo } from "../../../constant/types"
 import produce from "immer"
+import { useInterval } from "../../../hook/useInterval"
+import { usePageVisibility } from "react-page-visibility"
+import { createExchangeContract, createExchangeContractMulticall } from "../contractFactory"
 
 export const PerpdexExchangeContainer = createContainer(usePerpdexExchangeContainer)
 
@@ -24,10 +26,6 @@ const nullExchangeState: ExchangeState = {
         collateralBalance: Big(0),
         totalAccountValue: Big(0),
     },
-}
-
-const createExchangeContract = (address: string, signer: any) => {
-    return PerpdexExchange__factory.connect(address, signer)
 }
 
 const createExchangeExecutor = (address: string, signer: any) => {
@@ -60,9 +58,10 @@ function calcTrade(isBaseToQuote: boolean, collateral: Big, slippage: number, ma
 }
 
 function usePerpdexExchangeContainer() {
-    const { account, signer, chainId } = Connection.useContainer()
+    const { account, signer, chainId, multicallNetworkProvider } = Connection.useContainer()
     const { marketStates, currentMarketState, currentMarket } = PerpdexMarketContainer.useContainer()
     const { execute } = Transaction.useContainer()
+    const isVisible = usePageVisibility()
 
     // core
     const [exchangeStates, setExchangeStates] = useState<{ [key: string]: ExchangeState }>({})
@@ -87,15 +86,12 @@ function usePerpdexExchangeContainer() {
         return exchangeStates[currentExchange]?.myAccountInfo.takerInfos[currentMarket]
     }, [exchangeStates, currentExchange, currentMarket])
 
-    // const [contractExecuter, setContractExecuter] = useState<ContractExecutor | undefined>(undefined)
-    // const [makerInfo, setMakerInfo] = useState<MakerInfo | undefined>(undefined)
-    // const [takerInfo, setTakerInfo] = useState<TakerInfo | undefined>(undefined)
-
     useEffect(() => {
         ;(async () => {
             if (!chainId) return
             if (!account) return
             if (!currentMarket) return
+            if (!multicallNetworkProvider) return
 
             const exchangeAddresses = _.map(contractConfigs[chainId].exchanges, "address")
 
@@ -103,12 +99,19 @@ function usePerpdexExchangeContainer() {
 
             for (let i = 0; i < exchangeAddresses.length; i++) {
                 const address = exchangeAddresses[i]
-                const contract = createExchangeContract(address, signer)
+                const contract = createExchangeContractMulticall(address)
 
-                const collateralBalance = (await contract.accountInfos(account)).collateralBalance
-                const totalAccountValue = await contract.getTotalAccountValue(account)
-                const makerInfo = await contract.getMakerInfo(account, currentMarket)
-                const takerInfo = await contract.getTakerInfo(account, currentMarket)
+                const [
+                    collateralBalance,
+                    totalAccountValue,
+                    makerInfo,
+                    takerInfo,
+                ] = await multicallNetworkProvider.all([
+                    contract.accountInfos(account),
+                    contract.getTotalAccountValue(account),
+                    contract.getMakerInfo(account, currentMarket),
+                    contract.getTakerInfo(account, currentMarket),
+                ])
 
                 newExchangeStates[address] = {
                     myAccountInfo: {
@@ -274,6 +277,13 @@ function usePerpdexExchangeContainer() {
         },
         [account, currentMarket, marketStates, signer],
     )
+
+    useInterval(async () => {
+        if (!isVisible) return
+
+        console.log("perpdexExchangeContainer polling")
+        await fetchTakerInfo()
+    }, 5000)
 
     return {
         // core functions

@@ -18,7 +18,7 @@ export function ethFormatUnits(val: BigNumber) {
 
 export function x96ToBig(val: BigNumber, isInverse: boolean = false) {
     const X96 = BigNumber.from(2).pow(96)
-    const valBN = isInverse ? X96.div(val) : val.div(X96)
+    const valBN = isInverse && !val.eq(0) ? X96.div(val) : val.div(X96)
     return bigNum2Big(valBN, 0)
 }
 
