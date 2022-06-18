@@ -87,10 +87,6 @@ function usePerpdexExchangeContainer() {
         return exchangeStates[currentExchange]?.myAccountInfo.takerInfos[currentMarket]
     }, [exchangeStates, currentExchange, currentMarket])
 
-    // const [contractExecuter, setContractExecuter] = useState<ContractExecutor | undefined>(undefined)
-    // const [makerInfo, setMakerInfo] = useState<MakerInfo | undefined>(undefined)
-    // const [takerInfo, setTakerInfo] = useState<TakerInfo | undefined>(undefined)
-
     useEffect(() => {
         ;(async () => {
             if (!chainId) return
