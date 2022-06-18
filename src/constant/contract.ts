@@ -23,9 +23,18 @@ interface ContractConfig {
 }
 
 export const contractConfigs: { [key: string]: ContractConfig } = {
+    1: {
+        multicall: {
+            address: "0x5ba1e12693dc8f9c48aad8770482f4739beed696",
+        },
+        weth: {
+            address: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        },
+        exchanges: [],
+    },
     4: {
         multicall: {
-            address: "0x42ad527de7d4e9d9d011ac45b31d8551f8fe9821",
+            address: "0x5ba1e12693dc8f9c48aad8770482f4739beed696",
         },
         weth: {
             address: "0xc778417E063141139Fce010982780140Aa0cD5Ab",
@@ -34,7 +43,7 @@ export const contractConfigs: { [key: string]: ContractConfig } = {
     },
     81: {
         multicall: {
-            address: "", // TODO:
+            address: "0xF339Dd2b88e66901Cfa1d1232357eB1D491DdA32",
         },
         weth: {
             address: "0x9Af480478974a2fda7d5aE667541639164D2858B",
