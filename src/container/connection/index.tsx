@@ -2,8 +2,10 @@ import { useState, useEffect } from "react"
 import { createContainer } from "unstated-next"
 import { useWeb3React } from "@web3-react/core"
 import { Web3Provider } from "@ethersproject/providers"
-import { Provider as MulticallProvider } from "ethers-multicall"
+import { Provider as MulticallProvider, setMulticallAddress } from "ethers-multicall"
 import { getBaseNetworkLibrary } from "connector"
+import { contractConfigs } from "../../constant/contract"
+import _ from "lodash"
 
 export const Connection = createContainer(useConnection)
 
@@ -37,3 +39,10 @@ function useConnection() {
         deactivate,
     }
 }
+
+function initializeMulticall() {
+    _.each(contractConfigs, (config, chainId) => {
+        setMulticallAddress(+chainId, config.multicall.address)
+    })
+}
+initializeMulticall()
