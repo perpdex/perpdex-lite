@@ -10,6 +10,7 @@ import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeCo
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import { Connection } from "./container/connection"
 import { Contract } from "./container/connection/contract"
+import { Reload } from "./container/connection/reload"
 import { Fonts } from "component/Font"
 import { Modal } from "container/modal"
 import { Position } from "container/perpetual/position"
@@ -45,6 +46,7 @@ const Providers = ((...providers: any[]) => ({ children }: { children: React.Rea
     Web3Provider,
     BrowserRouter,
     Connection.Provider,
+    Reload.Provider,
     Contract.Provider,
     User.Provider,
     Transaction.Provider,
