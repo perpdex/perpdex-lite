@@ -8,7 +8,7 @@ import { getBaseNetworkLibrary } from "connector"
 export const Connection = createContainer(useConnection)
 
 function useConnection() {
-    const { account, library, active, chainId } = useWeb3React()
+    const { account, library, active, chainId, activate, deactivate } = useWeb3React()
     const [baseNetworkProvider, setBaseNetworkProvider] = useState<Web3Provider | null>(null)
     const [multicallNetworkProvider, setMulticallNetworkProvider] = useState<MulticallProvider | null>(null)
 
@@ -33,5 +33,7 @@ function useConnection() {
         active,
         account: account || null,
         chainId,
+        activate,
+        deactivate,
     }
 }

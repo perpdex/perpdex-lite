@@ -1,12 +1,24 @@
 import { ContractTransaction } from "ethers"
-import { Side } from "constant"
 import { BigNumber } from "ethers"
 
 type ReturnType = ContractTransaction | string
 
-export interface PerpdexMarketActions {
+export interface PerpdexExchangeActions {
+    deposit(etherValue: BigNumber, amount: BigNumber): Promise<ReturnType>
+
+    withdraw(amount: BigNumber): Promise<ReturnType>
+
+    trade(
+        trader: string,
+        market: string,
+        isBaseToQuote: boolean,
+        isExactInput: boolean,
+        amount: BigNumber,
+        oppositeAmountBound: BigNumber,
+    ): Promise<ReturnType>
+
     addLiquidity(
-        baseToken: string,
+        market: string,
         base: BigNumber,
         quote: BigNumber,
         minBase: BigNumber,
@@ -14,13 +26,12 @@ export interface PerpdexMarketActions {
     ): Promise<ReturnType>
 
     removeLiquidity(
-        baseToken: string,
+        trader: string,
+        market: string,
         liquidity: BigNumber,
         minBase: BigNumber,
         minQuote: BigNumber,
     ): Promise<ReturnType>
-
-    trade(baseToken: string, side: Side, baseAmount: BigNumber, quoteAmountBound: BigNumber): Promise<ReturnType>
 
     closePosition(baseToken: string, quoteAmountBound: BigNumber): Promise<ReturnType>
 }

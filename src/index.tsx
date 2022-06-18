@@ -3,26 +3,25 @@ import * as serviceWorker from "./serviceWorker"
 
 import { createErrorBoundary, setupBugsnag } from "./lib/bugsnag"
 
-import { PerpdexMarketContainer } from "container/perpdexMarketContainer"
 import { App } from "./App"
 import { BrowserRouter } from "react-router-dom"
 import { ChakraProvider } from "@chakra-ui/react"
-import { PerpdexExchangeContainer } from "container/perpdexExchangeContainer"
+import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
+import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import { Connection } from "./container/connection"
-import { Contract } from "./container/contract"
+import { Contract } from "./container/connection/contract"
 import { Fonts } from "component/Font"
-import { Global } from "container/global"
-import { Position } from "container/position"
+import { Modal } from "container/modal"
+import { Position } from "container/perpetual/position"
 import ReactDOM from "react-dom"
-import { Trade } from "container/trade"
-import { Transaction } from "./container/transaction"
-import { User } from "./container/user"
-import { Web3Provider } from "./container/web3"
-import { AccountPerpdex } from "./container/account"
+import { Trade } from "container/perpetual/trade"
+import { Transaction } from "./container/connection/transaction"
+import { User } from "./container/connection/user"
+import { Web3Provider } from "./util/web3"
+import { AccountPerpdex } from "./container/connection/account"
 import reportWebVitals from "./reportWebVitals"
 import { setupSegment } from "./lib/segment"
 import theme from "./theme"
-import { LiquidityProvider } from "./container/liquidityProvider"
 
 declare global {
     interface Window {
@@ -45,17 +44,16 @@ const Providers = ((...providers: any[]) => ({ children }: { children: React.Rea
     { component: ChakraProvider, props: { theme } },
     Web3Provider,
     BrowserRouter,
-    Global.Provider,
-    User.Provider,
     Connection.Provider,
-    Transaction.Provider,
     Contract.Provider,
+    User.Provider,
+    Transaction.Provider,
     PerpdexMarketContainer.Provider,
     PerpdexExchangeContainer.Provider,
+    AccountPerpdex.Provider,
     Trade.Provider,
     Position.Provider,
-    AccountPerpdex.Provider,
-    LiquidityProvider.Provider,
+    Modal.Provider,
 )
 
 ReactDOM.render(

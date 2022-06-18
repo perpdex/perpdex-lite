@@ -1,7 +1,7 @@
 import { FormControl, InputGroup, InputRightElement, NumberInput, NumberInputField, Text } from "@chakra-ui/react"
 import { useCallback, useMemo, useState } from "react"
 
-import { PerpdexMarketContainer } from "container/perpdexMarketContainer"
+import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import Big from "big.js"
 import SmallFormLabel from "component/SmallFormLabel"
 import { USDC_PRECISION } from "constant"
@@ -12,9 +12,7 @@ interface ICollateral {
 }
 
 function Collateral({ onChange }: ICollateral) {
-    const {
-        state: { currentMarketInfo },
-    } = PerpdexMarketContainer.useContainer()
+    const { currentMarketState } = PerpdexMarketContainer.useContainer()
     const [collateral, setCollateral] = useState<string>("")
 
     const handleOnInput = useCallback(
@@ -52,14 +50,14 @@ function Collateral({ onChange }: ICollateral) {
                                 color="blue.500"
                                 textTransform="uppercase"
                             >
-                                {currentMarketInfo?.quoteAssetSymbolDisplay}
+                                {currentMarketState?.quoteSymbol}
                             </Text>
                         </InputRightElement>
                     </InputGroup>
                 </NumberInput>
             </FormControl>
         ),
-        [collateral, currentMarketInfo?.quoteAssetSymbolDisplay, handleOnInput],
+        [collateral, currentMarketState?.quoteSymbol, handleOnInput],
     )
 }
 

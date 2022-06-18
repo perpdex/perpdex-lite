@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useReducer } from "react"
 import { createContainer } from "unstated-next"
-import { BIG_NUMBER_ZERO } from "../../constant"
-import { ethFormatUnits } from "../../util/format"
-import { Contract } from "../contract"
-import { Connection } from "../connection"
-import { useContractEvent } from "../../hook/useContractEvent"
+import { BIG_NUMBER_ZERO } from "constant"
+import { ethFormatUnits } from "util/format"
+import { Contract } from "./contract"
+import { Connection } from "./index"
+import { useContractEvent } from "hook/useContractEvent"
 import { BigNumber } from "ethers"
 
 enum ACTIONS {
@@ -20,6 +20,7 @@ type ActionType =
     | { type: ACTIONS.CLOSE_ACCOUNT_MODAL }
     | { type: ACTIONS.UPDATE_COLLATERAL; payload: { collateral: BigNumber } }
 
+// TODO: do not manage contract data outside contract container
 const initialState = {
     balance: BIG_NUMBER_ZERO,
     modal: {

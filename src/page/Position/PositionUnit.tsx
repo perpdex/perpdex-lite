@@ -2,19 +2,17 @@ import { Badge, Box, Button, HStack, Heading, SimpleGrid, Stack } from "@chakra-
 import { useCallback, useMemo } from "react"
 
 import DataUnit from "./DataUnit"
-import { Position } from "container/position"
+import { Position } from "container/perpetual/position"
 import { PositionInfo } from "constant/position"
 import { numberWithCommasUsdc } from "util/format"
-import { PerpdexMarketContainer } from "../../container/perpdexMarketContainer"
+import { PerpdexMarketContainer } from "../../container/connection/perpdexMarketContainer"
 
 interface PositionUnitProps {
     data: PositionInfo
 }
 
 function PositionUnit({ data }: PositionUnitProps) {
-    const {
-        state: { contract },
-    } = PerpdexMarketContainer.useContainer()
+    const { currentMarket } = PerpdexMarketContainer.useContainer()
     const inverse = true
     const { openClosePositionModal } = Position.useContainer()
     // const { openClosePositionModal, openAdjustMarginModal } = Position.useContainer()
@@ -32,10 +30,10 @@ function PositionUnit({ data }: PositionUnitProps) {
     const isLongSide = size.gte(0)
 
     const handleOnClosePositionClick = useCallback(() => {
-        if (!contract) return
+        if (!currentMarket) return
 
-        openClosePositionModal(contract.address, baseAssetSymbol, quoteAssetSymbol)
-    }, [contract, openClosePositionModal, baseAssetSymbol, quoteAssetSymbol])
+        openClosePositionModal(currentMarket, baseAssetSymbol, quoteAssetSymbol)
+    }, [currentMarket, openClosePositionModal, baseAssetSymbol, quoteAssetSymbol])
 
     // const handleOnAdjustMarginClick = useCallback(() => {
     //     openAdjustMarginModal(address, baseAssetSymbol, quoteAssetSymbol)

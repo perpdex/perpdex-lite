@@ -1,14 +1,12 @@
 import { FormControl, Input, InputGroup, InputRightElement, Text } from "@chakra-ui/react"
 
-import { PerpdexMarketContainer } from "container/perpdexMarketContainer"
+import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import SmallFormLabel from "component/SmallFormLabel"
 import { usePositionSize } from "../usePositionSize"
-import { Trade } from "container/trade"
+import { Trade } from "container/perpetual/trade"
 
 function Position() {
-    const {
-        state: { currentMarketInfo },
-    } = PerpdexMarketContainer.useContainer()
+    const { currentMarketState } = PerpdexMarketContainer.useContainer()
     const { isBaseToQuote } = Trade.useContainer()
 
     const { positionSize, isCalculating } = usePositionSize()
@@ -27,7 +25,7 @@ function Position() {
                         color="gray.500"
                         textTransform="uppercase"
                     >
-                        {isBaseToQuote ? currentMarketInfo?.baseAssetSymbol : currentMarketInfo?.quoteAssetSymbol}
+                        {isBaseToQuote ? currentMarketState?.baseSymbol : currentMarketState?.quoteSymbol}
                     </Text>
                 </InputRightElement>
             </InputGroup>

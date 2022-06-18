@@ -24,6 +24,29 @@ export class ContractExecutor implements PerpdexExchangeActions {
         return this.execute("withdraw", [amount])
     }
 
+    trade(
+        trader: string,
+        market: string,
+        isBaseToQuote: boolean,
+        isExactInput: boolean,
+        amount: BigNumber,
+        oppositeAmountBound: BigNumber,
+    ): Promise<ContractTransaction> {
+        const deadline = BigNumber.from(2).pow(96)
+
+        return this.execute("trade", [
+            {
+                trader,
+                market,
+                isBaseToQuote,
+                isExactInput,
+                amount,
+                oppositeAmountBound,
+                deadline,
+            },
+        ])
+    }
+
     addLiquidity(
         market: string,
         base: BigNumber,
@@ -58,29 +81,6 @@ export class ContractExecutor implements PerpdexExchangeActions {
                 minBase: minBase,
                 minQuote: minQuote,
                 deadline: getDeadline(),
-            },
-        ])
-    }
-
-    trade(
-        trader: string,
-        market: string,
-        isBaseToQuote: boolean,
-        isExactInput: boolean,
-        amount: BigNumber,
-        oppositeAmountBound: BigNumber,
-    ): Promise<ContractTransaction> {
-        const deadline = BigNumber.from(2).pow(96)
-
-        return this.execute("trade", [
-            {
-                trader,
-                market,
-                isBaseToQuote,
-                isExactInput,
-                amount,
-                oppositeAmountBound,
-                deadline,
             },
         ])
     }

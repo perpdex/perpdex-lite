@@ -1,11 +1,9 @@
 import { QuestionOutlineIcon } from "@chakra-ui/icons"
 import { Box, Heading, Popover, PopoverBody, PopoverContent, PopoverTrigger, SimpleGrid, Text } from "@chakra-ui/react"
-import { PerpdexMarketContainer } from "../../container/perpdexMarketContainer"
+import { PerpdexMarketContainer } from "../../container/connection/perpdexMarketContainer"
 
 function PoolInfoTable() {
-    const {
-        state: { currentMarketInfo },
-    } = PerpdexMarketContainer.useContainer()
+    const { currentMarketState } = PerpdexMarketContainer.useContainer()
 
     return (
         <>
@@ -58,7 +56,7 @@ function PoolInfoTable() {
                         TVL
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
-                        - {currentMarketInfo?.quoteAssetSymbol}
+                        - {currentMarketState?.quoteSymbol}
                     </Text>
                 </Box>
                 <Box>
@@ -66,7 +64,7 @@ function PoolInfoTable() {
                         Volume (24h)
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
-                        - {currentMarketInfo?.quoteAssetSymbol}
+                        - {currentMarketState?.quoteSymbol}
                     </Text>
                 </Box>
                 <Box>
@@ -74,7 +72,7 @@ function PoolInfoTable() {
                         24h Fees
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
-                        - {currentMarketInfo?.quoteAssetSymbol}
+                        - {currentMarketState?.quoteSymbol}
                     </Text>
                 </Box>
             </SimpleGrid>

@@ -17,19 +17,15 @@ import {
     Button,
 } from "@chakra-ui/react"
 import { useCallback, useEffect, useMemo, useState } from "react"
-// import { PnlCalcOption } from "constant/position"
-import { PerpdexExchangeContainer } from "container/perpdexExchangeContainer"
-import { Trade } from "container/trade"
-import { Transaction } from "container/transaction"
+import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
+import { Trade } from "container/perpetual/trade"
+import { Transaction } from "container/connection/transaction"
 import { Connection } from "container/connection"
-import { Contract } from "container/contract"
-import { numberWithCommasUsdc, bigNum2Big } from "util/format"
-// import AmmArtifact from "@perp/contract/build/contracts/src/Amm.sol/Amm.json"
-// import ClearingHouseViewerArtifact from "@perp/contract/build/contracts/src/ClearingHouseViewer.sol/ClearingHouseViewer.json"
+import { numberWithCommasUsdc } from "util/format"
 import { useInterval } from "hook/useInterval"
 import Big from "big.js"
-import { Position } from "container/position"
-import { PerpdexMarketContainer } from "../../container/perpdexMarketContainer"
+import { Position } from "container/perpetual/position"
+import { PerpdexMarketContainer } from "../../container/connection/perpdexMarketContainer"
 
 interface ClosePositionInfo {
     notional: Big
@@ -46,11 +42,10 @@ function ClosePositionModal() {
         closeClosePositionModal,
     } = Position.useContainer()
     const { account } = Connection.useContainer()
-    const { perpdexExchange } = Contract.useContainer()
-    const { closePosition } = PerpdexExchangeContainer.useContainer()
+    const { closePosition, currentMyTakerInfo, fetchTakerInfo } = PerpdexExchangeContainer.useContainer()
     const { isLoading: isTxLoading } = Transaction.useContainer()
     const {
-        state: { markPrice },
+        currentMarketState: { markPrice },
     } = PerpdexMarketContainer.useContainer() // TODO: refactor (this modal shouldn't depend on global state)
 
     const { slippage } = Trade.useContainer()
@@ -69,13 +64,12 @@ function ClosePositionModal() {
     const getClosePositionInfo = useCallback(async () => {
         if (!account) return
         if (!address) return
-        if (!perpdexExchange) return
+        if (!currentMyTakerInfo) return
 
-        const positionSizeBig = await perpdexExchange.getPositionSize(account, address)
-        const positionNotionalBig = await perpdexExchange.getPositionNotional(account, address)
+        await fetchTakerInfo()
 
-        const size = bigNum2Big(positionSizeBig)
-        const takerOpenNotional = bigNum2Big(positionNotionalBig)
+        const size = currentMyTakerInfo.baseBalanceShare
+        const takerOpenNotional = currentMyTakerInfo.quoteBalance
         const margin = Big(0)
 
         if (size.eq(0)) return
@@ -94,7 +88,7 @@ function ClosePositionModal() {
         }
 
         setClosePositionInfo(info)
-    }, [account, address, markPrice, perpdexExchange])
+    }, [account, address, currentMyTakerInfo, fetchTakerInfo, markPrice])
 
     useEffect(() => {
         getClosePositionInfo()

@@ -12,7 +12,3 @@ export const INPUT_PRECISION = 6
 export const BIG_ZERO = new Big(0)
 
 export const BIG_NUMBER_ZERO = BigNumber.from("0")
-
-export interface Decimal {
-    d: BigNumber
-}

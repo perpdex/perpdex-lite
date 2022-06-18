@@ -4,7 +4,7 @@ import { PerpdexMarketContainer } from "container/connection/perpdexMarketContai
 import _ from "lodash"
 
 function MarketSelector() {
-    const { marketStates, currentMarket, setCurrentMarket } = PerpdexMarketContainer.useContainer()
+    const { marketStates, setCurrentMarket, currentMarket } = PerpdexMarketContainer.useContainer()
 
     const handleOnChange = (ev: React.ChangeEvent<HTMLSelectElement>) =>
         ev.target.value && setCurrentMarket(ev.target.value)

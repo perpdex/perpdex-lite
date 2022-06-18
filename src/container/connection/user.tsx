@@ -10,7 +10,7 @@ import { logger } from "lib/bugsnag/logger"
 import { useLocalStorage } from "../../hook/useLocalStorage"
 import { useNotification } from "../../hook/useNotification"
 import { usePrevious } from "../../hook/usePrevious"
-import { useWeb3React } from "@web3-react/core"
+import { Connection } from "."
 
 enum ACTIONS {
     LOGIN_REQUEST = "LOGIN_REQUEST",
@@ -35,7 +35,7 @@ export const User = createContainer(useUser)
 const { CONNECTOR_ID } = STORAGE_KEY
 
 function usePostLogout(onLogout: Function) {
-    const { active } = useWeb3React()
+    const { active } = Connection.useContainer()
     const previousSession = usePrevious(active)
 
     useEffect(() => {
@@ -48,7 +48,7 @@ function usePostLogout(onLogout: Function) {
 
 function useUser() {
     const [state, dispatch] = useReducer(reducer, initialState)
-    const { active, account, activate, deactivate, chainId } = useWeb3React()
+    const { active, account, chainId, activate, deactivate } = Connection.useContainer()
     const [, setConnectorId] = useLocalStorage(CONNECTOR_ID.name, CONNECTOR_ID.defaultValue)
     const { notifyError, closeNotify } = useNotification()
     const wrongNetworkRef = useRef()

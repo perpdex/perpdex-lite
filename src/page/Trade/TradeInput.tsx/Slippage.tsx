@@ -12,7 +12,7 @@ import {
 import React, { useCallback, useMemo } from "react"
 
 import SmallFormLabel from "component/SmallFormLabel"
-import { Trade } from "container/trade"
+import { Trade } from "container/perpetual/trade"
 
 function Slippage() {
     const { slippage, setSlippage } = Trade.useContainer()

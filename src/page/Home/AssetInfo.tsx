@@ -1,7 +1,7 @@
 import React, { useEffect } from "react"
 import { Button } from "@chakra-ui/react"
-import { User } from "container/user"
-import { AccountPerpdex } from "container/account"
+import { User } from "container/connection/user"
+import { AccountPerpdex } from "container/connection/account"
 import WalletFill from "../../component/Icon/WalletFill"
 
 function AssetInfo() {

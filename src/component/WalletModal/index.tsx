@@ -3,8 +3,8 @@ import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOve
 import WalletButton from "./WalletButton"
 import DisconnectButton from "./DisconnectButton"
 import { WalletInfo, SUPPORTED_WALLETS } from "../../constant/wallet"
-import { User } from "container/user"
-import { Global } from "container/global"
+import { User } from "container/connection/user"
+import { Modal as ModalContainer } from "container/modal"
 
 function WalletListModal() {
     const {
@@ -12,14 +12,12 @@ function WalletListModal() {
     } = User.useContainer()
 
     const {
-        state: {
-            modal: { isWalletOpen },
-        },
+        walletModalIsOpen,
         actions: { toggleWalletModal },
-    } = Global.useContainer()
+    } = ModalContainer.useContainer()
 
     return (
-        <Modal isCentered={true} size="xs" isOpen={isWalletOpen} onClose={toggleWalletModal}>
+        <Modal isCentered={true} size="xs" isOpen={walletModalIsOpen} onClose={toggleWalletModal}>
             <ModalOverlay />
             <ModalContent bg="gray.800" color="gray.200">
                 <ModalHeader fontWeight="400" fontSize="sm">
