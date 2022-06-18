@@ -5,7 +5,7 @@
       "chainId": "4",
       "contracts": {
         "PerpdexExchange": {
-          "address": "0x95E2126AB9C40d8d0Cec6974744eBC112356438F",
+          "address": "0x335E2DF76eA6d5d4A82E45d2b917F84a747f0E82",
           "abi": [
             {
               "inputs": [
@@ -1406,7 +1406,7 @@
           ]
         },
         "PerpdexMarketBTC": {
-          "address": "0xD55f5Ce67A2c251e6db005c4fC2224b45F2194A4",
+          "address": "0xC98786B30316672631aA252F694B2Fca3fa0a76a",
           "abi": [
             {
               "inputs": [
@@ -2285,7 +2285,7 @@
           ]
         },
         "PerpdexMarketLINK": {
-          "address": "0xe52de11225803fc4fB94fDDCf8f20020171105BC",
+          "address": "0x39dF060CF5d317141dc258C49637a512d7985Fd9",
           "abi": [
             {
               "inputs": [
@@ -3164,7 +3164,7 @@
           ]
         },
         "PerpdexMarketMATIC": {
-          "address": "0x3125a3CD6Ab60ECDe578Fd23bb23A421f3CCf15c",
+          "address": "0x1a8B4B8f0f55d2eb2e12A252D843f8A2100CDFfe",
           "abi": [
             {
               "inputs": [
@@ -4043,7 +4043,7 @@
           ]
         },
         "PerpdexMarketUSD": {
-          "address": "0x0323E383D895A5DFaD13CFd71c15bB75b543f59a",
+          "address": "0x8Df4aC26b8174F531578474A3999194650e42D84",
           "abi": [
             {
               "inputs": [
@@ -4930,7 +4930,7 @@
       "chainId": "81",
       "contracts": {
         "PerpdexExchange": {
-          "address": "0x2AEfeE66480E23b2777AE2A3B24b78322B286259",
+          "address": "0x33Cd2616EAC828db30d481d04b9dab50a0E51Bdd",
           "abi": [
             {
               "inputs": [
@@ -6331,7 +6331,7 @@
           ]
         },
         "PerpdexMarketBTC": {
-          "address": "0x147eb86a1C015Be67741ee530f8Ca3F1Fe23Fd29",
+          "address": "0xB2999f95fEF686A866fd4221995DA41f58790a10",
           "abi": [
             {
               "inputs": [
@@ -7210,7 +7210,7 @@
           ]
         },
         "PerpdexMarketETH": {
-          "address": "0x293100BfBEd680f0Ec36dc9016A044447e48Da97",
+          "address": "0xE30D690E355D0300469b1280299D40524A56AfF3",
           "abi": [
             {
               "inputs": [
@@ -8089,7 +8089,7 @@
           ]
         },
         "PerpdexMarketKSM": {
-          "address": "0xdA4FB26E4F33BB74B8Eb28F01363E25400c3366e",
+          "address": "0x30d42bcDAf2c9261986246C2969A1B08A6eA4e6A",
           "abi": [
             {
               "inputs": [
@@ -8968,7 +8968,7 @@
           ]
         },
         "PerpdexMarketSDN": {
-          "address": "0x4f3229170F5281743aEfe6a5d00e0db2c3b92429",
+          "address": "0xdBfDF592Ea1460DA501E0d5a8A1Eae6F37B6675E",
           "abi": [
             {
               "inputs": [
@@ -9847,7 +9847,7 @@
           ]
         },
         "PerpdexMarketUSD": {
-          "address": "0x32514b47500Eaf2dB395b6C98E744eDBf6B068e1",
+          "address": "0xa4F2d54AB8996141c727Ae92caa65dF82CCB73d9",
           "abi": [
             {
               "inputs": [
