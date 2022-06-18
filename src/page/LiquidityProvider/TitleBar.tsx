@@ -1,7 +1,7 @@
 import { HStack, Text, VStack } from "@chakra-ui/react"
 
 import React from "react"
-import { PerpdexMarketContainer } from "../../container/perpdexMarketContainer"
+import { PerpdexMarketContainer } from "../../container/connection/perpdexMarketContainer"
 
 function TitleBar() {
     const { currentMarketState } = PerpdexMarketContainer.useContainer()

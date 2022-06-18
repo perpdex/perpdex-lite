@@ -2,10 +2,10 @@ import { Badge, Box, Button, HStack, Heading, SimpleGrid, Stack } from "@chakra-
 import { useCallback, useMemo } from "react"
 
 import DataUnit from "./DataUnit"
-import { Position } from "container/position"
+import { Position } from "container/perpetual/position"
 import { PositionInfo } from "constant/position"
 import { numberWithCommasUsdc } from "util/format"
-import { PerpdexMarketContainer } from "../../container/perpdexMarketContainer"
+import { PerpdexMarketContainer } from "../../container/connection/perpdexMarketContainer"
 
 interface PositionUnitProps {
     data: PositionInfo

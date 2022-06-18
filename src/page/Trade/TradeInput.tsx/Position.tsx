@@ -1,9 +1,9 @@
 import { FormControl, Input, InputGroup, InputRightElement, Text } from "@chakra-ui/react"
 
-import { PerpdexMarketContainer } from "container/perpdexMarketContainer"
+import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import SmallFormLabel from "component/SmallFormLabel"
 import { usePositionSize } from "../usePositionSize"
-import { Trade } from "container/trade"
+import { Trade } from "container/perpetual/trade"
 
 function Position() {
     const { currentMarketState } = PerpdexMarketContainer.useContainer()

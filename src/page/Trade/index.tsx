@@ -2,7 +2,7 @@ import React from "react"
 import { VStack, Flex, Box } from "@chakra-ui/react"
 
 // import Leverage from "./Leverage"
-import MarketSelector from "./MarketSelector"
+import MarketSelector from "component/Perpetual/MarketSelector"
 import Summary from "./Summary"
 import FrameContainer from "component/FrameContainer"
 import TradeInput from "./TradeInput.tsx"

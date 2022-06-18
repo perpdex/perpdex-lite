@@ -3,12 +3,11 @@ import { createContainer } from "unstated-next"
 import { Connection } from "container/connection"
 import { PerpdexMarket__factory, PerpdexExchange__factory, IERC20Metadata__factory } from "types/newContracts"
 import { bigNum2Big, x96ToBig } from "util/format"
-import { useWeb3React } from "@web3-react/core"
-import { contractConfigs } from "../../constant/contract"
-import { networkConfigs } from "../../constant/network"
+import { contractConfigs } from "constant/contract"
+import { networkConfigs } from "constant/network"
 import _ from "lodash"
 import { constants } from "ethers"
-import { MarketState } from "../../constant/types"
+import { MarketState } from "constant/types"
 import Big from "big.js"
 
 const createMarketContract = (address: string, signer: any) => {
@@ -39,8 +38,7 @@ const nullMarketState: MarketState = {
 export const PerpdexMarketContainer = createContainer(usePerpdexMarketContainer)
 
 function usePerpdexMarketContainer() {
-    const { signer } = Connection.useContainer()
-    const { chainId } = useWeb3React()
+    const { signer, chainId } = Connection.useContainer()
 
     // core
     const [marketStates, setMarketStates] = useState<{ [key: string]: MarketState }>({})
@@ -60,6 +58,8 @@ function usePerpdexMarketContainer() {
                     return _.map(exchange.markets, "address")
                 }),
             )
+
+            console.log("marketAddresses", marketAddresses)
 
             const newMarketStates: { [key: string]: MarketState } = {}
 

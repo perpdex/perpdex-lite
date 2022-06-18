@@ -1,20 +1,18 @@
-import { BIG_NUMBER_ZERO } from "../../constant"
+import { BIG_NUMBER_ZERO } from "../../../constant"
 import { big2BigNum, bigNum2Big, bigNum2FixedStr, parseEther, x96ToBig } from "util/format"
 import { useCallback, useEffect, useMemo, useState } from "react"
 
 import { Big } from "big.js"
-import { Connection } from "../connection"
-import { Contract } from "../contract"
+import { Connection } from ".."
 import { ContractExecutor } from "./ContractExecutor"
 import { Transaction } from "../transaction"
 import { createContainer } from "unstated-next"
-import { PerpdexMarketContainer } from "container/perpdexMarketContainer"
+import { PerpdexMarketContainer } from "../perpdexMarketContainer"
 import { BigNumber } from "ethers"
-import _ from "lodash"
-import { contractConfigs } from "../../constant/contract"
-import { useWeb3React } from "@web3-react/core"
+import _, { chain } from "lodash"
+import { contractConfigs } from "../../../constant/contract"
 import { PerpdexExchange__factory } from "types/newContracts"
-import { ExchangeState, MakerInfo, TakerInfo } from "../../constant/types"
+import { ExchangeState, MakerInfo, TakerInfo } from "../../../constant/types"
 import produce from "immer"
 
 export const PerpdexExchangeContainer = createContainer(usePerpdexExchangeContainer)
@@ -62,10 +60,9 @@ function calcTrade(isBaseToQuote: boolean, collateral: Big, slippage: number, ma
 }
 
 function usePerpdexExchangeContainer() {
-    const { account, signer } = Connection.useContainer()
+    const { account, signer, chainId } = Connection.useContainer()
     const { marketStates, currentMarketState, currentMarket } = PerpdexMarketContainer.useContainer()
     const { execute } = Transaction.useContainer()
-    const { chainId } = useWeb3React()
 
     // core
     const [exchangeStates, setExchangeStates] = useState<{ [key: string]: ExchangeState }>({})
@@ -133,6 +130,7 @@ function usePerpdexExchangeContainer() {
                     },
                 }
             }
+            console.log("newExchangeStates", newExchangeStates)
             setExchangeStates(newExchangeStates)
         })()
     }, [chainId, signer, currentMarket, account])
@@ -187,7 +185,7 @@ function usePerpdexExchangeContainer() {
                 )
             }
         },
-        [account, contractExecuter, execute, currentMarketState?.markPrice, currentMarket],
+        [currentMarketState, contractExecuter, account, currentMarket, execute],
     )
 
     const previewTrade = useCallback(
@@ -274,7 +272,7 @@ function usePerpdexExchangeContainer() {
                 }),
             )
         },
-        [account, marketStates, signer],
+        [account, currentMarket, marketStates, signer],
     )
 
     return {

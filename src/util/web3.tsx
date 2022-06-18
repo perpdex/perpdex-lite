@@ -1,8 +1,8 @@
 import React, { ReactNode } from "react"
 
 import { Web3ReactProvider } from "@web3-react/core"
-import { getLibrary } from "../../util/getLibrary"
-import { useInactiveListener } from "../../hook/useActiveWeb3React"
+import { getLibrary } from "./getLibrary"
+import { useInactiveListener } from "../hook/useActiveWeb3React"
 
 interface ProviderProps {
     children: ReactNode | JSX.Element

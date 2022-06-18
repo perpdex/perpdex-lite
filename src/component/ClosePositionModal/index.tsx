@@ -17,15 +17,15 @@ import {
     Button,
 } from "@chakra-ui/react"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { PerpdexExchangeContainer } from "container/perpdexExchangeContainer"
-import { Trade } from "container/trade"
-import { Transaction } from "container/transaction"
+import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
+import { Trade } from "container/perpetual/trade"
+import { Transaction } from "container/connection/transaction"
 import { Connection } from "container/connection"
 import { numberWithCommasUsdc } from "util/format"
 import { useInterval } from "hook/useInterval"
 import Big from "big.js"
-import { Position } from "container/position"
-import { PerpdexMarketContainer } from "../../container/perpdexMarketContainer"
+import { Position } from "container/perpetual/position"
+import { PerpdexMarketContainer } from "../../container/connection/perpdexMarketContainer"
 
 interface ClosePositionInfo {
     notional: Big
@@ -88,7 +88,7 @@ function ClosePositionModal() {
         }
 
         setClosePositionInfo(info)
-    }, [account, address, markPrice, fetchTakerInfo])
+    }, [account, address, currentMyTakerInfo, fetchTakerInfo, markPrice])
 
     useEffect(() => {
         getClosePositionInfo()

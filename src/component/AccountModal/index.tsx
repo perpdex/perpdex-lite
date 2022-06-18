@@ -16,13 +16,13 @@ import {
     FormControl,
     Box,
 } from "@chakra-ui/react"
-import { AccountPerpdex } from "container/account"
+import { AccountPerpdex } from "container/connection/account"
 import ButtonPerpdex from "component/ButtonPerpdex"
 import SmallFormLabel from "../SmallFormLabel"
-import { bigNum2FixedStr, formatInput, parseEther } from "../../util/format"
+import { bigNum2FixedStr, formatInput } from "../../util/format"
 import { INPUT_PRECISION } from "../../constant"
-import { PerpdexMarketContainer } from "container/perpdexMarketContainer"
-import { PerpdexExchangeContainer } from "container/perpdexExchangeContainer"
+import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
+import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
 
 function AccountModal() {
     const {

@@ -11,19 +11,22 @@ import {
     Box,
     Button,
 } from "@chakra-ui/react"
-import MarketSelector from "./MarketSelector"
+import MarketSelector from "../Perpetual/MarketSelector"
 import Collateral from "./Collateral"
 // import Position from "./Position"
 import Slippage from "./Slippage"
 import { useCallback, useMemo, useState } from "react"
-import { LiquidityProvider } from "container/liquidityProvider"
+import { Modal as ModalContainer } from "container/modal"
 import Big from "big.js"
-import { PerpdexMarketContainer } from "../../container/perpdexMarketContainer"
+import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import { AddIcon } from "@chakra-ui/icons"
-import { PerpdexExchangeContainer } from "container/perpdexExchangeContainer"
+import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
 
 function LiquidityProviderModal() {
-    const { isModalOpen, toggleModal } = LiquidityProvider.useContainer()
+    const {
+        lpModalIsOpen,
+        actions: { toggleLpModal },
+    } = ModalContainer.useContainer()
 
     const { addLiquidity } = PerpdexExchangeContainer.useContainer()
     const {
@@ -53,7 +56,7 @@ function LiquidityProviderModal() {
     )
 
     return (
-        <Modal isCentered motionPreset="slideInBottom" isOpen={isModalOpen} onClose={toggleModal}>
+        <Modal isCentered motionPreset="slideInBottom" isOpen={lpModalIsOpen} onClose={toggleLpModal}>
             <ModalOverlay />
             <ModalContent borderRadius="2xl" pb={3}>
                 <ModalHeader>Add Liquidity</ModalHeader>

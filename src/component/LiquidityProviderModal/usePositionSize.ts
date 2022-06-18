@@ -2,7 +2,7 @@ import { Dir, Side } from "constant"
 import { useCallback, useEffect, useState } from "react"
 
 // import { PerpdexMarketContainer } from "container/perpdexMarketContainer"
-import { Trade } from "container/trade"
+import { Trade } from "container/perpetual/trade"
 import { formatInput } from "util/format"
 import Big from "big.js"
 

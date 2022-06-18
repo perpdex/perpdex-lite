@@ -4,6 +4,19 @@ import { BigNumber } from "ethers"
 type ReturnType = ContractTransaction | string
 
 export interface PerpdexExchangeActions {
+    deposit(etherValue: BigNumber, amount: BigNumber): Promise<ReturnType>
+
+    withdraw(amount: BigNumber): Promise<ReturnType>
+
+    trade(
+        trader: string,
+        market: string,
+        isBaseToQuote: boolean,
+        isExactInput: boolean,
+        amount: BigNumber,
+        oppositeAmountBound: BigNumber,
+    ): Promise<ReturnType>
+
     addLiquidity(
         market: string,
         base: BigNumber,
@@ -18,15 +31,6 @@ export interface PerpdexExchangeActions {
         liquidity: BigNumber,
         minBase: BigNumber,
         minQuote: BigNumber,
-    ): Promise<ReturnType>
-
-    trade(
-        trader: string,
-        market: string,
-        isBaseToQuote: boolean,
-        isExactInput: boolean,
-        amount: BigNumber,
-        oppositeAmountBound: BigNumber,
     ): Promise<ReturnType>
 
     closePosition(baseToken: string, quoteAmountBound: BigNumber): Promise<ReturnType>

@@ -1,7 +1,7 @@
 import { FormControl, InputGroup, InputRightElement, NumberInput, NumberInputField, Text } from "@chakra-ui/react"
 import { useCallback, useMemo, useState } from "react"
 
-import { PerpdexMarketContainer } from "container/perpdexMarketContainer"
+import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import Big from "big.js"
 import SmallFormLabel from "component/SmallFormLabel"
 import { USDC_PRECISION } from "constant"

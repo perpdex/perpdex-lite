@@ -7,11 +7,10 @@ import ProvidedInfo from "./ProvidedInfo"
 import Position from "./Position"
 import PoolInfo from "./PoolInfo"
 import FrameContainer from "component/FrameContainer"
-import { LiquidityProvider as LiquidityProviderContainer } from "container/liquidityProvider"
+import { Modal } from "container/modal"
 import { useCallback } from "react"
-import { bigNum2Big } from "../../util/format"
-import { PerpdexExchangeContainer } from "container/perpdexExchangeContainer"
-import { PerpdexMarketContainer } from "container/perpdexMarketContainer"
+import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
+import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import Big from "big.js"
 
 export interface MakerPositionInfo {
@@ -28,7 +27,9 @@ function LiquidityProvider() {
     const { currentMyMakerInfo, removeLiquidity } = PerpdexExchangeContainer.useContainer()
     const { currentMarketState } = PerpdexMarketContainer.useContainer()
 
-    const { toggleModal } = LiquidityProviderContainer.useContainer()
+    const {
+        actions: { toggleLpModal },
+    } = Modal.useContainer()
 
     const [makerPositionInfo, setMakerPositionInfo] = useState<MakerPositionInfo>({
         unrealizedPnl: Big(0),
@@ -92,7 +93,7 @@ function LiquidityProvider() {
                     <VStack spacing={6} p={0}>
                         <ProvidedInfo marketInfo={currentMarketState} makerPositionInfo={makerPositionInfo} />
                         <Position
-                            handleOnAddLiquidityClick={toggleModal}
+                            handleOnAddLiquidityClick={toggleLpModal}
                             handleOnRemoveLiquidityClick={handleOnRemoveLiquidityClick}
                         />
                     </VStack>
