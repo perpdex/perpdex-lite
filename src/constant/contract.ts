@@ -65,6 +65,7 @@ export const contractConfigs: { [key: string]: ContractConfig } = {
 _.each(contractConfigs, (value: ContractConfig, key: string) => {
     const deployment: any = perpdexDeployment
     const stablecoinDeployment: any = perpdexStablecoin
+    if (!deployment[key]) return
     const contracts = deployment[key][0].contracts
     const stablecoinContracts = stablecoinDeployment[key][0].contracts
     const markets: PerpdexMarket[] = []
