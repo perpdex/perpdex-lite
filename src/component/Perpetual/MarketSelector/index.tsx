@@ -15,7 +15,7 @@ function MarketSelector() {
             <Select onChange={handleOnChange}>
                 {_.map(marketStates, (marketState, marketAddress) => (
                     <option key={marketAddress} value={marketAddress} selected={marketAddress === currentMarket}>
-                        {marketState.quoteSymbol} / {marketState.baseSymbol} (inverse)
+                        {marketState.baseSymbol} / {marketState.quoteSymbol} {marketState.inverse && "(inverse)"}
                     </option>
                 ))}
             </Select>

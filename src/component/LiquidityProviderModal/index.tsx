@@ -30,8 +30,11 @@ function LiquidityProviderModal() {
 
     const { addLiquidity } = PerpdexExchangeContainer.useContainer()
     const {
-        currentMarketState: { markPrice },
+        currentMarketState: { markPrice, inverse },
+        marketStates,
     } = PerpdexMarketContainer.useContainer()
+
+    console.log("marketStates", marketStates, markPrice.toString())
 
     // const indexPrice = selectedAmm?.indexPrice || Big(0)
 
@@ -39,20 +42,26 @@ function LiquidityProviderModal() {
 
     const baseAmount = useMemo(() => {
         if (markPrice && markPrice.gt(0)) {
-            return collateral.mul(markPrice)
-            // } else if (indexPrice.gt(0)) {
-            //     return collateral.div(indexPrice)
+            return inverse ? collateral : collateral.div(markPrice)
         } else {
+            console.error(
+                "This is the first time to add Liquidity Pool, so you need to specify MarkPrice maually, or use some index prices",
+            )
+            // const defaultMarkPrice = Big(964) // ETHUSD
+            // return collateral.div(defaultMarkPrice)
             return Big(0)
         }
-    }, [collateral, markPrice])
+    }, [collateral, inverse, markPrice])
 
     const handleAddLiquidity = useCallback(
         e => {
-            console.log("test", collateral, markPrice, baseAmount)
-            addLiquidity(baseAmount, collateral, baseAmount.mul(0.9), collateral.mul(0.9))
+            // const defaultMarkPrice = Big(964)
+            // const inverseQuoteAmount = collateral.mul(defaultMarkPrice)
+            const inputBaseAmount = inverse ? collateral.mul(markPrice) : baseAmount
+
+            addLiquidity(inputBaseAmount, collateral, inputBaseAmount.mul(0.9), collateral.mul(0.9))
         },
-        [baseAmount, collateral, markPrice, addLiquidity],
+        [collateral, markPrice, baseAmount, inverse, addLiquidity],
     )
 
     return (
@@ -65,7 +74,7 @@ function LiquidityProviderModal() {
                     <VStack spacing={5}>
                         <MarketSelector />
                         <Collateral onChange={setCollateral} />
-                        <Box>baseAmount: {baseAmount.toString()}</Box>
+                        <Box>baseAmount: {inverse ? collateral.toString() : baseAmount.toString()}</Box>
                         {/*<Position/>*/}
                         <Divider />
                         <Slippage />

@@ -23,6 +23,8 @@ interface ProvidedInfoTableProps {
 }
 
 function ProvidedInfoTable({ marketInfo, makerPositionInfo }: ProvidedInfoTableProps) {
+    const collateralSymbol = marketInfo?.inverse ? marketInfo.baseSymbol : marketInfo?.quoteSymbol
+
     return (
         <>
             <Heading w="full" size="sm">
@@ -35,7 +37,7 @@ function ProvidedInfoTable({ marketInfo, makerPositionInfo }: ProvidedInfoTableP
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
                         {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.liquidityValue.toFixed(6)}{" "}
-                        {marketInfo?.quoteSymbol}
+                        {collateralSymbol}
                     </Text>
                 </Box>
                 <Box>
@@ -54,7 +56,7 @@ function ProvidedInfoTable({ marketInfo, makerPositionInfo }: ProvidedInfoTableP
                     </Text>
                     <Text fontSize="xl" color="green.400" fontWeight="bold" lineHeight="1.4">
                         {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.unrealizedPnl.toFixed(6)}{" "}
-                        {marketInfo?.quoteSymbol}
+                        {collateralSymbol}
                     </Text>
                 </Box>
                 <Box>

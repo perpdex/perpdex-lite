@@ -15,12 +15,13 @@ function Collateral({ onChange }: ICollateral) {
     const { currentMarketState } = PerpdexMarketContainer.useContainer()
     const [collateral, setCollateral] = useState<string>("")
 
+    const collateralSymbol = currentMarketState.inverse ? currentMarketState.baseSymbol : currentMarketState.quoteSymbol
+
     const handleOnInput = useCallback(
         e => {
             const value = e.target.value
             if (value >= 0) {
                 const formattedValue = formatInput(value, USDC_PRECISION)
-                console.log("for", formattedValue)
                 setCollateral(formattedValue)
                 if (onChange) {
                     try {
@@ -50,14 +51,14 @@ function Collateral({ onChange }: ICollateral) {
                                 color="blue.500"
                                 textTransform="uppercase"
                             >
-                                {currentMarketState?.quoteSymbol}
+                                {collateralSymbol}
                             </Text>
                         </InputRightElement>
                     </InputGroup>
                 </NumberInput>
             </FormControl>
         ),
-        [collateral, currentMarketState?.quoteSymbol, handleOnInput],
+        [collateral, collateralSymbol, handleOnInput],
     )
 }
 

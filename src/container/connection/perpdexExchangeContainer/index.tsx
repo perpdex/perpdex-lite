@@ -25,6 +25,7 @@ const nullExchangeState: ExchangeState = {
         makerInfos: {},
         collateralBalance: Big(0),
         totalAccountValue: Big(0),
+        totalPositionNotional: Big(0),
     },
 }
 
@@ -104,11 +105,13 @@ function usePerpdexExchangeContainer() {
                 const [
                     collateralBalance,
                     totalAccountValue,
+                    totalPositionNotional,
                     makerInfo,
                     takerInfo,
                 ] = await multicallNetworkProvider.all([
                     contract.accountInfos(account),
                     contract.getTotalAccountValue(account),
+                    contract.getTotalPositionNotional(account),
                     contract.getMakerInfo(account, currentMarket),
                     contract.getTakerInfo(account, currentMarket),
                 ])
@@ -130,13 +133,14 @@ function usePerpdexExchangeContainer() {
                         },
                         collateralBalance: bigNum2Big(collateralBalance),
                         totalAccountValue: bigNum2Big(totalAccountValue),
+                        totalPositionNotional: bigNum2Big(totalPositionNotional),
                     },
                 }
             }
             console.log("newExchangeStates", newExchangeStates)
             setExchangeStates(newExchangeStates)
         })()
-    }, [chainId, signer, currentMarket, account])
+    }, [chainId, signer, currentMarket, account, multicallNetworkProvider])
 
     const deposit = useCallback(
         (amount: string) => {
@@ -222,6 +226,35 @@ function usePerpdexExchangeContainer() {
         [account, perpdexExchange, currentMarketState, currentMarket],
     )
 
+    const maxTrade = useCallback(
+        async (isBaseToQuote: boolean) => {
+            if (account && currentMarket) {
+                const isExactInput = isBaseToQuote
+
+                try {
+                    const results = await perpdexExchange.callStatic.maxTrade({
+                        trader: account,
+                        market: currentMarket,
+                        caller: account,
+                        isBaseToQuote,
+                        isExactInput,
+                    })
+                    return results
+                } catch (err) {
+                    console.error("Error maxTrade", err)
+                }
+            }
+        },
+        [account, currentMarket, perpdexExchange.callStatic],
+    )
+
+    useEffect(() => {
+        ;(async () => {
+            const results = await maxTrade(false)
+            console.log("maxTrade:", results)
+        })()
+    }, [maxTrade])
+
     const addLiquidity = useCallback(
         (base: Big, quote: Big, minBase: Big, minQuote: Big) => {
             if (contractExecuter && account && currentMarket) {
@@ -300,6 +333,7 @@ function usePerpdexExchangeContainer() {
         removeLiquidity,
         preview: {
             trade: previewTrade,
+            maxTrade: maxTrade,
         },
     }
 }

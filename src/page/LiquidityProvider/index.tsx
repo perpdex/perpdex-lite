@@ -62,8 +62,8 @@ function LiquidityProvider() {
             unrealizedPnl: baseAmount.sub(baseDebt).mul(_markPrice).add(quoteAmount.sub(quoteDebt)), // FIX: consider funding
             liquidityValue: baseAmount.mul(_markPrice).add(quoteAmount),
             liquidity,
-            baseAmount,
-            quoteAmount,
+            baseAmount: currentMarketState.inverse ? quoteAmount : baseAmount,
+            quoteAmount: currentMarketState.inverse ? baseAmount : quoteAmount,
             baseDebt,
             quoteDebt,
         }

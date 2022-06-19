@@ -31,6 +31,7 @@ interface AccountInfo {
     makerInfos: { [key: string]: MakerInfo }
     collateralBalance: Big
     totalAccountValue: Big
+    totalPositionNotional: Big
 }
 
 export interface ExchangeState {
