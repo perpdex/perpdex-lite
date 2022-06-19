@@ -20,20 +20,10 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
 import { Trade } from "container/perpetual/trade"
 import { Transaction } from "container/connection/transaction"
-import { Connection } from "container/connection"
 import { numberWithCommasUsdc } from "util/format"
-import { useInterval } from "hook/useInterval"
 import Big from "big.js"
 import { Position } from "container/perpetual/position"
 import { PerpdexMarketContainer } from "../../container/connection/perpdexMarketContainer"
-
-interface ClosePositionInfo {
-    notional: Big
-    size: Big
-    margin: Big
-    unrealizedPnl: Big
-    fee: Big
-}
 
 function ClosePositionModal() {
     // address is base token address
@@ -41,8 +31,7 @@ function ClosePositionModal() {
         state: { baseAssetSymbol, quoteAssetSymbol, address, isClosePositionModalOpen },
         closeClosePositionModal,
     } = Position.useContainer()
-    const { account } = Connection.useContainer()
-    const { closePosition, currentMyTakerInfo, fetchTakerInfo } = PerpdexExchangeContainer.useContainer()
+    const { closePosition, currentMyTakerInfo } = PerpdexExchangeContainer.useContainer()
     const { isLoading: isTxLoading } = Transaction.useContainer()
     const {
         currentMarketState: { markPrice },
@@ -50,7 +39,28 @@ function ClosePositionModal() {
 
     const { slippage } = Trade.useContainer()
 
-    const [closePositionInfo, setClosePositionInfo] = useState<ClosePositionInfo | null>(null)
+    const closePositionInfo = useMemo(() => {
+        if (!currentMyTakerInfo) return null
+
+        const size = currentMyTakerInfo.baseBalanceShare
+        const takerOpenNotional = currentMyTakerInfo.quoteBalance
+        const margin = Big(0)
+
+        if (size.eq(0)) return null
+
+        const entryPrice = takerOpenNotional.abs().div(size.abs())
+        if (!markPrice) return null
+
+        const unrealizedPnl = markPrice.div(entryPrice).sub(1).mul(takerOpenNotional.mul(-1))
+
+        return {
+            notional: takerOpenNotional,
+            size,
+            margin,
+            unrealizedPnl,
+            fee: takerOpenNotional.mul(Big("0.003")),
+        }
+    }, [currentMyTakerInfo, markPrice])
 
     const handleOnClick = useCallback(async () => {
         if (address && closePositionInfo !== null && closePositionInfo.notional && closePositionInfo.size) {
@@ -60,45 +70,6 @@ function ClosePositionModal() {
             closePosition(address, quoteLimit)
         }
     }, [address, closePosition, closePositionInfo, slippage])
-
-    const getClosePositionInfo = useCallback(async () => {
-        if (!account) return
-        if (!address) return
-        if (!currentMyTakerInfo) return
-
-        await fetchTakerInfo()
-
-        const size = currentMyTakerInfo.baseBalanceShare
-        const takerOpenNotional = currentMyTakerInfo.quoteBalance
-        const margin = Big(0)
-
-        if (size.eq(0)) return
-
-        const entryPrice = takerOpenNotional.abs().div(size.abs())
-        if (!markPrice) return
-
-        const unrealizedPnl = markPrice.div(entryPrice).sub(1).mul(takerOpenNotional.mul(-1))
-
-        const info = {
-            notional: takerOpenNotional,
-            size,
-            margin,
-            unrealizedPnl,
-            fee: takerOpenNotional.mul(Big("0.003")),
-        }
-
-        setClosePositionInfo(info)
-    }, [account, address, currentMyTakerInfo, fetchTakerInfo, markPrice])
-
-    useEffect(() => {
-        getClosePositionInfo()
-    }, [getClosePositionInfo])
-
-    /**
-     * NOTE: higher frequency of info updating
-     * update trader's position info per 2s
-     */
-    useInterval(getClosePositionInfo, 2000)
 
     /* prepare data for UI */
     const exitPriceStr = useMemo(() => {
