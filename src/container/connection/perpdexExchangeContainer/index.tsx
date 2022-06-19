@@ -8,29 +8,19 @@ import { ContractExecutor } from "./ContractExecutor"
 import { Transaction } from "../transaction"
 import { createContainer } from "unstated-next"
 import { PerpdexMarketContainer } from "../perpdexMarketContainer"
-import { BigNumber } from "ethers"
+import { BigNumber, constants } from "ethers"
 import _ from "lodash"
 import { contractConfigs } from "../../../constant/contract"
-import { ExchangeState, MakerInfo, TakerInfo } from "../../../constant/types"
-import produce from "immer"
+import { ExchangeState, MakerInfo, TakerInfo, AccountInfo } from "../../../constant/types"
 import { useInterval } from "../../../hook/useInterval"
 import { usePageVisibility } from "react-page-visibility"
 import {
+    createERC20ContractMulticall,
     createExchangeContract,
     createExchangeContractMulticall,
-    createMarketContractMulticall,
 } from "../contractFactory"
 
 export const PerpdexExchangeContainer = createContainer(usePerpdexExchangeContainer)
-
-const nullExchangeState: ExchangeState = {
-    myAccountInfo: {
-        takerInfos: {},
-        makerInfos: {},
-        collateralBalance: Big(0),
-        totalAccountValue: Big(0),
-    },
-}
 
 const createExchangeExecutor = (address: string, signer: any) => {
     return new ContractExecutor(createExchangeContract(address, signer), signer)
@@ -63,12 +53,13 @@ function calcTrade(isBaseToQuote: boolean, collateral: Big, slippage: number, ma
 
 function usePerpdexExchangeContainer() {
     const { account, signer, chainId, multicallNetworkProvider } = Connection.useContainer()
-    const { marketStates, currentMarketState, currentMarket } = PerpdexMarketContainer.useContainer()
+    const { currentMarketState, currentMarket } = PerpdexMarketContainer.useContainer()
     const { execute } = Transaction.useContainer()
     const isVisible = usePageVisibility()
 
     // core
     const [exchangeStates, setExchangeStates] = useState<{ [key: string]: ExchangeState }>({})
+    let settlementTokenMetadata: { decimals: number; address: string }[] = []
 
     // utils (this can be separated into other container)
     const currentExchange: string = useMemo(() => {
@@ -83,6 +74,9 @@ function usePerpdexExchangeContainer() {
     const perpdexExchange = useMemo(() => {
         return createExchangeContract(currentExchange, signer)
     }, [currentExchange, signer])
+    const currentMyAccountInfo: AccountInfo | undefined = useMemo(() => {
+        return exchangeStates[currentExchange]?.myAccountInfo
+    }, [exchangeStates, currentExchange])
     const currentMyMakerInfo: MakerInfo | undefined = useMemo(() => {
         return exchangeStates[currentExchange]?.myAccountInfo.makerInfos[currentMarket]
     }, [exchangeStates, currentExchange, currentMarket])
@@ -97,10 +91,41 @@ function usePerpdexExchangeContainer() {
 
         const exchanges = contractConfigs[chainId].exchanges
 
+        if (_.isEmpty(settlementTokenMetadata)) {
+            const multicallRequest2 = _.map(exchanges, exchange => {
+                const contract = createExchangeContractMulticall(exchange.address)
+                return contract.settlementToken()
+            })
+            const settlementTokens = await multicallNetworkProvider.all(multicallRequest2)
+
+            const multicallRequest3 = _.flattenDeep(
+                _.map(settlementTokens, (settlementToken, idx) => {
+                    return [
+                        settlementToken === constants.AddressZero
+                            ? multicallNetworkProvider.getEthBalance(constants.AddressZero) // dummy
+                            : createERC20ContractMulticall(settlementToken).decimals(),
+                    ]
+                }),
+            )
+            const decimals = await multicallNetworkProvider.all(multicallRequest3)
+
+            settlementTokenMetadata = _.map(settlementTokens, (settlementToken, idx) => {
+                return {
+                    decimals: settlementToken === constants.AddressZero ? 18 : decimals[idx].toNumber(),
+                    address: settlementToken,
+                }
+            })
+        }
+
         const multicallRequest = _.flattenDeep(
-            _.map(exchanges, exchange => {
+            _.map(exchanges, (exchange, idx) => {
                 const contract = createExchangeContractMulticall(exchange.address)
                 return [
+                    contract.imRatio(),
+                    contract.mmRatio(),
+                    settlementTokenMetadata[idx].address === constants.AddressZero
+                        ? multicallNetworkProvider.getEthBalance(account)
+                        : createERC20ContractMulticall(settlementTokenMetadata[idx].address).balanceOf(account),
                     contract.accountInfos(account),
                     contract.getTotalAccountValue(account),
                     _.map(exchange.markets, market => {
@@ -116,17 +141,20 @@ function usePerpdexExchangeContainer() {
 
         const newExchangeStates: { [key: string]: ExchangeState } = {}
 
-        let idx = 0
-        _.each(exchanges, exchange => {
-            const [accountInfo, totalAccountValue] = multicallResult.slice(idx, idx + 2)
-            idx += 2
+        let resultIdx = 0
+        _.each(exchanges, (exchange, idx) => {
+            const [imRatio, mmRatio, settlementTokenBalance, accountInfo, totalAccountValue] = multicallResult.slice(
+                resultIdx,
+                resultIdx + 5,
+            )
+            resultIdx += 5
 
             const takerInfos: { [key: string]: any } = {}
             const makerInfos: { [key: string]: any } = {}
 
             _.each(exchange.markets, market => {
-                const [takerInfo, makerInfo] = multicallResult.slice(idx, idx + 2)
-                idx += 2
+                const [takerInfo, makerInfo] = multicallResult.slice(resultIdx, resultIdx + 2)
+                resultIdx += 2
 
                 takerInfos[market.address] = {
                     baseBalanceShare: bigNum2Big(takerInfo.baseBalanceShare),
@@ -140,9 +168,12 @@ function usePerpdexExchangeContainer() {
             })
 
             newExchangeStates[exchange.address] = {
+                imRatio: bigNum2Big(imRatio, 6),
+                mmRatio: bigNum2Big(mmRatio, 6),
                 myAccountInfo: {
                     takerInfos: takerInfos,
                     makerInfos: makerInfos,
+                    settlementTokenBalance: bigNum2Big(settlementTokenBalance, settlementTokenMetadata[idx].decimals),
                     collateralBalance: bigNum2Big(accountInfo.collateralBalance),
                     totalAccountValue: bigNum2Big(totalAccountValue),
                 },
@@ -295,6 +326,7 @@ function usePerpdexExchangeContainer() {
         // core functions
         exchangeStates,
         // utils (my account of current market)
+        currentMyAccountInfo,
         currentMyMakerInfo,
         currentMyTakerInfo,
         deposit,

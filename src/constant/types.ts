@@ -26,13 +26,16 @@ export interface TakerInfo {
     quoteBalance: Big
 }
 
-interface AccountInfo {
+export interface AccountInfo {
     takerInfos: { [key: string]: TakerInfo }
     makerInfos: { [key: string]: MakerInfo }
+    settlementTokenBalance: Big
     collateralBalance: Big
     totalAccountValue: Big
 }
 
 export interface ExchangeState {
+    imRatio: Big
+    mmRatio: Big
     myAccountInfo: AccountInfo
 }
