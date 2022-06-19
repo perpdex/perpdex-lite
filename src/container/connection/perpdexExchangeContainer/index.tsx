@@ -8,25 +8,19 @@ import { ContractExecutor } from "./ContractExecutor"
 import { Transaction } from "../transaction"
 import { createContainer } from "unstated-next"
 import { PerpdexMarketContainer } from "../perpdexMarketContainer"
-import { BigNumber } from "ethers"
+import { BigNumber, constants } from "ethers"
 import _ from "lodash"
 import { contractConfigs } from "../../../constant/contract"
-import { ExchangeState, MakerInfo, TakerInfo } from "../../../constant/types"
-import produce from "immer"
+import { ExchangeState, MakerInfo, TakerInfo, AccountInfo } from "../../../constant/types"
 import { useInterval } from "../../../hook/useInterval"
 import { usePageVisibility } from "react-page-visibility"
-import { createExchangeContract, createExchangeContractMulticall } from "../contractFactory"
+import {
+    createERC20ContractMulticall,
+    createExchangeContract,
+    createExchangeContractMulticall,
+} from "../contractFactory"
 
 export const PerpdexExchangeContainer = createContainer(usePerpdexExchangeContainer)
-
-const nullExchangeState: ExchangeState = {
-    myAccountInfo: {
-        takerInfos: {},
-        makerInfos: {},
-        collateralBalance: Big(0),
-        totalAccountValue: Big(0),
-    },
-}
 
 const createExchangeExecutor = (address: string, signer: any) => {
     return new ContractExecutor(createExchangeContract(address, signer), signer)
@@ -59,12 +53,13 @@ function calcTrade(isBaseToQuote: boolean, collateral: Big, slippage: number, ma
 
 function usePerpdexExchangeContainer() {
     const { account, signer, chainId, multicallNetworkProvider } = Connection.useContainer()
-    const { marketStates, currentMarketState, currentMarket } = PerpdexMarketContainer.useContainer()
+    const { currentMarketState, currentMarket } = PerpdexMarketContainer.useContainer()
     const { execute } = Transaction.useContainer()
     const isVisible = usePageVisibility()
 
     // core
     const [exchangeStates, setExchangeStates] = useState<{ [key: string]: ExchangeState }>({})
+    let settlementTokenMetadata: { decimals: number; address: string }[] = []
 
     // utils (this can be separated into other container)
     const currentExchange: string = useMemo(() => {
@@ -79,6 +74,9 @@ function usePerpdexExchangeContainer() {
     const perpdexExchange = useMemo(() => {
         return createExchangeContract(currentExchange, signer)
     }, [currentExchange, signer])
+    const currentMyAccountInfo: AccountInfo | undefined = useMemo(() => {
+        return exchangeStates[currentExchange]?.myAccountInfo
+    }, [exchangeStates, currentExchange])
     const currentMyMakerInfo: MakerInfo | undefined = useMemo(() => {
         return exchangeStates[currentExchange]?.myAccountInfo.makerInfos[currentMarket]
     }, [exchangeStates, currentExchange, currentMarket])
@@ -86,57 +84,114 @@ function usePerpdexExchangeContainer() {
         return exchangeStates[currentExchange]?.myAccountInfo.takerInfos[currentMarket]
     }, [exchangeStates, currentExchange, currentMarket])
 
-    useEffect(() => {
-        ;(async () => {
-            if (!chainId) return
-            if (!account) return
-            if (!currentMarket) return
-            if (!multicallNetworkProvider) return
+    const fetchAll = async () => {
+        if (!chainId) return
+        if (!account) return
+        if (!multicallNetworkProvider) return
 
-            const exchangeAddresses = _.map(contractConfigs[chainId].exchanges, "address")
+        const exchanges = contractConfigs[chainId].exchanges
 
-            const newExchangeStates: { [key: string]: ExchangeState } = {}
+        if (_.isEmpty(settlementTokenMetadata)) {
+            const multicallRequest2 = _.map(exchanges, exchange => {
+                const contract = createExchangeContractMulticall(exchange.address)
+                return contract.settlementToken()
+            })
+            const settlementTokens = await multicallNetworkProvider.all(multicallRequest2)
 
-            for (let i = 0; i < exchangeAddresses.length; i++) {
-                const address = exchangeAddresses[i]
-                const contract = createExchangeContractMulticall(address)
+            const multicallRequest3 = _.flattenDeep(
+                _.map(settlementTokens, (settlementToken, idx) => {
+                    return [
+                        settlementToken === constants.AddressZero
+                            ? multicallNetworkProvider.getEthBalance(constants.AddressZero) // dummy
+                            : createERC20ContractMulticall(settlementToken).decimals(),
+                    ]
+                }),
+            )
+            const decimals = await multicallNetworkProvider.all(multicallRequest3)
 
-                const [
-                    collateralBalance,
-                    totalAccountValue,
-                    makerInfo,
-                    takerInfo,
-                ] = await multicallNetworkProvider.all([
+            settlementTokenMetadata = _.map(settlementTokens, (settlementToken, idx) => {
+                return {
+                    decimals: settlementToken === constants.AddressZero ? 18 : decimals[idx].toNumber(),
+                    address: settlementToken,
+                }
+            })
+        }
+
+        const multicallRequest = _.flattenDeep(
+            _.map(exchanges, (exchange, idx) => {
+                const contract = createExchangeContractMulticall(exchange.address)
+                return [
+                    contract.imRatio(),
+                    contract.mmRatio(),
+                    settlementTokenMetadata[idx].address === constants.AddressZero
+                        ? multicallNetworkProvider.getEthBalance(account)
+                        : createERC20ContractMulticall(settlementTokenMetadata[idx].address).balanceOf(account),
                     contract.accountInfos(account),
                     contract.getTotalAccountValue(account),
-                    contract.getMakerInfo(account, currentMarket),
-                    contract.getTakerInfo(account, currentMarket),
-                ])
+                    _.map(exchange.markets, market => {
+                        return [
+                            contract.getTakerInfo(account, market.address),
+                            contract.getMakerInfo(account, market.address),
+                        ]
+                    }),
+                ]
+            }),
+        )
+        const multicallResult = await multicallNetworkProvider.all(multicallRequest)
 
-                newExchangeStates[address] = {
-                    myAccountInfo: {
-                        takerInfos: {
-                            [currentMarket]: {
-                                baseBalanceShare: bigNum2Big(takerInfo.baseBalanceShare),
-                                quoteBalance: bigNum2Big(takerInfo.quoteBalance),
-                            },
-                        },
-                        makerInfos: {
-                            [currentMarket]: {
-                                liquidity: bigNum2Big(makerInfo.liquidity),
-                                cumBaseSharePerLiquidity: x96ToBig(makerInfo.cumBaseSharePerLiquidityX96),
-                                cumQuotePerLiquidity: x96ToBig(makerInfo.cumQuotePerLiquidityX96),
-                            },
-                        },
-                        collateralBalance: bigNum2Big(collateralBalance),
-                        totalAccountValue: bigNum2Big(totalAccountValue),
-                    },
+        const newExchangeStates: { [key: string]: ExchangeState } = {}
+
+        let resultIdx = 0
+        _.each(exchanges, (exchange, idx) => {
+            const [imRatio, mmRatio, settlementTokenBalance, accountInfo, totalAccountValue] = multicallResult.slice(
+                resultIdx,
+                resultIdx + 5,
+            )
+            resultIdx += 5
+
+            const takerInfos: { [key: string]: any } = {}
+            const makerInfos: { [key: string]: any } = {}
+
+            _.each(exchange.markets, market => {
+                const [takerInfo, makerInfo] = multicallResult.slice(resultIdx, resultIdx + 2)
+                resultIdx += 2
+
+                takerInfos[market.address] = {
+                    baseBalanceShare: bigNum2Big(takerInfo.baseBalanceShare),
+                    quoteBalance: bigNum2Big(takerInfo.quoteBalance),
                 }
+                makerInfos[market.address] = {
+                    liquidity: bigNum2Big(makerInfo.liquidity),
+                    cumBaseSharePerLiquidity: x96ToBig(makerInfo.cumBaseSharePerLiquidityX96),
+                    cumQuotePerLiquidity: x96ToBig(makerInfo.cumQuotePerLiquidityX96),
+                }
+            })
+
+            newExchangeStates[exchange.address] = {
+                imRatio: bigNum2Big(imRatio, 6),
+                mmRatio: bigNum2Big(mmRatio, 6),
+                myAccountInfo: {
+                    takerInfos: takerInfos,
+                    makerInfos: makerInfos,
+                    settlementTokenBalance: bigNum2Big(settlementTokenBalance, settlementTokenMetadata[idx].decimals),
+                    collateralBalance: bigNum2Big(accountInfo.collateralBalance),
+                    totalAccountValue: bigNum2Big(totalAccountValue),
+                },
             }
+        })
+
+        return newExchangeStates
+    }
+
+    useEffect(() => {
+        ;(async () => {
+            const newExchangeStates = await fetchAll()
+            if (!newExchangeStates) return
+
             console.log("newExchangeStates", newExchangeStates)
             setExchangeStates(newExchangeStates)
         })()
-    }, [chainId, signer, currentMarket, account])
+    }, [chainId, multicallNetworkProvider, account])
 
     const deposit = useCallback(
         (amount: string) => {
@@ -256,40 +311,22 @@ function usePerpdexExchangeContainer() {
         [account, contractExecuter, execute, currentMarket],
     )
 
-    const fetchTakerInfo = useCallback(
-        async (options: { trader?: string; market?: string } = {}) => {
-            const trader = options.trader || account
-            if (!trader) return
-            const market = options.market || currentMarket
-            const exchange = marketStates[market].exchangeAddress
-
-            const contract = createExchangeContract(exchange, signer)
-            const takerInfo = await contract.getTakerInfo(trader, market)
-
-            setExchangeStates(
-                produce(draft => {
-                    draft[exchange].myAccountInfo.takerInfos[market] = {
-                        baseBalanceShare: bigNum2Big(takerInfo.baseBalanceShare),
-                        quoteBalance: bigNum2Big(takerInfo.quoteBalance),
-                    }
-                }),
-            )
-        },
-        [account, currentMarket, marketStates, signer],
-    )
-
     useInterval(async () => {
         if (!isVisible) return
 
         console.log("perpdexExchangeContainer polling")
-        await fetchTakerInfo()
+        const newExchangeStates = await fetchAll()
+        if (!newExchangeStates) return
+
+        console.log("newExchangeStates", newExchangeStates)
+        setExchangeStates(newExchangeStates)
     }, 5000)
 
     return {
         // core functions
         exchangeStates,
-        fetchTakerInfo,
         // utils (my account of current market)
+        currentMyAccountInfo,
         currentMyMakerInfo,
         currentMyTakerInfo,
         deposit,
