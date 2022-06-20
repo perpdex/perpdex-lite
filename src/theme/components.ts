@@ -2,40 +2,20 @@ const components = {
     Button: {
         sizes: {
             lg: {
-                borderRadius: "xl",
+                borderRadius: "5px",
             },
             md: {
-                borderRadius: "xl",
+                borderRadius: "5px",
             },
             sm: {
-                borderRadius: "2xl",
+                borderRadius: "5px",
             },
             xs: {
-                borderRadius: "2xl",
+                borderRadius: "5px",
             },
         },
         defaultProps: {
             colorScheme: "white",
-        },
-    },
-    Heading: {
-        sizes: {
-            lg: {
-                fontFamily: "subHeading",
-                letterSpacing: "tight",
-            },
-            md: {
-                fontFamily: "subHeading",
-                letterSpacing: "tight",
-            },
-            sm: {
-                fontFamily: "subHeading",
-                letterSpacing: "tighter",
-            },
-            xs: {
-                fontFamily: "subHeading",
-                letterSpacing: "tighter",
-            },
         },
     },
 }
