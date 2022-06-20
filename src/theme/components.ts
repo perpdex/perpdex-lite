@@ -2,16 +2,16 @@ const components = {
     Button: {
         sizes: {
             lg: {
-                borderRadius: "xl",
+                borderRadius: "5px",
             },
             md: {
-                borderRadius: "xl",
+                borderRadius: "5px",
             },
             sm: {
-                borderRadius: "2xl",
+                borderRadius: "5px",
             },
             xs: {
-                borderRadius: "2xl",
+                borderRadius: "5px",
             },
         },
         defaultProps: {
