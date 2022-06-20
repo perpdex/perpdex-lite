@@ -18,26 +18,6 @@ const components = {
             colorScheme: "white",
         },
     },
-    Heading: {
-        sizes: {
-            lg: {
-                fontFamily: "subHeading",
-                letterSpacing: "tight",
-            },
-            md: {
-                fontFamily: "subHeading",
-                letterSpacing: "tight",
-            },
-            sm: {
-                fontFamily: "subHeading",
-                letterSpacing: "tighter",
-            },
-            xs: {
-                fontFamily: "subHeading",
-                letterSpacing: "tighter",
-            },
-        },
-    },
 }
 
 export default components
