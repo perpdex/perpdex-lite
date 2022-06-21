@@ -16,7 +16,6 @@ import produce from "immer"
 import { useInterval } from "../../../hook/useInterval"
 import { usePageVisibility } from "react-page-visibility"
 import { createExchangeContract, createExchangeContractMulticall } from "../contractFactory"
-import { calcPositionSize } from "util/market"
 
 export const PerpdexExchangeContainer = createContainer(usePerpdexExchangeContainer)
 
@@ -34,18 +33,15 @@ const createExchangeExecutor = (address: string, signer: any) => {
     return new ContractExecutor(createExchangeContract(address, signer), signer)
 }
 
-function calcTrade(isBaseToQuote: boolean, inverse: boolean, collateral: Big, slippage: number, markPrice: Big) {
+function calcTrade(isBaseToQuote: boolean, baseAmount: Big, quoteAmount: Big, slippage: number) {
     const isExactInput = isBaseToQuote
-    const positions = calcPositionSize(isBaseToQuote, inverse, collateral, markPrice)
     const _slippage = slippage / 100
 
-    const oppositeAmountBound = isExactInput
-        ? positions.oppositPosition.mul(1 - _slippage)
-        : positions.oppositPosition.mul(1 + _slippage)
+    const oppositeAmountBound = isExactInput ? quoteAmount.mul(1 - _slippage) : quoteAmount.mul(1 + _slippage)
 
     return {
         isExactInput,
-        position: big2BigNum(positions.basePosition),
+        position: big2BigNum(baseAmount),
         oppositeAmountBound: big2BigNum(oppositeAmountBound),
     }
 }
@@ -162,14 +158,13 @@ function usePerpdexExchangeContainer() {
     )
 
     const trade = useCallback(
-        (isBaseToQuote: boolean, collateral: Big, slippage: number) => {
+        (isBaseToQuote: boolean, baseAmount: Big, quoteAmount: Big, slippage: number) => {
             if (!currentMarketState || !currentMarketState.markPrice) return
             const { isExactInput, position, oppositeAmountBound } = calcTrade(
                 isBaseToQuote,
-                currentMarketState.inverse,
-                collateral,
+                baseAmount,
+                quoteAmount,
                 slippage,
-                currentMarketState.markPrice,
             )
 
             if (contractExecuter && account && currentMarket) {
@@ -189,14 +184,13 @@ function usePerpdexExchangeContainer() {
     )
 
     const previewTrade = useCallback(
-        async (isBaseToQuote: boolean, collateral: Big, slippage: number) => {
+        async (isBaseToQuote: boolean, baseAmount: Big, quoteAmount: Big, slippage: number) => {
             if (perpdexExchange && account && currentMarketState && currentMarketState.markPrice) {
                 const { isExactInput, position, oppositeAmountBound } = calcTrade(
                     isBaseToQuote,
-                    currentMarketState.inverse,
-                    collateral,
+                    baseAmount,
+                    quoteAmount,
                     slippage,
-                    currentMarketState.markPrice,
                 )
 
                 console.log(bigNum2FixedStr(position, 18), bigNum2FixedStr(oppositeAmountBound, 18))
@@ -245,7 +239,7 @@ function usePerpdexExchangeContainer() {
     useEffect(() => {
         ;(async () => {
             const results = await maxTrade(false)
-            console.log("maxTrade:", results)
+            results && console.log("maxTrade:", bigNum2Big(results).toString())
         })()
     }, [maxTrade])
 

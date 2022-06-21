@@ -1,41 +1,55 @@
-import React, { useCallback } from "react"
-
-import SideSwitcher from "./SideSwitcher"
-import Collateral from "./Collateral"
-import Slippage from "./Slippage"
-import Position from "./Position"
-import { calcPositionSize, getCollateralSymbol } from "util/market"
-import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
-import { Trade } from "container/perpetual/trade"
+import React, { useCallback, useMemo, useState } from "react"
 import Big from "big.js"
-import { formatInput } from "util/format"
+
+import Slippage from "./Slippage"
+import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
+import PositionInput from "./PositionInput"
+import { BIG_ZERO } from "constant"
+import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
+import SubmitBuySell from "./SubmitBuySell"
+import { Transaction } from "container/connection/transaction"
 
 function TradeInput() {
     const { currentMarketState } = PerpdexMarketContainer.useContainer()
-    const { isBaseToQuote, collateral, setCollateral } = Trade.useContainer()
+    const { trade, preview } = PerpdexExchangeContainer.useContainer()
+    const { isLoading } = Transaction.useContainer()
+    const [baseOrderValue, setBaseOrderValue] = useState<Big>(BIG_ZERO)
+    const [slippage, setSlippage] = useState<number>(0.5)
 
-    const handleCollateral = useCallback(
-        (value: Big | null) => {
-            setCollateral(value)
-        },
-        [setCollateral],
-    )
-    const collateralSymbol = getCollateralSymbol(currentMarketState)
+    const baseSymbol = currentMarketState.inverse ? currentMarketState.quoteSymbol : currentMarketState.baseSymbol
 
-    const positionSymbol = isBaseToQuote ? currentMarketState.quoteSymbol : currentMarketState.baseSymbol
-    const positionSize =
-        collateral &&
-        currentMarketState.markPrice &&
-        !currentMarketState.markPrice.eq(Big(0)) &&
-        calcPositionSize(isBaseToQuote, currentMarketState.inverse, collateral, currentMarketState.markPrice)
-    const positionDisplay = positionSize ? formatInput(positionSize.basePosition.toString(), 7) : "⃜⏳"
+    const handlePositionInput = useCallback((value: Big | null) => {
+        if (value !== null) {
+            setBaseOrderValue(value)
+        }
+    }, [])
+
+    const quoteOrderValue = useMemo(() => {
+        return baseOrderValue.mul(currentMarketState.markPrice)
+    }, [baseOrderValue, currentMarketState.markPrice])
+
+    const quoteSymbol = useMemo(() => {
+        return currentMarketState.inverse ? currentMarketState.baseSymbol : currentMarketState.quoteSymbol
+    }, [currentMarketState.baseSymbol, currentMarketState.inverse, currentMarketState.quoteSymbol])
+
+    const isSubmitDisabled = useMemo(() => {
+        return baseOrderValue.eq(0) || isLoading
+    }, [baseOrderValue, isLoading])
 
     return (
         <>
-            <SideSwitcher />
-            <Collateral collateralSymbol={collateralSymbol} handleCollateral={handleCollateral} />
-            <Position positionSymbol={positionSymbol} positionSize={positionDisplay} />
-            <Slippage />
+            <PositionInput baseSymbol={baseSymbol} handleInput={handlePositionInput} />
+            <Slippage slippage={slippage} setSlippage={setSlippage} />
+            <SubmitBuySell
+                baseOrderValue={baseOrderValue}
+                quoteOrderValue={quoteOrderValue}
+                quoteSymbol={quoteSymbol}
+                slippage={slippage}
+                isLoading={isLoading}
+                isDisabled={isSubmitDisabled}
+                trade={trade}
+                previewTrade={preview.trade}
+            />
         </>
     )
 }

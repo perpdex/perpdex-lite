@@ -98,8 +98,8 @@ function usePerpdexMarketContainer() {
 
                 newMarketStates[address] = {
                     exchangeAddress,
-                    baseSymbol: inverse ? quoteSymbol : baseSymbol,
-                    quoteSymbol: inverse ? baseSymbol : quoteSymbol,
+                    baseSymbol,
+                    quoteSymbol,
                     poolInfo: {
                         base: bigNum2Big(poolInfo.base),
                         quote: bigNum2Big(poolInfo.quote),

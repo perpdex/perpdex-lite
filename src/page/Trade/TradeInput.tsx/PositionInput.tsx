@@ -2,40 +2,39 @@ import { FormControl, InputGroup, InputRightElement, NumberInput, NumberInputFie
 import { useCallback, useMemo, useState } from "react"
 
 import Big from "big.js"
-// import MyBalance from "../../component/MyBalance"
 import SmallFormLabel from "component/SmallFormLabel"
 import { USDC_PRECISION } from "constant"
 import { formatInput } from "util/format"
 
-interface CollateralState {
-    collateralSymbol: string
-    handleCollateral: (value: Big | null) => void
+interface PositionInputState {
+    baseSymbol: string
+    handleInput: (value: Big | null) => void
 }
 
-function Collateral({ collateralSymbol, handleCollateral }: CollateralState) {
-    const [_collateral, _setCollateral] = useState<string>("")
+function PositionInput({ baseSymbol, handleInput }: PositionInputState) {
+    const [position, setPosition] = useState<string>("")
 
     const handleOnInput = useCallback(
         e => {
             const value = e.target.value
             if (value >= 0) {
                 const formattedValue = formatInput(value, USDC_PRECISION)
-                _setCollateral(formattedValue)
+                setPosition(formattedValue)
                 try {
-                    formattedValue && handleCollateral(new Big(formattedValue))
+                    formattedValue && handleInput(new Big(formattedValue))
                 } catch (err) {
                     console.error(err)
                 }
             }
         },
-        [handleCollateral],
+        [handleInput],
     )
 
     return useMemo(
         () => (
             <FormControl id="margin">
-                <SmallFormLabel>COLLATERAL</SmallFormLabel>
-                <NumberInput value={_collateral} onInput={handleOnInput}>
+                <SmallFormLabel>Order by Qty</SmallFormLabel>
+                <NumberInput value={position} onInput={handleOnInput}>
                     <InputGroup>
                         <NumberInputField />
                         <InputRightElement w="54px">
@@ -47,16 +46,15 @@ function Collateral({ collateralSymbol, handleCollateral }: CollateralState) {
                                 color="blue.500"
                                 textTransform="uppercase"
                             >
-                                {collateralSymbol}
+                                {baseSymbol}
                             </Text>
                         </InputRightElement>
                     </InputGroup>
                 </NumberInput>
-                {/*<MyBalance setCollateral={_setCollateral} />*/}
             </FormControl>
         ),
-        [_collateral, handleOnInput, collateralSymbol],
+        [position, handleOnInput, baseSymbol],
     )
 }
 
-export default Collateral
+export default PositionInput
