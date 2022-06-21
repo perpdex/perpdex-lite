@@ -172,8 +172,8 @@ export const LogoWhite = (props: any) => {
                         y2="50.6465"
                         gradientUnits="userSpaceOnUse"
                     >
-                        <stop stop-color="white" />
-                        <stop offset="1" stop-color="white" />
+                        <stop stopColor="white" />
+                        <stop offset="1" stopColor="white" />
                     </linearGradient>
                 </defs>
             </svg>
