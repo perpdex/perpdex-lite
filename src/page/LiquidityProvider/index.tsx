@@ -48,7 +48,7 @@ function LiquidityProvider() {
         if (!currentMyMakerInfo || !poolInfo || !markPrice || !currentMarketState) return
         if (poolInfo.totalLiquidity.eq(0)) return
 
-        const _markPrice = currentMarketState.inverse ? Big(0).div(markPrice) : markPrice
+        // const _markPrice = currentMarketState.inverse ? Big(0).div(markPrice) : markPrice
 
         const liquidity = currentMyMakerInfo.liquidity
 
@@ -58,12 +58,21 @@ function LiquidityProvider() {
         const baseDebt = Big(0)
         const quoteDebt = Big(0)
 
+        const unrealizedPnl = currentMarketState.inverse
+            ? baseAmount.sub(baseDebt).div(markPrice).add(quoteAmount.sub(quoteDebt))
+            : baseAmount.sub(baseDebt).mul(markPrice).add(quoteAmount.sub(quoteDebt))
+
+        console.log("markPrice", markPrice.toString())
+        const liquidityValue = currentMarketState.inverse
+            ? baseAmount.div(markPrice).add(quoteAmount)
+            : baseAmount.mul(markPrice).add(quoteAmount)
+
         const info = {
-            unrealizedPnl: baseAmount.sub(baseDebt).mul(_markPrice).add(quoteAmount.sub(quoteDebt)), // FIX: consider funding
-            liquidityValue: baseAmount.mul(_markPrice).add(quoteAmount),
+            unrealizedPnl, // FIX: consider funding
+            liquidityValue,
             liquidity,
-            baseAmount: currentMarketState.inverse ? quoteAmount : baseAmount,
-            quoteAmount: currentMarketState.inverse ? baseAmount : quoteAmount,
+            baseAmount,
+            quoteAmount,
             baseDebt,
             quoteDebt,
         }
