@@ -18,6 +18,10 @@ export const createMarketContractMulticall = (address: string) => {
     return new MulticallContract(address, abis.PerpdexMarket)
 }
 
+export const createPriceFeedContractMulticall = (address: string) => {
+    return new MulticallContract(address, abis.IPerpdexPriceFeed)
+}
+
 export const createERC20ContractMulticall = (address: string) => {
     return new MulticallContract(address, abis.IERC20Metadata)
 }

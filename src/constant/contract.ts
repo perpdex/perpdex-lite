@@ -97,6 +97,34 @@ _.each(contractConfigs, (value: ContractConfig, key: string) => {
 export const abis = {
     PerpdexExchange: perpdexDeployment["4"][0].contracts.PerpdexExchange.abi,
     PerpdexMarket: perpdexDeployment["4"][0].contracts.PerpdexMarketUSD.abi,
+    IPerpdexPriceFeed: [
+        {
+            inputs: [],
+            name: "decimals",
+            outputs: [
+                {
+                    internalType: "uint8",
+                    name: "",
+                    type: "uint8",
+                },
+            ],
+            stateMutability: "view",
+            type: "function",
+        },
+        {
+            inputs: [],
+            name: "getPrice",
+            outputs: [
+                {
+                    internalType: "uint256",
+                    name: "",
+                    type: "uint256",
+                },
+            ],
+            stateMutability: "view",
+            type: "function",
+        },
+    ],
     IERC20Metadata: [
         {
             anonymous: false,

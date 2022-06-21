@@ -2,15 +2,17 @@ import { Box, SimpleGrid, Text } from "@chakra-ui/react"
 import { LogoWhite } from "../Icon"
 import Big from "big.js"
 import { PerpdexExchangeContainer } from "../../container/connection/perpdexExchangeContainer"
+import { PerpdexMarketContainer } from "../../container/connection/perpdexMarketContainer"
 
 function AccountPanel() {
     const { currentMyAccountInfo } = PerpdexExchangeContainer.useContainer()
+    const { currentMarketState } = PerpdexMarketContainer.useContainer()
 
-    const totalAccountValue = currentMyAccountInfo?.totalAccountValue
-    // TODO: create hook to estimate usd value
-    const totalAccountValueUsd = Big(4.56)
-    const collateralBalance = currentMyAccountInfo?.collateralBalance
-    const collateralBalanceUsd = Big(45.67)
+    const quoteSymbol = currentMarketState.quoteSymbol
+    const totalAccountValue = currentMyAccountInfo?.totalAccountValue || Big(0)
+    const totalAccountValueUsd = totalAccountValue.mul(currentMarketState.indexPriceQuote)
+    const collateralBalance = currentMyAccountInfo?.collateralBalance || Big(0)
+    const collateralBalanceUsd = collateralBalance.mul(currentMarketState.indexPriceQuote)
 
     return (
         <Box bgGradient="linear(to-b, #627EEA80, #F9007780)" borderRadius={20}>
@@ -22,10 +24,10 @@ function AccountPanel() {
                         Total Account Value
                     </Text>
                     <Text as="span" fontSize="xl" fontWeight="bold">
-                        {totalAccountValue?.toFixed()}
+                        {totalAccountValue?.toFixed()} {quoteSymbol}
                     </Text>
                     <Text as="span" fontSize="xl" marginLeft={2}>
-                        ({totalAccountValueUsd?.toFixed()})
+                        (${totalAccountValueUsd?.toFixed()})
                     </Text>
                 </Box>
                 <Box>
@@ -33,10 +35,10 @@ function AccountPanel() {
                         Collateral
                     </Text>
                     <Text as="span" fontSize="xl" fontWeight="bold">
-                        {collateralBalance?.toFixed()}
+                        {collateralBalance?.toFixed()} {quoteSymbol}
                     </Text>
                     <Text as="span" fontSize="xl" marginLeft={2}>
-                        ({collateralBalanceUsd?.toFixed()})
+                        (${collateralBalanceUsd?.toFixed()})
                     </Text>
                 </Box>
             </SimpleGrid>
