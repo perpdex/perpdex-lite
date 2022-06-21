@@ -13,6 +13,7 @@ import {
     createMarketContractMulticall,
     createExchangeContractMulticall,
     createERC20ContractMulticall,
+    createPriceFeedContractMulticall,
 } from "../contractFactory"
 import { useInterval } from "../../../hook/useInterval"
 import produce from "immer"
@@ -27,6 +28,8 @@ const nullMarketState: MarketState = {
         totalLiquidity: Big(0),
     },
     markPrice: Big(0),
+    priceFeedQuote: "",
+    indexPriceQuote: Big(0),
     inverse: false,
 }
 
@@ -61,13 +64,19 @@ function usePerpdexMarketContainer() {
             const multicallRequest = _.flatten(
                 _.map(marketAddresses, address => {
                     const contract = createMarketContractMulticall(address)
-                    return [contract.exchange(), contract.poolInfo(), contract.symbol(), contract.getMarkPriceX96()]
+                    return [
+                        contract.exchange(),
+                        contract.poolInfo(),
+                        contract.symbol(),
+                        contract.getMarkPriceX96(),
+                        contract.priceFeedQuote(),
+                    ]
                 }),
             )
             const multicallResult = await multicallNetworkProvider.all(multicallRequest)
 
             const multicallRequest2 = _.map(_.range(marketAddresses.length), idx => {
-                const exchangeAddress = multicallResult[4 * idx]
+                const exchangeAddress = multicallResult[5 * idx]
                 const exchangeContract = createExchangeContractMulticall(exchangeAddress)
                 return exchangeContract.settlementToken()
             })
@@ -75,7 +84,7 @@ function usePerpdexMarketContainer() {
 
             const multicallRequest3 = _.map(settlementTokens, settlementTokenAddress => {
                 if (settlementTokenAddress === constants.AddressZero) {
-                    settlementTokenAddress = contractConfigs[chainId].weth.address // dummy
+                    return multicallNetworkProvider.getEthBalance(constants.AddressZero) // dummy
                 }
                 const settlementToken = createERC20ContractMulticall(settlementTokenAddress)
                 return settlementToken.symbol()
@@ -85,7 +94,10 @@ function usePerpdexMarketContainer() {
             const newMarketStates: { [key: string]: MarketState } = {}
 
             for (let i = 0; i < marketAddresses.length; i++) {
-                const [exchangeAddress, poolInfo, baseSymbol, markPriceX96] = multicallResult.slice(4 * i, 4 * (i + 1))
+                const [exchangeAddress, poolInfo, baseSymbol, markPriceX96, priceFeedQuote] = multicallResult.slice(
+                    5 * i,
+                    5 * (i + 1),
+                )
 
                 const address = marketAddresses[i]
                 const inverse = baseSymbol === "USD"
@@ -104,6 +116,8 @@ function usePerpdexMarketContainer() {
                         totalLiquidity: bigNum2Big(poolInfo.totalLiquidity),
                     },
                     markPrice: markPrice,
+                    priceFeedQuote: priceFeedQuote,
+                    indexPriceQuote: Big(0),
                     inverse: inverse,
                 }
             }
@@ -120,10 +134,23 @@ function usePerpdexMarketContainer() {
 
         const marketAddresses = _.keys(marketStates)
 
-        const multicallRequest = _.flatten(
+        const multicallRequest = _.flattenDeep(
             _.map(marketAddresses, address => {
                 const contract = createMarketContractMulticall(address)
-                return [contract.poolInfo(), contract.getMarkPriceX96()]
+                const priceFeedQuote =
+                    marketStates[address].priceFeedQuote === constants.AddressZero
+                        ? void 0
+                        : createPriceFeedContractMulticall(marketStates[address].priceFeedQuote)
+                return [
+                    contract.poolInfo(),
+                    contract.getMarkPriceX96(),
+                    priceFeedQuote
+                        ? priceFeedQuote.decimals()
+                        : multicallNetworkProvider.getEthBalance(constants.AddressZero), // dummy
+                    priceFeedQuote
+                        ? priceFeedQuote.getPrice()
+                        : multicallNetworkProvider.getEthBalance(constants.AddressZero), // dummy
+                ]
             }),
         )
         const multicallResult = await multicallNetworkProvider.all(multicallRequest)
@@ -132,7 +159,10 @@ function usePerpdexMarketContainer() {
             produce(draft => {
                 for (let i = 0; i < marketAddresses.length; i++) {
                     const marketAddress = marketAddresses[i]
-                    const [poolInfo, markPriceX96] = multicallResult.slice(2 * i, 2 * (i + 1))
+                    const [poolInfo, markPriceX96, priceFeedQuoteDecimals, priceFeedQuotePrice] = multicallResult.slice(
+                        4 * i,
+                        4 * (i + 1),
+                    )
 
                     if (_.has(draft, marketAddress)) {
                         const inverse = draft[marketAddress].inverse
@@ -142,6 +172,10 @@ function usePerpdexMarketContainer() {
                             totalLiquidity: bigNum2Big(poolInfo.totalLiquidity),
                         }
                         draft[marketAddress].markPrice = x96ToBig(markPriceX96, inverse)
+                        draft[marketAddress].indexPriceQuote =
+                            draft[marketAddress].priceFeedQuote === constants.AddressZero
+                                ? Big(1)
+                                : bigNum2Big(priceFeedQuotePrice, priceFeedQuoteDecimals)
                     }
                 }
             }),
