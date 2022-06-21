@@ -1,22 +1,19 @@
 import { FormControl, InputGroup, InputRightElement, NumberInput, NumberInputField, Text } from "@chakra-ui/react"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 
-import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import Big from "big.js"
 // import MyBalance from "../../component/MyBalance"
 import SmallFormLabel from "component/SmallFormLabel"
-import { Trade } from "container/perpetual/trade"
 import { USDC_PRECISION } from "constant"
 import { formatInput } from "util/format"
-import { useDebounce } from "hook/useDebounce"
 
-function Collateral() {
-    const {
-        currentMarketState: { quoteSymbol },
-    } = PerpdexMarketContainer.useContainer()
-    const { collateral, setCollateral } = Trade.useContainer()
+interface CollateralState {
+    collateralSymbol: string
+    handleCollateral: (value: Big | null) => void
+}
+
+function Collateral({ collateralSymbol, handleCollateral }: CollateralState) {
     const [_collateral, _setCollateral] = useState<string>("")
-    const debouncedCollateral = useDebounce({ value: _collateral, delay: 500 })
 
     const handleOnInput = useCallback(
         e => {
@@ -24,23 +21,15 @@ function Collateral() {
             if (value >= 0) {
                 const formattedValue = formatInput(value, USDC_PRECISION)
                 _setCollateral(formattedValue)
+                try {
+                    formattedValue && handleCollateral(new Big(formattedValue))
+                } catch (err) {
+                    console.error(err)
+                }
             }
         },
-        [_setCollateral],
+        [handleCollateral],
     )
-
-    useEffect(() => {
-        /* reset collateral to null */
-        if (debouncedCollateral === "") {
-            setCollateral(null)
-            return
-        }
-        /* detect if the value is different */
-        const b_debouncedCollateral = new Big(debouncedCollateral)
-        if (!collateral?.eq(b_debouncedCollateral)) {
-            setCollateral(b_debouncedCollateral)
-        }
-    }, [collateral, debouncedCollateral, setCollateral])
 
     return useMemo(
         () => (
@@ -58,7 +47,7 @@ function Collateral() {
                                 color="blue.500"
                                 textTransform="uppercase"
                             >
-                                {quoteSymbol}
+                                {collateralSymbol}
                             </Text>
                         </InputRightElement>
                     </InputGroup>
@@ -66,7 +55,7 @@ function Collateral() {
                 {/*<MyBalance setCollateral={_setCollateral} />*/}
             </FormControl>
         ),
-        [_collateral, handleOnInput, quoteSymbol],
+        [_collateral, handleOnInput, collateralSymbol],
     )
 }
 

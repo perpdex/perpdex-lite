@@ -4,7 +4,6 @@ import TxInfoTable from "./TxInfoTable"
 import { Trade } from "container/perpetual/trade"
 import { Transaction } from "container/connection/transaction"
 import { useCallback } from "react"
-import { usePositionSize } from "../usePositionSize"
 import { bigNum2Big } from "util/format"
 import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
@@ -17,7 +16,6 @@ function Summary() {
     const { slippage, isBaseToQuote, collateral, leverage } = Trade.useContainer()
     const { trade, preview } = PerpdexExchangeContainer.useContainer()
     const { isLoading } = Transaction.useContainer()
-    const { positionSize, isCalculating } = usePositionSize()
 
     // const { size: openedSize, margin: openedMargin, unrealizedPnl, outputPrice } = useOpenedPositionSize("")
 
@@ -33,7 +31,7 @@ function Summary() {
     //     return null
     // }, [collateral, isCalculating, leverage, positionSize])
 
-    const isDisabled = isLoading || isCalculating || collateral === null || collateral.eq(0)
+    const isDisabled = isLoading || collateral === null || collateral.eq(0)
 
     const handleOnTrade = useCallback(async () => {
         if (collateral) {

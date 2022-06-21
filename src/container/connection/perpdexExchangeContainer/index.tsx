@@ -16,6 +16,7 @@ import produce from "immer"
 import { useInterval } from "../../../hook/useInterval"
 import { usePageVisibility } from "react-page-visibility"
 import { createExchangeContract, createExchangeContractMulticall } from "../contractFactory"
+import { calcPositionSize } from "util/market"
 
 export const PerpdexExchangeContainer = createContainer(usePerpdexExchangeContainer)
 
@@ -33,18 +34,9 @@ const createExchangeExecutor = (address: string, signer: any) => {
     return new ContractExecutor(createExchangeContract(address, signer), signer)
 }
 
-function calcPositionSize(isBaseToQuote: boolean, notional: Big, markPrice: Big) {
-    const basePosition = isBaseToQuote ? notional.mul(markPrice) : notional
-    const oppositPosition = isBaseToQuote ? notional : notional.mul(markPrice)
-    return {
-        basePosition,
-        oppositPosition,
-    }
-}
-
-function calcTrade(isBaseToQuote: boolean, collateral: Big, slippage: number, markPrice: Big) {
+function calcTrade(isBaseToQuote: boolean, inverse: boolean, collateral: Big, slippage: number, markPrice: Big) {
     const isExactInput = isBaseToQuote
-    const positions = calcPositionSize(isBaseToQuote, collateral, markPrice)
+    const positions = calcPositionSize(isBaseToQuote, inverse, collateral, markPrice)
     const _slippage = slippage / 100
 
     const oppositeAmountBound = isExactInput
@@ -174,6 +166,7 @@ function usePerpdexExchangeContainer() {
             if (!currentMarketState || !currentMarketState.markPrice) return
             const { isExactInput, position, oppositeAmountBound } = calcTrade(
                 isBaseToQuote,
+                currentMarketState.inverse,
                 collateral,
                 slippage,
                 currentMarketState.markPrice,
@@ -200,6 +193,7 @@ function usePerpdexExchangeContainer() {
             if (perpdexExchange && account && currentMarketState && currentMarketState.markPrice) {
                 const { isExactInput, position, oppositeAmountBound } = calcTrade(
                     isBaseToQuote,
+                    currentMarketState.inverse,
                     collateral,
                     slippage,
                     currentMarketState.markPrice,

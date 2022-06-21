@@ -12,7 +12,7 @@ export interface MarketState {
     quoteSymbol: string
     poolInfo: PoolInfo
     markPrice: Big
-    inverse: Boolean
+    inverse: boolean
 }
 
 export interface MakerInfo {

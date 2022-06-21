@@ -16,6 +16,7 @@ import {
 } from "@chakra-ui/react"
 import { MarketState } from "../../constant/types"
 import { MakerPositionInfo } from "."
+import { getCollateralSymbol } from "util/market"
 
 interface ProvidedInfoTableProps {
     marketInfo?: MarketState
@@ -23,7 +24,7 @@ interface ProvidedInfoTableProps {
 }
 
 function ProvidedInfoTable({ marketInfo, makerPositionInfo }: ProvidedInfoTableProps) {
-    const collateralSymbol = marketInfo?.inverse ? marketInfo.baseSymbol : marketInfo?.quoteSymbol
+    const collateralSymbol = getCollateralSymbol(marketInfo)
 
     return (
         <>
