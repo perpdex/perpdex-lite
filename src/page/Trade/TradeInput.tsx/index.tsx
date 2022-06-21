@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
 import Big from "big.js"
 
 import Slippage from "./Slippage"
@@ -36,9 +36,15 @@ function TradeInput() {
         return baseOrderValue.eq(0) || isLoading
     }, [baseOrderValue, isLoading])
 
+    useEffect(() => {
+        if (currentMarketState.baseSymbol) {
+            setBaseOrderValue(BIG_ZERO)
+        }
+    }, [currentMarketState.baseSymbol])
+
     return (
         <>
-            <PositionInput baseSymbol={baseSymbol} handleInput={handlePositionInput} />
+            <PositionInput baseSymbol={baseSymbol} baseOrderValue={baseOrderValue} handleInput={handlePositionInput} />
             <Slippage slippage={slippage} setSlippage={setSlippage} />
             <SubmitBuySell
                 baseOrderValue={baseOrderValue}
