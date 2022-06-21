@@ -1,45 +1,68 @@
 import { FormControl, InputGroup, InputRightElement, NumberInput, NumberInputField, Text } from "@chakra-ui/react"
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
-import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import Big from "big.js"
 import SmallFormLabel from "component/SmallFormLabel"
-import { USDC_PRECISION } from "constant"
+import { BIG_ZERO, USDC_PRECISION } from "constant"
 import { formatInput } from "util/format"
+import { LpCollateralState, MarketState } from "constant/types"
 
-interface ICollateral {
-    onChange?: (value: Big) => void
+interface CollateralState {
+    currentMarketState: MarketState
+    collateralValues: LpCollateralState
+    setCollateralValues: (value: LpCollateralState) => void
 }
 
-function Collateral({ onChange }: ICollateral) {
-    const { currentMarketState } = PerpdexMarketContainer.useContainer()
-    const [collateral, setCollateral] = useState<string>("")
-
-    const collateralSymbol = currentMarketState.inverse ? currentMarketState.baseSymbol : currentMarketState.quoteSymbol
+function Collateral({ currentMarketState, collateralValues, setCollateralValues }: CollateralState) {
+    const [baseValue, setBaseValue] = useState<string>("")
+    const [quoteValue, setQuoteValue] = useState<string>("")
 
     const handleOnInput = useCallback(
-        e => {
-            const value = e.target.value
+        (isBase, value) => {
             if (value >= 0) {
-                const formattedValue = formatInput(value, USDC_PRECISION)
-                setCollateral(formattedValue)
-                if (onChange) {
-                    try {
-                        onChange(Big(value))
-                    } catch (err) {
-                        console.log(err)
+                try {
+                    const newValue = formatInput(value, USDC_PRECISION)
+                    isBase ? setBaseValue(newValue) : setQuoteValue(newValue)
+
+                    let base
+                    let quote
+                    if (isBase) {
+                        base = Big(value)
+                        quote = base.mul(currentMarketState.markPrice)
+                    } else {
+                        quote = Big(value)
+                        base = quote.div(currentMarketState.markPrice)
                     }
+
+                    isBase ? setQuoteValue(quote.toString()) : setBaseValue(base.toString())
+
+                    setCollateralValues({
+                        base,
+                        quote,
+                    })
+                } catch (err) {
+                    console.log(err)
                 }
             }
         },
-        [setCollateral, onChange],
+        [setCollateralValues, currentMarketState.markPrice],
     )
+
+    useEffect(() => {
+        if (collateralValues.base === BIG_ZERO && collateralValues.quote === BIG_ZERO) {
+            setBaseValue("")
+            setQuoteValue("")
+        }
+    }, [collateralValues.base, collateralValues.quote])
+
+    const handleOnBaseInput = useCallback(e => handleOnInput(true, e.target.value), [handleOnInput])
+    const handleOnQuoteInput = useCallback(e => handleOnInput(false, e.target.value), [handleOnInput])
 
     return useMemo(
         () => (
             <FormControl id="margin">
                 <SmallFormLabel>COLLATERAL</SmallFormLabel>
-                <NumberInput value={collateral} onInput={handleOnInput}>
+                <NumberInput value={baseValue} onInput={handleOnBaseInput}>
                     <InputGroup>
                         <NumberInputField />
                         <InputRightElement w="54px">
@@ -51,14 +74,43 @@ function Collateral({ onChange }: ICollateral) {
                                 color="blue.500"
                                 textTransform="uppercase"
                             >
-                                {collateralSymbol}
+                                {currentMarketState.inverse
+                                    ? currentMarketState.quoteSymbol
+                                    : currentMarketState.baseSymbol}
+                            </Text>
+                        </InputRightElement>
+                    </InputGroup>
+                </NumberInput>
+                <NumberInput value={quoteValue} onInput={handleOnQuoteInput}>
+                    <InputGroup>
+                        <NumberInputField />
+                        <InputRightElement w="54px">
+                            <Text
+                                w="100%"
+                                textAlign="center"
+                                fontWeight="bold"
+                                fontSize="xs"
+                                color="blue.500"
+                                textTransform="uppercase"
+                            >
+                                {currentMarketState.inverse
+                                    ? currentMarketState.baseSymbol
+                                    : currentMarketState.quoteSymbol}
                             </Text>
                         </InputRightElement>
                     </InputGroup>
                 </NumberInput>
             </FormControl>
         ),
-        [collateral, collateralSymbol, handleOnInput],
+        [
+            baseValue,
+            currentMarketState.baseSymbol,
+            currentMarketState.inverse,
+            currentMarketState.quoteSymbol,
+            handleOnBaseInput,
+            handleOnQuoteInput,
+            quoteValue,
+        ],
     )
 }
 

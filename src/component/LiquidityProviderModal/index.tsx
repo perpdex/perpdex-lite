@@ -8,19 +8,24 @@ import {
     ModalHeader,
     ModalOverlay,
     VStack,
-    Box,
     Button,
+    Text,
 } from "@chakra-ui/react"
 import MarketSelector from "../Perpetual/MarketSelector"
 import Collateral from "./Collateral"
-// import Position from "./Position"
 import Slippage from "./Slippage"
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { Modal as ModalContainer } from "container/modal"
-import Big from "big.js"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import { AddIcon } from "@chakra-ui/icons"
 import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
+import { LpCollateralState } from "constant/types"
+import { BIG_ZERO } from "constant"
+
+const initialLpCollateral = {
+    base: BIG_ZERO,
+    quote: BIG_ZERO,
+}
 
 function LiquidityProviderModal() {
     const {
@@ -29,40 +34,25 @@ function LiquidityProviderModal() {
     } = ModalContainer.useContainer()
 
     const { addLiquidity } = PerpdexExchangeContainer.useContainer()
-    const {
-        currentMarketState: { markPrice, inverse },
-        marketStates,
-    } = PerpdexMarketContainer.useContainer()
-
-    console.log("marketStates", marketStates, markPrice.toString())
+    const { currentMarketState } = PerpdexMarketContainer.useContainer()
 
     // const indexPrice = selectedAmm?.indexPrice || Big(0)
 
-    const [collateral, setCollateral] = useState<Big>(Big(0))
+    const [collateralValues, setCollateralValues] = useState<LpCollateralState>(initialLpCollateral)
 
-    const baseAmount = useMemo(() => {
-        if (markPrice && markPrice.gt(0)) {
-            return inverse ? collateral : collateral.div(markPrice)
-        } else {
-            console.error(
-                "This is the first time to add Liquidity Pool, so you need to specify MarkPrice maually, or use some index prices",
-            )
-            // const defaultMarkPrice = Big(964) // ETHUSD
-            // return collateral.div(defaultMarkPrice)
-            return Big(0)
+    const handleAddLiquidity = useCallback(() => {
+        const base = collateralValues.base
+        const quote = collateralValues.quote
+
+        addLiquidity(base, quote, base.mul(0.9), quote.mul(0.9))
+    }, [collateralValues.base, collateralValues.quote, addLiquidity])
+
+    // Reset values when market is updated
+    useEffect(() => {
+        if (currentMarketState.baseSymbol) {
+            setCollateralValues(initialLpCollateral)
         }
-    }, [collateral, inverse, markPrice])
-
-    const handleAddLiquidity = useCallback(
-        e => {
-            // const defaultMarkPrice = Big(964)
-            // const inverseQuoteAmount = collateral.mul(defaultMarkPrice)
-            const inputBaseAmount = inverse ? collateral.mul(markPrice) : baseAmount
-
-            addLiquidity(inputBaseAmount, collateral, inputBaseAmount.mul(0.9), collateral.mul(0.9))
-        },
-        [collateral, markPrice, baseAmount, inverse, addLiquidity],
-    )
+    }, [currentMarketState.baseSymbol])
 
     return (
         <Modal isCentered motionPreset="slideInBottom" isOpen={lpModalIsOpen} onClose={toggleLpModal}>
@@ -73,9 +63,14 @@ function LiquidityProviderModal() {
                 <ModalBody>
                     <VStack spacing={5}>
                         <MarketSelector />
-                        <Collateral onChange={setCollateral} />
-                        <Box>baseAmount: {inverse ? collateral.toString() : baseAmount.toString()}</Box>
-                        {/*<Position/>*/}
+                        <Text align="center" fontSize="medium" fontWeight="bold" lineHeight="1.4">
+                            Mark Price: {currentMarketState.markPrice.toString()}
+                        </Text>
+                        <Collateral
+                            currentMarketState={currentMarketState}
+                            collateralValues={collateralValues}
+                            setCollateralValues={setCollateralValues}
+                        />
                         <Divider />
                         <Slippage />
                         <Divider />

@@ -37,3 +37,8 @@ interface AccountInfo {
 export interface ExchangeState {
     myAccountInfo: AccountInfo
 }
+
+export interface LpCollateralState {
+    base: Big
+    quote: Big
+}
