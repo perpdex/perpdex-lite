@@ -33,15 +33,25 @@ const createExchangeExecutor = (address: string, signer: any) => {
     return new ContractExecutor(createExchangeContract(address, signer), signer)
 }
 
-function calcTrade(isBaseToQuote: boolean, baseAmount: Big, quoteAmount: Big, slippage: number) {
+function calcTrade(isBaseToQuote: boolean, isInverse: boolean, baseAmount: Big, quoteAmount: Big, slippage: number) {
     const isExactInput = isBaseToQuote
     const _slippage = slippage / 100
 
-    const oppositeAmountBound = isExactInput ? quoteAmount.mul(1 - _slippage) : quoteAmount.mul(1 + _slippage)
+    let position
+    let oppositeAmountBound
+    if (isInverse) {
+        position = quoteAmount
+        oppositeAmountBound = isExactInput ? baseAmount.mul(1 - _slippage) : baseAmount.mul(1 + _slippage)
+    } else {
+        position = baseAmount
+        oppositeAmountBound = isExactInput ? quoteAmount.mul(1 - _slippage) : quoteAmount.mul(1 + _slippage)
+    }
+
+    console.log("@@@@", position.toString(), oppositeAmountBound.toString())
 
     return {
         isExactInput,
-        position: big2BigNum(baseAmount),
+        position: big2BigNum(position),
         oppositeAmountBound: big2BigNum(oppositeAmountBound),
     }
 }
@@ -162,6 +172,7 @@ function usePerpdexExchangeContainer() {
             if (!currentMarketState || !currentMarketState.markPrice) return
             const { isExactInput, position, oppositeAmountBound } = calcTrade(
                 isBaseToQuote,
+                currentMarketState.inverse,
                 baseAmount,
                 quoteAmount,
                 slippage,
@@ -188,6 +199,7 @@ function usePerpdexExchangeContainer() {
             if (perpdexExchange && account && currentMarketState && currentMarketState.markPrice) {
                 const { isExactInput, position, oppositeAmountBound } = calcTrade(
                     isBaseToQuote,
+                    currentMarketState.inverse,
                     baseAmount,
                     quoteAmount,
                     slippage,
