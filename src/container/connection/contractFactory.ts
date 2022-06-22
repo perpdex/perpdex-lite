@@ -25,3 +25,7 @@ export const createPriceFeedContractMulticall = (address: string) => {
 export const createERC20ContractMulticall = (address: string) => {
     return new MulticallContract(address, abis.IERC20Metadata)
 }
+
+export const createERC4626ContractMulticall = (address: string) => {
+    return new MulticallContract(address, abis.IERC4626)
+}

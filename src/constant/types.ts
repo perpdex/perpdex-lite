@@ -74,3 +74,18 @@ interface settlementTokenMetadataUnit {
 }
 
 export type settlementTokenMetadataState = settlementTokenMetadataUnit[]
+
+export interface LongTokenState {
+    symbol: string
+    assetAddress: string
+    assetSymbol: string
+    assetDecimals: number
+    totalSupply: Big
+    totalAssets: Big
+    myShares: Big
+    myAssets: Big
+    maxDeposit: Big
+    maxMint: Big
+    maxWithdraw: Big
+    maxRedeem: Big
+}
