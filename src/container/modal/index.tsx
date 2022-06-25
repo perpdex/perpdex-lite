@@ -4,6 +4,7 @@ import { createContainer } from "unstated-next"
 function useModal() {
     const [walletModalIsOpen, setWalletModalIsOpen] = useState<boolean>(false)
     const [lpModalIsOpen, setLpModalIsOpen] = useState<boolean>(false)
+    const [positionCloseModalIsOpen, setPositionCloseModalIsOpen] = useState<boolean>(false)
 
     const toggleWalletModal = useCallback(() => {
         setWalletModalIsOpen(!walletModalIsOpen)
@@ -13,12 +14,18 @@ function useModal() {
         setLpModalIsOpen(!lpModalIsOpen)
     }, [lpModalIsOpen])
 
+    const togglePositionCloseModal = useCallback(() => {
+        setPositionCloseModalIsOpen(!positionCloseModalIsOpen)
+    }, [positionCloseModalIsOpen])
+
     return {
         walletModalIsOpen,
         lpModalIsOpen,
+        positionCloseModalIsOpen,
         actions: {
             toggleWalletModal,
             toggleLpModal,
+            togglePositionCloseModal,
         },
     }
 }

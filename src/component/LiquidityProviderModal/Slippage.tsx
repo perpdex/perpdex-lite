@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react"
 import React, { useCallback, useMemo } from "react"
 
-import SmallFormLabel from "component/SmallFormLabel"
+import SmallFormLabel from "component/base/SmallFormLabel"
 import { Trade } from "container/perpetual/trade"
 import { QuestionOutlineIcon } from "@chakra-ui/icons"
 

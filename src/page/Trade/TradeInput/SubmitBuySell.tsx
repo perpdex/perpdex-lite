@@ -42,6 +42,9 @@ function SubmitBuySell({
                     console.log("oppositeAmount", bigNum2Big(results).toString())
                 }
 
+                // inverse の buy sell が逆
+                console.error("ERRRRRRRRRR")
+
                 trade(isBaseToQuote, baseOrderValue, quoteOrderValue, slippage)
             }
         },

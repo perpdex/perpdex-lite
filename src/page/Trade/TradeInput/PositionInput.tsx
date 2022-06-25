@@ -1,17 +1,18 @@
 import { FormControl, InputGroup, InputRightElement, NumberInput, NumberInputField, Text } from "@chakra-ui/react"
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
 import Big from "big.js"
-import SmallFormLabel from "component/SmallFormLabel"
-import { USDC_PRECISION } from "constant"
+import SmallFormLabel from "component/base/SmallFormLabel"
+import { BIG_ZERO, USDC_PRECISION } from "constant"
 import { formatInput } from "util/format"
 
 interface PositionInputState {
     baseSymbol: string
+    baseOrderValue: Big
     handleInput: (value: Big | null) => void
 }
 
-function PositionInput({ baseSymbol, handleInput }: PositionInputState) {
+function PositionInput({ baseSymbol, baseOrderValue, handleInput }: PositionInputState) {
     const [position, setPosition] = useState<string>("")
 
     const handleOnInput = useCallback(
@@ -29,6 +30,12 @@ function PositionInput({ baseSymbol, handleInput }: PositionInputState) {
         },
         [handleInput],
     )
+
+    useEffect(() => {
+        if (baseOrderValue && baseOrderValue === BIG_ZERO) {
+            setPosition("")
+        }
+    }, [baseOrderValue])
 
     return useMemo(
         () => (

@@ -3,7 +3,6 @@ import { BIG_NUMBER_ZERO } from "constant"
 
 import { PerpdexExchange } from "types/newContracts"
 import { PerpdexExchangeActions } from "./type"
-import { constants } from "ethers"
 
 function getDeadline(): Number {
     return Math.floor(Date.now() / 1000) + 120
@@ -81,17 +80,6 @@ export class ContractExecutor implements PerpdexExchangeActions {
                 minBase: minBase,
                 minQuote: minQuote,
                 deadline: getDeadline(),
-            },
-        ])
-    }
-
-    closePosition(baseToken: string, quoteAmountBound: BigNumber): Promise<ContractTransaction> {
-        return this.execute("closePosition", [
-            {
-                baseToken: baseToken,
-                oppositeAmountBound: quoteAmountBound,
-                deadline: getDeadline(),
-                referralCode: constants.HashZero,
             },
         ])
     }

@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react"
 import React, { useCallback, useMemo } from "react"
 
-import SmallFormLabel from "component/SmallFormLabel"
+import SmallFormLabel from "component/base/SmallFormLabel"
 
 interface SlippageState {
     slippage: number

@@ -26,6 +26,14 @@ export interface TakerInfo {
     quoteBalance: Big
 }
 
+export interface TakerPositionsInfo {
+    notional: Big
+    size: Big
+    margin: Big
+    unrealizedPnl: Big
+    fee: Big
+}
+
 interface AccountInfo {
     takerInfos: { [key: string]: TakerInfo }
     makerInfos: { [key: string]: MakerInfo }
@@ -41,4 +49,16 @@ export interface ExchangeState {
 export interface LpCollateralState {
     base: Big
     quote: Big
+}
+
+export interface PositionState {
+    baseAssetSymbolDisplay: string
+    quoteAssetSymbolDisplay: string
+    isLong: boolean
+    positionQuantity: Big
+    positionValue: Big
+    entryPrice: Big
+    markPrice: Big
+    liqPrice: Big
+    unrealizedPnl: Big
 }

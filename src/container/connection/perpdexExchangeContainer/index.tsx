@@ -11,7 +11,7 @@ import { PerpdexMarketContainer } from "../perpdexMarketContainer"
 import { BigNumber } from "ethers"
 import _ from "lodash"
 import { contractConfigs } from "../../../constant/contract"
-import { ExchangeState, MakerInfo, TakerInfo } from "../../../constant/types"
+import { ExchangeState, MakerInfo, PositionState, TakerInfo, TakerPositionsInfo } from "../../../constant/types"
 import produce from "immer"
 import { useInterval } from "../../../hook/useInterval"
 import { usePageVisibility } from "react-page-visibility"
@@ -33,15 +33,25 @@ const createExchangeExecutor = (address: string, signer: any) => {
     return new ContractExecutor(createExchangeContract(address, signer), signer)
 }
 
-function calcTrade(isBaseToQuote: boolean, baseAmount: Big, quoteAmount: Big, slippage: number) {
+function calcTrade(isBaseToQuote: boolean, isInverse: boolean, baseAmount: Big, quoteAmount: Big, slippage: number) {
     const isExactInput = isBaseToQuote
     const _slippage = slippage / 100
 
-    const oppositeAmountBound = isExactInput ? quoteAmount.mul(1 - _slippage) : quoteAmount.mul(1 + _slippage)
+    let position
+    let oppositeAmountBound
+    if (isInverse) {
+        position = quoteAmount
+        oppositeAmountBound = isExactInput ? baseAmount.mul(1 - _slippage) : baseAmount.mul(1 + _slippage)
+    } else {
+        position = baseAmount
+        oppositeAmountBound = isExactInput ? quoteAmount.mul(1 - _slippage) : quoteAmount.mul(1 + _slippage)
+    }
+
+    console.log("@@@@", isExactInput, position.toString(), oppositeAmountBound.toString())
 
     return {
         isExactInput,
-        position: big2BigNum(baseAmount),
+        position: big2BigNum(position),
         oppositeAmountBound: big2BigNum(oppositeAmountBound),
     }
 }
@@ -74,6 +84,64 @@ function usePerpdexExchangeContainer() {
     const currentMyTakerInfo: TakerInfo | undefined = useMemo(() => {
         return exchangeStates[currentExchange]?.myAccountInfo.takerInfos[currentMarket]
     }, [exchangeStates, currentExchange, currentMarket])
+
+    // // FIX: inverse-related bugs
+    // const currentMyTakerPositions: TakerPositionsInfo | undefined = useMemo(() => {
+    //     if (currentMyTakerInfo?.baseBalanceShare && currentMyTakerInfo?.quoteBalance && currentMarketState?.markPrice) {
+    //         const takerOpenNotional = currentMyTakerInfo.quoteBalance
+    //         const size = currentMyTakerInfo.baseBalanceShare
+    //         const margin = Big(0)
+    //         if (size.eq(0)) return
+
+    //         const entryPrice = takerOpenNotional.abs().div(size.abs())
+    //         const unrealizedPnl = currentMarketState.markPrice.div(entryPrice).sub(1).mul(takerOpenNotional.mul(-1))
+
+    //         const exitPrice = size.div(takerOpenNotional).abs()
+    //         const fee = takerOpenNotional.mul(Big("0.003"))
+    //         const total = margin.add(unrealizedPnl).sub(fee)
+
+    //         return {
+    //             notional: takerOpenNotional,
+    //             size,
+    //             margin,
+    //             unrealizedPnl,
+    //             fee,
+    //             exitPrice,
+    //             total
+    //         }
+    //     }
+    //     return
+    // }, [currentMarketState?.markPrice, currentMyTakerInfo?.baseBalanceShare, currentMyTakerInfo?.quoteBalance])
+
+    const currentMyTakerPositions: PositionState | undefined = useMemo(() => {
+        if (currentMarketState && currentMyTakerInfo) {
+            const { inverse, markPrice, quoteSymbol, baseSymbol } = currentMarketState
+
+            const baseAssetSymbolDisplay = inverse ? quoteSymbol : baseSymbol
+            const quoteAssetSymbolDisplay = inverse ? baseSymbol : quoteSymbol
+
+            const takerOpenNotional = currentMyTakerInfo.quoteBalance
+            const size = currentMyTakerInfo.baseBalanceShare
+            if (size.eq(0)) return
+
+            const positionValue = size.mul(markPrice)
+            const entryPrice = takerOpenNotional.abs().div(size.abs())
+            const unrealizedPnl = markPrice.div(entryPrice).sub(1).mul(takerOpenNotional.mul(-1))
+
+            return {
+                baseAssetSymbolDisplay,
+                quoteAssetSymbolDisplay,
+                isLong: size.gt(0),
+                positionQuantity: size,
+                positionValue,
+                entryPrice,
+                markPrice,
+                liqPrice: Big(0),
+                unrealizedPnl,
+            }
+        }
+        return
+    }, [currentMarketState, currentMyTakerInfo])
 
     useEffect(() => {
         ;(async () => {
@@ -148,20 +216,12 @@ function usePerpdexExchangeContainer() {
         [contractExecuter, execute],
     )
 
-    const closePosition = useCallback(
-        (baseToken: string, quoteAmountBound: Big) => {
-            if (contractExecuter) {
-                execute(contractExecuter.closePosition(baseToken, big2BigNum(quoteAmountBound)))
-            }
-        },
-        [contractExecuter, execute],
-    )
-
     const trade = useCallback(
         (isBaseToQuote: boolean, baseAmount: Big, quoteAmount: Big, slippage: number) => {
             if (!currentMarketState || !currentMarketState.markPrice) return
             const { isExactInput, position, oppositeAmountBound } = calcTrade(
                 isBaseToQuote,
+                currentMarketState.inverse,
                 baseAmount,
                 quoteAmount,
                 slippage,
@@ -188,6 +248,7 @@ function usePerpdexExchangeContainer() {
             if (perpdexExchange && account && currentMarketState && currentMarketState.markPrice) {
                 const { isExactInput, position, oppositeAmountBound } = calcTrade(
                     isBaseToQuote,
+                    currentMarketState.inverse,
                     baseAmount,
                     quoteAmount,
                     slippage,
@@ -282,7 +343,7 @@ function usePerpdexExchangeContainer() {
             const trader = options.trader || account
             if (!trader) return
             const market = options.market || currentMarket
-            const exchange = marketStates[market].exchangeAddress
+            const exchange = marketStates[market]?.exchangeAddress
 
             const contract = createExchangeContract(exchange, signer)
             const takerInfo = await contract.getTakerInfo(trader, market)
@@ -313,10 +374,10 @@ function usePerpdexExchangeContainer() {
         // utils (my account of current market)
         currentMyMakerInfo,
         currentMyTakerInfo,
+        currentMyTakerPositions,
         deposit,
         withdraw,
         trade,
-        closePosition,
         addLiquidity,
         removeLiquidity,
         preview: {
