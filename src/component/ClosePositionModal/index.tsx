@@ -16,24 +16,12 @@ import {
     ModalFooter,
     Button,
 } from "@chakra-ui/react"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useMemo } from "react"
 import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
 import { Trade } from "container/perpetual/trade"
 import { Transaction } from "container/connection/transaction"
-import { Connection } from "container/connection"
 import { numberWithCommasUsdc } from "util/format"
-import { useInterval } from "hook/useInterval"
-import Big from "big.js"
 import { Position } from "container/perpetual/position"
-import { PerpdexMarketContainer } from "../../container/connection/perpdexMarketContainer"
-
-interface ClosePositionInfo {
-    notional: Big
-    size: Big
-    margin: Big
-    unrealizedPnl: Big
-    fee: Big
-}
 
 function ClosePositionModal() {
     // address is base token address
@@ -41,107 +29,45 @@ function ClosePositionModal() {
         state: { baseAssetSymbol, quoteAssetSymbol, address, isClosePositionModalOpen },
         closeClosePositionModal,
     } = Position.useContainer()
-    const { account } = Connection.useContainer()
-    const { closePosition, currentMyTakerInfo, fetchTakerInfo } = PerpdexExchangeContainer.useContainer()
+    const { closePosition, currentMyTakerPositions } = PerpdexExchangeContainer.useContainer()
     const { isLoading: isTxLoading } = Transaction.useContainer()
-    const {
-        currentMarketState: { markPrice },
-    } = PerpdexMarketContainer.useContainer() // TODO: refactor (this modal shouldn't depend on global state)
 
-    const { slippage } = Trade.useContainer()
-
-    const [closePositionInfo, setClosePositionInfo] = useState<ClosePositionInfo | null>(null)
+    const { slippage } = Trade.useContainer() // FIX the slippage
 
     const handleOnClick = useCallback(async () => {
-        if (address && closePositionInfo !== null && closePositionInfo.notional && closePositionInfo.size) {
-            const { notional, size } = closePositionInfo
+        if (address && currentMyTakerPositions && currentMyTakerPositions.notional && currentMyTakerPositions.size) {
+            const { notional, size } = currentMyTakerPositions
             const slippageLimit = notional.abs().mul(slippage / 100)
             const quoteLimit = size.gt(0) ? notional.abs().sub(slippageLimit) : notional.abs().add(slippageLimit)
             closePosition(address, quoteLimit)
         }
-    }, [address, closePosition, closePositionInfo, slippage])
-
-    const getClosePositionInfo = useCallback(async () => {
-        if (!account) return
-        if (!address) return
-        if (!currentMyTakerInfo) return
-
-        await fetchTakerInfo()
-
-        const size = currentMyTakerInfo.baseBalanceShare
-        const takerOpenNotional = currentMyTakerInfo.quoteBalance
-        const margin = Big(0)
-
-        if (size.eq(0)) return
-
-        const entryPrice = takerOpenNotional.abs().div(size.abs())
-        if (!markPrice) return
-
-        const unrealizedPnl = markPrice.div(entryPrice).sub(1).mul(takerOpenNotional.mul(-1))
-
-        const info = {
-            notional: takerOpenNotional,
-            size,
-            margin,
-            unrealizedPnl,
-            fee: takerOpenNotional.mul(Big("0.003")),
-        }
-
-        setClosePositionInfo(info)
-    }, [account, address, currentMyTakerInfo, fetchTakerInfo, markPrice])
-
-    useEffect(() => {
-        getClosePositionInfo()
-    }, [getClosePositionInfo])
-
-    /**
-     * NOTE: higher frequency of info updating
-     * update trader's position info per 2s
-     */
-    useInterval(getClosePositionInfo, 2000)
+    }, [address, closePosition, currentMyTakerPositions, slippage])
 
     /* prepare data for UI */
     const exitPriceStr = useMemo(() => {
-        if (closePositionInfo === null) {
-            return "-"
+        if (
+            currentMyTakerPositions &&
+            currentMyTakerPositions.notional.abs().gt(0) &&
+            currentMyTakerPositions.size.abs().gt(0)
+        ) {
+            const { size, notional } = currentMyTakerPositions
+            return numberWithCommasUsdc(size.div(notional).abs())
         }
-        const { notional, size } = closePositionInfo
-        if (notional.eq(0) || size.eq(0)) {
-            return "-"
-        }
-        return numberWithCommasUsdc(size.div(notional).abs())
-    }, [closePositionInfo])
+        return "-"
+    }, [currentMyTakerPositions])
 
-    const pnlStr = useMemo(() => {
-        if (closePositionInfo !== null && closePositionInfo.unrealizedPnl) {
-            return closePositionInfo.unrealizedPnl.toFixed(2)
-        }
-        return "-"
-    }, [closePositionInfo])
-    const marginStr = useMemo(() => {
-        if (closePositionInfo !== null && closePositionInfo.margin) {
-            return numberWithCommasUsdc(closePositionInfo.margin)
-        }
-        return "-"
-    }, [closePositionInfo])
-    const feeStr = useMemo(() => {
-        if (closePositionInfo !== null && closePositionInfo.fee) {
-            return closePositionInfo.fee.toFixed(2)
-        }
-        return "-"
-    }, [closePositionInfo])
     const totalStr = useMemo(() => {
         if (
-            closePositionInfo !== null &&
-            closePositionInfo.margin &&
-            closePositionInfo.unrealizedPnl &&
-            closePositionInfo.fee
+            currentMyTakerPositions &&
+            currentMyTakerPositions.margin &&
+            currentMyTakerPositions.unrealizedPnl &&
+            currentMyTakerPositions.fee
         ) {
-            const { margin, unrealizedPnl, fee } = closePositionInfo
+            const { margin, unrealizedPnl, fee } = currentMyTakerPositions
             return numberWithCommasUsdc(margin.add(unrealizedPnl).sub(fee))
         }
         return "-"
-    }, [closePositionInfo])
+    }, [currentMyTakerPositions])
 
     return useMemo(
         () => (
@@ -179,19 +105,23 @@ function ClosePositionModal() {
                                         <Tr>
                                             <Td>Margin</Td>
                                             <Td isNumeric>
-                                                {marginStr} {quoteAssetSymbol}
+                                                {(currentMyTakerPositions?.margin &&
+                                                    numberWithCommasUsdc(currentMyTakerPositions.margin)) ||
+                                                    "-"}{" "}
+                                                {quoteAssetSymbol}
                                             </Td>
                                         </Tr>
                                         <Tr>
                                             <Td>PnL</Td>
                                             <Td isNumeric>
-                                                {pnlStr} {quoteAssetSymbol}
+                                                {currentMyTakerPositions?.unrealizedPnl.toFixed(2) || "-"}{" "}
+                                                {quoteAssetSymbol}
                                             </Td>
                                         </Tr>
                                         <Tr>
                                             <Td>Transaction Fee</Td>
                                             <Td isNumeric>
-                                                {feeStr} {quoteAssetSymbol}
+                                                {currentMyTakerPositions?.fee.toFixed(2) || "-"} {quoteAssetSymbol}
                                             </Td>
                                         </Tr>
                                         <Tr>
@@ -226,9 +156,9 @@ function ClosePositionModal() {
             baseAssetSymbol,
             exitPriceStr,
             quoteAssetSymbol,
-            marginStr,
-            pnlStr,
-            feeStr,
+            currentMyTakerPositions?.margin,
+            currentMyTakerPositions?.unrealizedPnl,
+            currentMyTakerPositions?.fee,
             totalStr,
             handleOnClick,
             isTxLoading,

@@ -11,7 +11,7 @@ import { PerpdexMarketContainer } from "../perpdexMarketContainer"
 import { BigNumber } from "ethers"
 import _ from "lodash"
 import { contractConfigs } from "../../../constant/contract"
-import { ExchangeState, MakerInfo, TakerInfo } from "../../../constant/types"
+import { ExchangeState, MakerInfo, TakerInfo, TakerPositionsInfo } from "../../../constant/types"
 import produce from "immer"
 import { useInterval } from "../../../hook/useInterval"
 import { usePageVisibility } from "react-page-visibility"
@@ -84,6 +84,27 @@ function usePerpdexExchangeContainer() {
     const currentMyTakerInfo: TakerInfo | undefined = useMemo(() => {
         return exchangeStates[currentExchange]?.myAccountInfo.takerInfos[currentMarket]
     }, [exchangeStates, currentExchange, currentMarket])
+
+    const currentMyTakerPositions: TakerPositionsInfo | undefined = useMemo(() => {
+        if (currentMyTakerInfo?.baseBalanceShare && currentMyTakerInfo?.quoteBalance && currentMarketState?.markPrice) {
+            const takerOpenNotional = currentMyTakerInfo.quoteBalance
+            const size = currentMyTakerInfo.baseBalanceShare
+            const margin = Big(0)
+            if (size.eq(0)) return
+
+            const entryPrice = takerOpenNotional.abs().div(size.abs())
+            const unrealizedPnl = currentMarketState.markPrice.div(entryPrice).sub(1).mul(takerOpenNotional.mul(-1))
+
+            return {
+                notional: takerOpenNotional,
+                size,
+                margin,
+                unrealizedPnl,
+                fee: takerOpenNotional.mul(Big("0.003")),
+            }
+        }
+        return
+    }, [currentMarketState?.markPrice, currentMyTakerInfo?.baseBalanceShare, currentMyTakerInfo?.quoteBalance])
 
     useEffect(() => {
         ;(async () => {
@@ -325,6 +346,7 @@ function usePerpdexExchangeContainer() {
         // utils (my account of current market)
         currentMyMakerInfo,
         currentMyTakerInfo,
+        currentMyTakerPositions,
         deposit,
         withdraw,
         trade,

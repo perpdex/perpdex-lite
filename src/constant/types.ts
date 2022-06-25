@@ -26,6 +26,14 @@ export interface TakerInfo {
     quoteBalance: Big
 }
 
+export interface TakerPositionsInfo {
+    notional: Big
+    size: Big
+    margin: Big
+    unrealizedPnl: Big
+    fee: Big
+}
+
 interface AccountInfo {
     takerInfos: { [key: string]: TakerInfo }
     makerInfos: { [key: string]: MakerInfo }
