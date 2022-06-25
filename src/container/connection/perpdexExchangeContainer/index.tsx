@@ -211,7 +211,10 @@ function usePerpdexExchangeContainer() {
                 myAccountInfo: {
                     takerInfos: takerInfos,
                     makerInfos: makerInfos,
-                    settlementTokenBalance: bigNum2Big(settlementTokenBalance, settlementTokenMetadata[idx].decimals),
+                    settlementTokenBalance: bigNum2Big(
+                        settlementTokenBalance,
+                        settlementTokenMetadataLocal[idx].decimals,
+                    ),
                     collateralBalance: bigNum2Big(accountInfo.collateralBalance),
                     totalAccountValue: bigNum2Big(totalAccountValue),
                 },
