@@ -67,3 +67,10 @@ export interface PositionState {
     liqPrice: Big
     unrealizedPnl: Big
 }
+
+interface settlementTokenMetadataUnit {
+    decimals: number
+    address: string
+}
+
+export type settlementTokenMetadataState = settlementTokenMetadataUnit[]

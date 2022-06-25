@@ -11,7 +11,14 @@ import { PerpdexMarketContainer } from "../perpdexMarketContainer"
 import { BigNumber, constants } from "ethers"
 import _ from "lodash"
 import { contractConfigs } from "../../../constant/contract"
-import { ExchangeState, MakerInfo, TakerInfo, AccountInfo, PositionState } from "../../../constant/types"
+import {
+    ExchangeState,
+    MakerInfo,
+    TakerInfo,
+    AccountInfo,
+    PositionState,
+    settlementTokenMetadataState,
+} from "../../../constant/types"
 import { useInterval } from "../../../hook/useInterval"
 import { usePageVisibility } from "react-page-visibility"
 import {
@@ -57,7 +64,7 @@ function usePerpdexExchangeContainer() {
 
     // core
     const [exchangeStates, setExchangeStates] = useState<{ [key: string]: ExchangeState }>({})
-    const [settlementTokenMetadata, setSettlementTokenMetadata] = useState<{ decimals: number; address: string }[]>([])
+    const [settlementTokenMetadata, setSettlementTokenMetadata] = useState<settlementTokenMetadataState>([])
 
     // utils (this can be separated into other container)
     const currentExchange: string = useMemo(() => {
@@ -120,7 +127,8 @@ function usePerpdexExchangeContainer() {
 
         const exchanges = contractConfigs[chainId].exchanges
 
-        if (_.isEmpty(settlementTokenMetadata)) {
+        let settlementTokenMetadataLocal: settlementTokenMetadataState = settlementTokenMetadata
+        if (_.isEmpty(settlementTokenMetadataLocal)) {
             const multicallRequest2 = _.map(exchanges, exchange => {
                 const contract = createExchangeContractMulticall(exchange.address)
                 return contract.settlementToken()
@@ -138,14 +146,13 @@ function usePerpdexExchangeContainer() {
             )
             const decimals = await multicallNetworkProvider.all(multicallRequest3)
 
-            setSettlementTokenMetadata(
-                _.map(settlementTokens, (settlementToken, idx) => {
-                    return {
-                        decimals: settlementToken === constants.AddressZero ? 18 : decimals[idx].toNumber(),
-                        address: settlementToken,
-                    }
-                }),
-            )
+            settlementTokenMetadataLocal = _.map(settlementTokens, (settlementToken, idx) => {
+                return {
+                    decimals: settlementToken === constants.AddressZero ? 18 : decimals[idx].toNumber(),
+                    address: settlementToken,
+                }
+            })
+            setSettlementTokenMetadata(settlementTokenMetadataLocal)
         }
 
         const multicallRequest = _.flattenDeep(
@@ -154,9 +161,9 @@ function usePerpdexExchangeContainer() {
                 return [
                     contract.imRatio(),
                     contract.mmRatio(),
-                    settlementTokenMetadata[idx].address === constants.AddressZero
+                    settlementTokenMetadataLocal[idx].address === constants.AddressZero
                         ? multicallNetworkProvider.getEthBalance(account)
-                        : createERC20ContractMulticall(settlementTokenMetadata[idx].address).balanceOf(account),
+                        : createERC20ContractMulticall(settlementTokenMetadataLocal[idx].address).balanceOf(account),
                     contract.accountInfos(account),
                     contract.getTotalAccountValue(account),
                     _.map(exchange.markets, market => {
