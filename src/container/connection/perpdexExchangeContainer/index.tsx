@@ -117,7 +117,8 @@ function usePerpdexExchangeContainer() {
         if (currentMarketState && currentMyTakerInfo) {
             const { inverse, markPrice, quoteSymbol, baseSymbol } = currentMarketState
 
-            const market = inverse ? `${quoteSymbol}${baseSymbol}` : `${baseSymbol}${quoteSymbol}`
+            const baseAssetSymbolDisplay = inverse ? quoteSymbol : baseSymbol
+            const quoteAssetSymbolDisplay = inverse ? baseSymbol : quoteSymbol
 
             const takerOpenNotional = currentMyTakerInfo.quoteBalance
             const size = currentMyTakerInfo.baseBalanceShare
@@ -127,7 +128,8 @@ function usePerpdexExchangeContainer() {
             const unrealizedPnl = markPrice.div(entryPrice).sub(1).mul(takerOpenNotional.mul(-1))
 
             return {
-                market,
+                baseAssetSymbolDisplay,
+                quoteAssetSymbolDisplay,
                 isLong: size.gt(0),
                 positionQuantity: size,
                 positionValue,

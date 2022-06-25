@@ -23,7 +23,7 @@ function PositionTab() {
     const positionTableData: Omit<PositionTableState, "handleOnClick"> | undefined = useMemo(() => {
         if (currentMyTakerPositions) {
             return {
-                market: currentMyTakerPositions.market,
+                market: `${currentMyTakerPositions.baseAssetSymbolDisplay}${currentMyTakerPositions.quoteAssetSymbolDisplay}`,
                 isLong: currentMyTakerPositions.isLong,
                 positionQuantity: currentMyTakerPositions.positionQuantity.abs().toFixed(2),
                 positionValue: currentMyTakerPositions.positionValue.abs().toFixed(2),
