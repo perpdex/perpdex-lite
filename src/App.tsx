@@ -11,6 +11,7 @@ import UserAgreementModal from "component/UserAgreementModal"
 import AccountPerpdexModal from "component/AccountModal"
 import LiquidityProviderModal from "component/LiquidityProviderModal"
 import LiquidityProvider from "page/LiquidityProvider"
+import Pools from "page/Pools"
 
 export const App = () => (
     <Container maxW="container.2xl" pb={20} px={6}>
@@ -20,6 +21,7 @@ export const App = () => (
             <Route exact path="/" component={Home} />
             <Route exact path="/trade" component={Trade} />
             <Route exact path="/pool" component={LiquidityProvider} />
+            <Route exact path="/pools" component={Pools} />
         </Switch>
         <LiquidityProviderModal />
         <WalletListModal />
