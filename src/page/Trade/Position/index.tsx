@@ -94,7 +94,6 @@ function Position() {
     // }, [account, currentMarket, currentMarketState, markPrice, perpdexExchange])
 
     // TODO: calc PositionInfo from takerInfo
-    // TODO: fetchTakerInfo
 
     // useEffect(() => {
     //     getTraderPositionInfo()

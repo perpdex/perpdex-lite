@@ -12,6 +12,8 @@ export interface MarketState {
     quoteSymbol: string
     poolInfo: PoolInfo
     markPrice: Big
+    priceFeedQuote: string
+    indexPriceQuote: Big
     inverse: boolean
 }
 
@@ -34,15 +36,18 @@ export interface TakerPositionsInfo {
     fee: Big
 }
 
-interface AccountInfo {
+export interface AccountInfo {
     takerInfos: { [key: string]: TakerInfo }
     makerInfos: { [key: string]: MakerInfo }
+    settlementTokenBalance: Big
     collateralBalance: Big
     totalAccountValue: Big
-    totalPositionNotional: Big
+    // totalPositionNotional: Big
 }
 
 export interface ExchangeState {
+    imRatio: Big
+    mmRatio: Big
     myAccountInfo: AccountInfo
 }
 

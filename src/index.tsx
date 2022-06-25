@@ -9,7 +9,6 @@ import { ChakraProvider } from "@chakra-ui/react"
 import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import { Connection } from "./container/connection"
-import { Contract } from "./container/connection/contract"
 import { Reload } from "./container/connection/reload"
 import { Fonts } from "component/Font"
 import { Modal } from "container/modal"
@@ -19,7 +18,7 @@ import { Trade } from "container/perpetual/trade"
 import { Transaction } from "./container/connection/transaction"
 import { User } from "./container/connection/user"
 import { Web3Provider } from "./util/web3"
-import { AccountPerpdex } from "./container/connection/account"
+import { AccountPerpdex } from "./container/perpetual/account"
 import reportWebVitals from "./reportWebVitals"
 import { setupSegment } from "./lib/segment"
 import theme from "./theme"
@@ -47,7 +46,6 @@ const Providers = ((...providers: any[]) => ({ children }: { children: React.Rea
     HashRouter,
     Connection.Provider,
     Reload.Provider,
-    Contract.Provider,
     User.Provider,
     Transaction.Provider,
     PerpdexMarketContainer.Provider,

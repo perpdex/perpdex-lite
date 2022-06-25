@@ -1,7 +1,7 @@
 import React, { useEffect } from "react"
 import { Button } from "@chakra-ui/react"
 import { User } from "container/connection/user"
-import { AccountPerpdex } from "container/connection/account"
+import { AccountPerpdex } from "container/perpetual/account"
 import WalletFill from "../../component/Icon/WalletFill"
 
 function AssetInfo() {
@@ -10,12 +10,8 @@ function AssetInfo() {
     } = User.useContainer()
 
     const {
-        actions: { openAccountModal, getBalance },
+        actions: { openAccountModal },
     } = AccountPerpdex.useContainer()
-
-    useEffect(() => {
-        getBalance()
-    }, [getBalance])
 
     const AssetInfoButton = (isDeposit: boolean) => (
         <Button

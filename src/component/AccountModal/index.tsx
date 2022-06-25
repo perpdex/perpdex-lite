@@ -16,10 +16,10 @@ import {
     FormControl,
     Box,
 } from "@chakra-ui/react"
-import { AccountPerpdex } from "container/connection/account"
+import { AccountPerpdex } from "container/perpetual/account"
 import ButtonPerpdex from "component/ButtonPerpdex"
 import SmallFormLabel from "../base/SmallFormLabel"
-import { bigNum2FixedStr, formatInput } from "../../util/format"
+import { formatInput } from "../../util/format"
 import { INPUT_PRECISION } from "../../constant"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
@@ -28,15 +28,13 @@ function AccountModal() {
     const {
         state: {
             modal: { isAccountModalOpen, isDeposit },
-            balance,
-            collateral,
         },
         actions: { closeAccountModal },
     } = AccountPerpdex.useContainer()
 
     const { currentMarketState } = PerpdexMarketContainer.useContainer()
 
-    const { deposit, withdraw } = PerpdexExchangeContainer.useContainer()
+    const { deposit, withdraw, currentMyAccountInfo } = PerpdexExchangeContainer.useContainer()
 
     const [amount, setAmount] = useState<string>("")
 
@@ -86,9 +84,15 @@ function AccountModal() {
                             </NumberInput>
                         </FormControl>
                         {isDeposit ? (
-                            <Box>{balance ? bigNum2FixedStr(balance) : ""} available</Box>
+                            <Box>
+                                {currentMyAccountInfo ? currentMyAccountInfo.settlementTokenBalance.toFixed() : ""}{" "}
+                                available
+                            </Box>
                         ) : (
-                            <Box>{collateral ? bigNum2FixedStr(collateral) : ""} available to withdraw</Box>
+                            <Box>
+                                {currentMyAccountInfo ? currentMyAccountInfo.collateralBalance.toFixed() : ""} available
+                                to withdraw
+                            </Box>
                         )}
                         <ButtonGroup>
                             <ButtonPerpdex text={isDeposit ? "Deposit" : "Withdraw"} onClick={handleSubmit} />
