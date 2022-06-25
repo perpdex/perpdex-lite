@@ -75,7 +75,7 @@ function DiscreteInputModifier({ inputLabel, assetSymbol, maxValue, handleUpdate
                 </NumberInput>
             </FormControl>
 
-            <Box py={2} mx={2}>
+            <Box py={2}>
                 <Stack backgroundColor="whiteAlpha.200" direction="row" spacing={1} align="center">
                     {markedValues.map(val => (
                         <Button

@@ -47,7 +47,7 @@ function calcTrade(isBaseToQuote: boolean, isInverse: boolean, baseAmount: Big, 
         oppositeAmountBound = isExactInput ? quoteAmount.mul(1 - _slippage) : quoteAmount.mul(1 + _slippage)
     }
 
-    console.log("@@@@", position.toString(), oppositeAmountBound.toString())
+    console.log("@@@@", isExactInput, position.toString(), oppositeAmountBound.toString())
 
     return {
         isExactInput,
@@ -215,15 +215,6 @@ function usePerpdexExchangeContainer() {
         [contractExecuter, execute],
     )
 
-    const closePosition = useCallback(
-        (baseToken: string, quoteAmountBound: Big) => {
-            if (contractExecuter) {
-                execute(contractExecuter.closePosition(baseToken, big2BigNum(quoteAmountBound)))
-            }
-        },
-        [contractExecuter, execute],
-    )
-
     const trade = useCallback(
         (isBaseToQuote: boolean, baseAmount: Big, quoteAmount: Big, slippage: number) => {
             if (!currentMarketState || !currentMarketState.markPrice) return
@@ -386,7 +377,6 @@ function usePerpdexExchangeContainer() {
         deposit,
         withdraw,
         trade,
-        closePosition,
         addLiquidity,
         removeLiquidity,
         preview: {

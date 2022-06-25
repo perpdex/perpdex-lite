@@ -17,18 +17,14 @@ import Big from "big.js"
 import { BIG_ZERO } from "constant"
 
 function ClosePositionModal() {
-    // address is base token address
+    const [closeValue, setCloseValue] = useState<Big>(BIG_ZERO)
     const {
         positionCloseModalIsOpen,
         actions: { togglePositionCloseModal },
     } = ModalContainer.useContainer()
+
     const { isLoading: isTxLoading } = Transaction.useContainer()
-    const [closeValue, setCloseValue] = useState<Big>(BIG_ZERO)
-
-    const { currentMyTakerPositions } = PerpdexExchangeContainer.useContainer()
-    // const { closePosition, currentMyTakerPositions } = PerpdexExchangeContainer.useContainer()
-
-    // const { slippage } = Trade.useContainer() // FIX the slippage
+    const { currentMyTakerPositions, trade } = PerpdexExchangeContainer.useContainer()
 
     // const handleOnClick = useCallback(async () => {
     //     if (address && currentMyTakerPositions && currentMyTakerPositions.notional && currentMyTakerPositions.size) {
@@ -55,8 +51,15 @@ function ClosePositionModal() {
     }, [])
 
     const handleCloseMarket = useCallback(() => {
-        console.log("close value", closeValue.toFixed(6))
-    }, [closeValue])
+        if (currentMyTakerPositions) {
+            const isBaseToQuote = currentMyTakerPositions.isLong
+            const baseAmount = closeValue
+            const quoteAmount = baseAmount.mul(currentMyTakerPositions.markPrice)
+            const slippage = 40 // Future fix
+
+            trade(isBaseToQuote, baseAmount, quoteAmount, slippage)
+        }
+    }, [closeValue, currentMyTakerPositions, trade])
 
     return useMemo(
         () => (
@@ -90,7 +93,7 @@ function ClosePositionModal() {
                             isDisabled={isDisabled}
                             isLoading={isTxLoading}
                         >
-                            Close Position
+                            Confirm
                         </Button>
                     </ModalFooter>
                 </ModalContent>
