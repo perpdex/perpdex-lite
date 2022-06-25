@@ -103,7 +103,7 @@ function TxInfoTable(transactionInfo: TransactionInfo) {
             <Tbody>
                 <Tr>
                     <Td>Mark Price</Td>
-                    <Td isNumeric>{transactionInfo.markPrice?.toString()}</Td>
+                    <Td isNumeric>{transactionInfo.markPrice?.toFixed(6)}</Td>
                 </Tr>
                 <Tr>
                     <Td>Price Impact</Td>
@@ -111,7 +111,7 @@ function TxInfoTable(transactionInfo: TransactionInfo) {
                 </Tr>
                 <Tr>
                     <Td>Estimate Gas Fee</Td>
-                    <Td isNumeric>{transactionInfo.estimateGasFee?.toString()}</Td>
+                    <Td isNumeric>{transactionInfo.estimateGasFee?.toFixed(6)}</Td>
                 </Tr>
                 <Tr fontWeight="bold">
                     <Td>Funding Ratio</Td>

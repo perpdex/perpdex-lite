@@ -20,13 +20,13 @@ import { useCallback, useMemo } from "react"
 import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
 import { Trade } from "container/perpetual/trade"
 import { Transaction } from "container/connection/transaction"
-import { numberWithCommasUsdc } from "util/format"
 import { Position } from "container/perpetual/position"
 
 function ClosePositionModal() {
     // address is base token address
     const {
         state: { baseAssetSymbol, quoteAssetSymbol, address, isClosePositionModalOpen },
+        displayInfo,
         closeClosePositionModal,
     } = Position.useContainer()
     const { closePosition, currentMyTakerPositions } = PerpdexExchangeContainer.useContainer()
@@ -39,35 +39,11 @@ function ClosePositionModal() {
             const { notional, size } = currentMyTakerPositions
             const slippageLimit = notional.abs().mul(slippage / 100)
             const quoteLimit = size.gt(0) ? notional.abs().sub(slippageLimit) : notional.abs().add(slippageLimit)
+
+            // FIX: closePosition is not avaibale on the current contract
             closePosition(address, quoteLimit)
         }
     }, [address, closePosition, currentMyTakerPositions, slippage])
-
-    /* prepare data for UI */
-    const exitPriceStr = useMemo(() => {
-        if (
-            currentMyTakerPositions &&
-            currentMyTakerPositions.notional.abs().gt(0) &&
-            currentMyTakerPositions.size.abs().gt(0)
-        ) {
-            const { size, notional } = currentMyTakerPositions
-            return numberWithCommasUsdc(size.div(notional).abs())
-        }
-        return "-"
-    }, [currentMyTakerPositions])
-
-    const totalStr = useMemo(() => {
-        if (
-            currentMyTakerPositions &&
-            currentMyTakerPositions.margin &&
-            currentMyTakerPositions.unrealizedPnl &&
-            currentMyTakerPositions.fee
-        ) {
-            const { margin, unrealizedPnl, fee } = currentMyTakerPositions
-            return numberWithCommasUsdc(margin.add(unrealizedPnl).sub(fee))
-        }
-        return "-"
-    }, [currentMyTakerPositions])
 
     return useMemo(
         () => (
@@ -98,36 +74,34 @@ function ClosePositionModal() {
                                         <Tr fontWeight="bold">
                                             <Td>Exit Price</Td>
                                             <Td isNumeric>
-                                                {exitPriceStr}
+                                                {displayInfo.exitPriceStr}
                                                 {quoteAssetSymbol}
                                             </Td>
                                         </Tr>
                                         <Tr>
                                             <Td>Margin</Td>
                                             <Td isNumeric>
-                                                {(currentMyTakerPositions?.margin &&
-                                                    numberWithCommasUsdc(currentMyTakerPositions.margin)) ||
-                                                    "-"}{" "}
+                                                {displayInfo.marginStr}
                                                 {quoteAssetSymbol}
                                             </Td>
                                         </Tr>
                                         <Tr>
                                             <Td>PnL</Td>
                                             <Td isNumeric>
-                                                {currentMyTakerPositions?.unrealizedPnl.toFixed(2) || "-"}{" "}
+                                                {displayInfo.unrPnlStr}
                                                 {quoteAssetSymbol}
                                             </Td>
                                         </Tr>
                                         <Tr>
                                             <Td>Transaction Fee</Td>
                                             <Td isNumeric>
-                                                {currentMyTakerPositions?.fee.toFixed(2) || "-"} {quoteAssetSymbol}
+                                                {displayInfo.feeStr} {quoteAssetSymbol}
                                             </Td>
                                         </Tr>
                                         <Tr>
                                             <Td>Total Value Received</Td>
                                             <Td isNumeric>
-                                                {totalStr} {quoteAssetSymbol}
+                                                {displayInfo.totalStr} {quoteAssetSymbol}
                                             </Td>
                                         </Tr>
                                     </Tbody>
@@ -154,12 +128,12 @@ function ClosePositionModal() {
             isClosePositionModalOpen,
             closeClosePositionModal,
             baseAssetSymbol,
-            exitPriceStr,
+            displayInfo.exitPriceStr,
+            displayInfo.marginStr,
+            displayInfo.unrPnlStr,
+            displayInfo.feeStr,
+            displayInfo.totalStr,
             quoteAssetSymbol,
-            currentMyTakerPositions?.margin,
-            currentMyTakerPositions?.unrealizedPnl,
-            currentMyTakerPositions?.fee,
-            totalStr,
             handleOnClick,
             isTxLoading,
         ],

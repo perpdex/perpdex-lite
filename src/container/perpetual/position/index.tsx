@@ -1,6 +1,8 @@
-import { useCallback } from "react"
+import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
+import { useCallback, useMemo } from "react"
 import { createContainer } from "unstated-next"
 import { useImmerReducer } from "use-immer"
+import { numberWithCommasUsdc } from "util/format"
 
 enum ACTIONS {
     OPEN_CLOSE_POSITION_MODAL = "OPEN_CLOSE_POSITION_MODAL",
@@ -25,7 +27,47 @@ const initialState = {
 export const Position = createContainer(usePosition)
 
 function usePosition() {
+    const { currentMyTakerPositions } = PerpdexExchangeContainer.useContainer()
+
     const [state, dispatch] = useImmerReducer(reducer, initialState)
+
+    /* prepare data for UI */
+    const exitPriceStr = useMemo(() => {
+        if (
+            currentMyTakerPositions &&
+            currentMyTakerPositions.notional.abs().gt(0) &&
+            currentMyTakerPositions.size.abs().gt(0)
+        ) {
+            const { size, notional } = currentMyTakerPositions
+            return numberWithCommasUsdc(size.div(notional).abs())
+        }
+        return "-"
+    }, [currentMyTakerPositions])
+
+    const marginStr = useMemo(() => {
+        return (currentMyTakerPositions?.margin && numberWithCommasUsdc(currentMyTakerPositions.margin)) || "-"
+    }, [currentMyTakerPositions?.margin])
+
+    const unrPnlStr = useMemo(() => {
+        return currentMyTakerPositions?.unrealizedPnl.toFixed(2) || "-"
+    }, [currentMyTakerPositions?.unrealizedPnl])
+
+    const feeStr = useMemo(() => {
+        return currentMyTakerPositions?.fee.toFixed(2) || "-"
+    }, [currentMyTakerPositions?.fee])
+
+    const totalStr = useMemo(() => {
+        if (
+            currentMyTakerPositions &&
+            currentMyTakerPositions.margin &&
+            currentMyTakerPositions.unrealizedPnl &&
+            currentMyTakerPositions.fee
+        ) {
+            const { margin, unrealizedPnl, fee } = currentMyTakerPositions
+            return numberWithCommasUsdc(margin.add(unrealizedPnl).sub(fee))
+        }
+        return "-"
+    }, [currentMyTakerPositions])
 
     const openClosePositionModal = useCallback(
         (address: string, baseAssetSymbol: string, quoteAssetSymbol: string) => {
@@ -65,6 +107,13 @@ function usePosition() {
 
     return {
         state,
+        displayInfo: {
+            exitPriceStr,
+            marginStr,
+            unrPnlStr,
+            feeStr,
+            totalStr,
+        },
         openClosePositionModal,
         closeClosePositionModal,
         openAdjustMarginModal,

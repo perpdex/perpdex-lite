@@ -85,6 +85,7 @@ function usePerpdexExchangeContainer() {
         return exchangeStates[currentExchange]?.myAccountInfo.takerInfos[currentMarket]
     }, [exchangeStates, currentExchange, currentMarket])
 
+    // FIX: inverse-related bugs
     const currentMyTakerPositions: TakerPositionsInfo | undefined = useMemo(() => {
         if (currentMyTakerInfo?.baseBalanceShare && currentMyTakerInfo?.quoteBalance && currentMarketState?.markPrice) {
             const takerOpenNotional = currentMyTakerInfo.quoteBalance
@@ -315,7 +316,7 @@ function usePerpdexExchangeContainer() {
             const trader = options.trader || account
             if (!trader) return
             const market = options.market || currentMarket
-            const exchange = marketStates[market].exchangeAddress
+            const exchange = marketStates[market]?.exchangeAddress
 
             const contract = createExchangeContract(exchange, signer)
             const takerInfo = await contract.getTakerInfo(trader, market)
