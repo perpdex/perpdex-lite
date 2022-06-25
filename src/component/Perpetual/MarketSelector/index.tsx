@@ -1,5 +1,5 @@
 import { FormControl, Select } from "@chakra-ui/react"
-import SmallFormLabel from "component/SmallFormLabel"
+import SmallFormLabel from "component/base/SmallFormLabel"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import _ from "lodash"
 
@@ -15,7 +15,8 @@ function MarketSelector() {
             <Select onChange={handleOnChange}>
                 {_.map(marketStates, (marketState, marketAddress) => (
                     <option key={marketAddress} value={marketAddress} selected={marketAddress === currentMarket}>
-                        {marketState.quoteSymbol} / {marketState.baseSymbol} (inverse)
+                        {marketState.inverse && `${marketState.quoteSymbol} / ${marketState.baseSymbol} (inverse)`}
+                        {!marketState.inverse && `${marketState.baseSymbol} / ${marketState.quoteSymbol}`}
                     </option>
                 ))}
             </Select>

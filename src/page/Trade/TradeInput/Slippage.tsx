@@ -11,12 +11,14 @@ import {
 } from "@chakra-ui/react"
 import React, { useCallback, useMemo } from "react"
 
-import SmallFormLabel from "component/SmallFormLabel"
-import { Trade } from "container/perpetual/trade"
+import SmallFormLabel from "component/base/SmallFormLabel"
 
-function Slippage() {
-    const { slippage, setSlippage } = Trade.useContainer()
+interface SlippageState {
+    slippage: number
+    setSlippage: (value: number) => void
+}
 
+function Slippage({ slippage, setSlippage }: SlippageState) {
     const handleOnChange = useCallback(
         value => {
             if (value >= 0) {

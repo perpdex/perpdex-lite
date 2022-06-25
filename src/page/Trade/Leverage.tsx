@@ -8,7 +8,7 @@ import {
     SliderTrack,
     Text,
 } from "@chakra-ui/react"
-import SmallFormLabel from "component/SmallFormLabel"
+import SmallFormLabel from "component/base/SmallFormLabel"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { Trade } from "container/perpetual/trade"
 import { useDebounce } from "hook/useDebounce"

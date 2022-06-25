@@ -1,21 +1,45 @@
 // import { PositionInfo } from "constant/position"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import { Connection } from "container/connection"
-// import NoPosition from "./NoPosition"
+import NoPosition from "./NoPosition"
 import NoWallet from "./NoWallet"
-// import PositionUnit from "./PositionUnit"
+import PositionUnit from "./PositionUnit"
 import { SimpleGrid } from "@chakra-ui/layout"
-import { bigNum2Big } from "util/format"
-import { useInterval } from "@chakra-ui/hooks"
-import Big from "big.js"
 import FrameContainer from "component/FrameContainer"
+import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
+import { BIG_ZERO } from "constant"
+import { useMemo } from "react"
 
 function Position() {
     const { account } = Connection.useContainer()
     // TODO: do not depend on contract directly from page
     // const { perpdexExchange } = Contract.useContainer()
-    const { currentMarketState, currentMarket } = PerpdexMarketContainer.useContainer()
-    const markPrice = currentMarketState.markPrice
+    const { currentMarketState } = PerpdexMarketContainer.useContainer()
+    const { currentMyTakerInfo } = PerpdexExchangeContainer.useContainer()
+
+    const positionData = useMemo(() => {
+        if (!currentMyTakerInfo || !currentMarketState) return undefined
+
+        const markPrice = currentMarketState.markPrice
+        const inverse = currentMarketState.inverse
+        const baseSymbolDisplay = inverse ? currentMarketState.quoteSymbol : currentMarketState.baseSymbol
+        const quoteSymbolDisplay = inverse ? currentMarketState.baseSymbol : currentMarketState.quoteSymbol
+
+        const size = inverse ? currentMyTakerInfo.quoteBalance : currentMyTakerInfo.baseBalanceShare
+        const side = size.eq(0) ? null : size.gt(0) ? "Long" : "Short"
+
+        return {
+            marketPair: `${baseSymbolDisplay}/${quoteSymbolDisplay}`,
+            markPrice,
+            baseSymbolDisplay,
+            quoteSymbolDisplay,
+            size,
+            side,
+            estimatedLiquidationPrice: BIG_ZERO, // FIX
+            unrealizedPnl: BIG_ZERO, // FIX
+            averageEntryPrice: BIG_ZERO, // FIX
+        }
+    }, [currentMarketState, currentMyTakerInfo])
 
     // const baseTokenAddress = selectedAmm?.address || ""
     // const baseAssetSymbol = selectedAmm?.baseAssetSymbol || ""
@@ -82,10 +106,20 @@ function Position() {
         <FrameContainer>
             <SimpleGrid columns={1} spacing={8}>
                 {!account && <NoWallet />}
-                {/* {account && positionInfo.size.eq(0) && <NoPosition />} */}
-                {/* {account && !positionInfo.size.eq(0) && (
-                    <PositionUnit key={positionInfo.baseAssetSymbol} data={positionInfo} />
-                )} */}
+                {account && positionData && positionData.side === null && <NoPosition />}
+                {account && positionData && positionData.side !== null && (
+                    <PositionUnit
+                        marketPair={positionData.marketPair}
+                        markPrice={positionData.markPrice}
+                        baseSymbolDisplay={positionData.baseSymbolDisplay}
+                        quoteSymbolDisplay={positionData.quoteSymbolDisplay}
+                        size={positionData.size}
+                        side={positionData.side}
+                        estimatedLiquidationPrice={positionData.estimatedLiquidationPrice}
+                        unrealizedPnl={positionData.unrealizedPnl}
+                        averageEntryPrice={positionData.averageEntryPrice}
+                    />
+                )}
             </SimpleGrid>
         </FrameContainer>
     )

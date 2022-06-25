@@ -103,13 +103,15 @@ function usePerpdexMarketContainer() {
                 const inverse = baseSymbol === "USD"
                 let markPrice = x96ToBig(markPriceX96, inverse)
 
+                const quoteSymbol =
+                    settlementTokens[i] === constants.AddressZero
+                        ? networkConfigs[chainId].nativeTokenSymbol
+                        : quoteSymbols[i]
+
                 newMarketStates[address] = {
                     exchangeAddress,
                     baseSymbol,
-                    quoteSymbol:
-                        settlementTokens[i] === constants.AddressZero
-                            ? networkConfigs[chainId].nativeTokenSymbol
-                            : quoteSymbols[i],
+                    quoteSymbol,
                     poolInfo: {
                         base: bigNum2Big(poolInfo.base),
                         quote: bigNum2Big(poolInfo.quote),

@@ -32,8 +32,6 @@ export interface PerpdexExchangeActions {
         minBase: BigNumber,
         minQuote: BigNumber,
     ): Promise<ReturnType>
-
-    closePosition(baseToken: string, quoteAmountBound: BigNumber): Promise<ReturnType>
 }
 
 export interface TypedData<T> {

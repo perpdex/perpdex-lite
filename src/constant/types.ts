@@ -14,7 +14,7 @@ export interface MarketState {
     markPrice: Big
     priceFeedQuote: string
     indexPriceQuote: Big
-    inverse: Boolean
+    inverse: boolean
 }
 
 export interface MakerInfo {
@@ -28,12 +28,21 @@ export interface TakerInfo {
     quoteBalance: Big
 }
 
+export interface TakerPositionsInfo {
+    notional: Big
+    size: Big
+    margin: Big
+    unrealizedPnl: Big
+    fee: Big
+}
+
 export interface AccountInfo {
     takerInfos: { [key: string]: TakerInfo }
     makerInfos: { [key: string]: MakerInfo }
     settlementTokenBalance: Big
     collateralBalance: Big
     totalAccountValue: Big
+    // totalPositionNotional: Big
 }
 
 export interface ExchangeState {
@@ -41,3 +50,27 @@ export interface ExchangeState {
     mmRatio: Big
     myAccountInfo: AccountInfo
 }
+
+export interface LpCollateralState {
+    base: Big
+    quote: Big
+}
+
+export interface PositionState {
+    baseAssetSymbolDisplay: string
+    quoteAssetSymbolDisplay: string
+    isLong: boolean
+    positionQuantity: Big
+    positionValue: Big
+    entryPrice: Big
+    markPrice: Big
+    liqPrice: Big
+    unrealizedPnl: Big
+}
+
+interface settlementTokenMetadataUnit {
+    decimals: number
+    address: string
+}
+
+export type settlementTokenMetadataState = settlementTokenMetadataUnit[]

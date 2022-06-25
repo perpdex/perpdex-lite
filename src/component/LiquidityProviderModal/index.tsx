@@ -8,19 +8,24 @@ import {
     ModalHeader,
     ModalOverlay,
     VStack,
-    Box,
     Button,
+    Text,
 } from "@chakra-ui/react"
 import MarketSelector from "../Perpetual/MarketSelector"
 import Collateral from "./Collateral"
-// import Position from "./Position"
 import Slippage from "./Slippage"
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { Modal as ModalContainer } from "container/modal"
-import Big from "big.js"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import { AddIcon } from "@chakra-ui/icons"
 import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
+import { LpCollateralState } from "constant/types"
+import { BIG_ZERO } from "constant"
+
+const initialLpCollateral = {
+    base: BIG_ZERO,
+    quote: BIG_ZERO,
+}
 
 function LiquidityProviderModal() {
     const {
@@ -29,31 +34,25 @@ function LiquidityProviderModal() {
     } = ModalContainer.useContainer()
 
     const { addLiquidity } = PerpdexExchangeContainer.useContainer()
-    const {
-        currentMarketState: { markPrice },
-    } = PerpdexMarketContainer.useContainer()
+    const { currentMarketState } = PerpdexMarketContainer.useContainer()
 
     // const indexPrice = selectedAmm?.indexPrice || Big(0)
 
-    const [collateral, setCollateral] = useState<Big>(Big(0))
+    const [collateralValues, setCollateralValues] = useState<LpCollateralState>(initialLpCollateral)
 
-    const baseAmount = useMemo(() => {
-        if (markPrice && markPrice.gt(0)) {
-            return collateral.mul(markPrice)
-            // } else if (indexPrice.gt(0)) {
-            //     return collateral.div(indexPrice)
-        } else {
-            return Big(0)
+    const handleAddLiquidity = useCallback(() => {
+        const base = collateralValues.base
+        const quote = collateralValues.quote
+
+        addLiquidity(base, quote, base.mul(0.9), quote.mul(0.9))
+    }, [collateralValues.base, collateralValues.quote, addLiquidity])
+
+    // Reset values when market is updated
+    useEffect(() => {
+        if (currentMarketState.baseSymbol) {
+            setCollateralValues(initialLpCollateral)
         }
-    }, [collateral, markPrice])
-
-    const handleAddLiquidity = useCallback(
-        e => {
-            console.log("test", collateral, markPrice, baseAmount)
-            addLiquidity(baseAmount, collateral, baseAmount.mul(0.9), collateral.mul(0.9))
-        },
-        [baseAmount, collateral, markPrice, addLiquidity],
-    )
+    }, [currentMarketState.baseSymbol])
 
     return (
         <Modal isCentered motionPreset="slideInBottom" isOpen={lpModalIsOpen} onClose={toggleLpModal}>
@@ -64,9 +63,14 @@ function LiquidityProviderModal() {
                 <ModalBody>
                     <VStack spacing={5}>
                         <MarketSelector />
-                        <Collateral onChange={setCollateral} />
-                        <Box>baseAmount: {baseAmount.toString()}</Box>
-                        {/*<Position/>*/}
+                        <Text align="center" fontSize="medium" fontWeight="bold" lineHeight="1.4">
+                            Mark Price: {currentMarketState.markPrice.toString()}
+                        </Text>
+                        <Collateral
+                            currentMarketState={currentMarketState}
+                            collateralValues={collateralValues}
+                            setCollateralValues={setCollateralValues}
+                        />
                         <Divider />
                         <Slippage />
                         <Divider />
