@@ -27,47 +27,45 @@ const initialState = {
 export const Position = createContainer(usePosition)
 
 function usePosition() {
-    const { currentMyTakerPositions } = PerpdexExchangeContainer.useContainer()
-
     const [state, dispatch] = useImmerReducer(reducer, initialState)
 
-    /* prepare data for UI */
-    const exitPriceStr = useMemo(() => {
-        if (
-            currentMyTakerPositions &&
-            currentMyTakerPositions.notional.abs().gt(0) &&
-            currentMyTakerPositions.size.abs().gt(0)
-        ) {
-            const { size, notional } = currentMyTakerPositions
-            return numberWithCommasUsdc(size.div(notional).abs())
-        }
-        return "-"
-    }, [currentMyTakerPositions])
+    // /* prepare data for UI */
+    // const exitPriceStr = useMemo(() => {
+    //     if (
+    //         currentMyTakerPositions &&
+    //         currentMyTakerPositions.notional.abs().gt(0) &&
+    //         currentMyTakerPositions.size.abs().gt(0)
+    //     ) {
+    //         const { size, notional } = currentMyTakerPositions
+    //         return numberWithCommasUsdc(size.div(notional).abs())
+    //     }
+    //     return "-"
+    // }, [currentMyTakerPositions])
 
-    const marginStr = useMemo(() => {
-        return (currentMyTakerPositions?.margin && numberWithCommasUsdc(currentMyTakerPositions.margin)) || "-"
-    }, [currentMyTakerPositions?.margin])
+    // const marginStr = useMemo(() => {
+    //     return (currentMyTakerPositions?.margin && numberWithCommasUsdc(currentMyTakerPositions.margin)) || "-"
+    // }, [currentMyTakerPositions?.margin])
 
-    const unrPnlStr = useMemo(() => {
-        return currentMyTakerPositions?.unrealizedPnl.toFixed(2) || "-"
-    }, [currentMyTakerPositions?.unrealizedPnl])
+    // const unrPnlStr = useMemo(() => {
+    //     return currentMyTakerPositions?.unrealizedPnl.toFixed(2) || "-"
+    // }, [currentMyTakerPositions?.unrealizedPnl])
 
-    const feeStr = useMemo(() => {
-        return currentMyTakerPositions?.fee.toFixed(2) || "-"
-    }, [currentMyTakerPositions?.fee])
+    // const feeStr = useMemo(() => {
+    //     return currentMyTakerPositions?.fee.toFixed(2) || "-"
+    // }, [currentMyTakerPositions?.fee])
 
-    const totalStr = useMemo(() => {
-        if (
-            currentMyTakerPositions &&
-            currentMyTakerPositions.margin &&
-            currentMyTakerPositions.unrealizedPnl &&
-            currentMyTakerPositions.fee
-        ) {
-            const { margin, unrealizedPnl, fee } = currentMyTakerPositions
-            return numberWithCommasUsdc(margin.add(unrealizedPnl).sub(fee))
-        }
-        return "-"
-    }, [currentMyTakerPositions])
+    // const totalStr = useMemo(() => {
+    //     if (
+    //         currentMyTakerPositions &&
+    //         currentMyTakerPositions.margin &&
+    //         currentMyTakerPositions.unrealizedPnl &&
+    //         currentMyTakerPositions.fee
+    //     ) {
+    //         const { margin, unrealizedPnl, fee } = currentMyTakerPositions
+    //         return numberWithCommasUsdc(margin.add(unrealizedPnl).sub(fee))
+    //     }
+    //     return "-"
+    // }, [currentMyTakerPositions])
 
     const openClosePositionModal = useCallback(
         (address: string, baseAssetSymbol: string, quoteAssetSymbol: string) => {
@@ -107,13 +105,13 @@ function usePosition() {
 
     return {
         state,
-        displayInfo: {
-            exitPriceStr,
-            marginStr,
-            unrPnlStr,
-            feeStr,
-            totalStr,
-        },
+        // displayInfo: {
+        //     exitPriceStr,
+        //     marginStr,
+        //     unrPnlStr,
+        //     feeStr,
+        //     totalStr,
+        // },
         openClosePositionModal,
         closeClosePositionModal,
         openAdjustMarginModal,

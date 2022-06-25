@@ -26,7 +26,6 @@ function ClosePositionModal() {
     // address is base token address
     const {
         state: { baseAssetSymbol, quoteAssetSymbol, address, isClosePositionModalOpen },
-        displayInfo,
         closeClosePositionModal,
     } = Position.useContainer()
     const { closePosition, currentMyTakerPositions } = PerpdexExchangeContainer.useContainer()
@@ -34,16 +33,16 @@ function ClosePositionModal() {
 
     const { slippage } = Trade.useContainer() // FIX the slippage
 
-    const handleOnClick = useCallback(async () => {
-        if (address && currentMyTakerPositions && currentMyTakerPositions.notional && currentMyTakerPositions.size) {
-            const { notional, size } = currentMyTakerPositions
-            const slippageLimit = notional.abs().mul(slippage / 100)
-            const quoteLimit = size.gt(0) ? notional.abs().sub(slippageLimit) : notional.abs().add(slippageLimit)
+    // const handleOnClick = useCallback(async () => {
+    //     if (address && currentMyTakerPositions && currentMyTakerPositions.notional && currentMyTakerPositions.size) {
+    //         const { notional, size } = currentMyTakerPositions
+    //         const slippageLimit = notional.abs().mul(slippage / 100)
+    //         const quoteLimit = size.gt(0) ? notional.abs().sub(slippageLimit) : notional.abs().add(slippageLimit)
 
-            // FIX: closePosition is not avaibale on the current contract
-            closePosition(address, quoteLimit)
-        }
-    }, [address, closePosition, currentMyTakerPositions, slippage])
+    //         // FIX: closePosition is not avaibale on the current contract
+    //         closePosition(address, quoteLimit)
+    //     }
+    // }, [address, closePosition, currentMyTakerPositions, slippage])
 
     return useMemo(
         () => (
@@ -58,7 +57,7 @@ function ClosePositionModal() {
                     <ModalHeader>Close Position ({baseAssetSymbol})</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
-                        <VStack spacing={5}>
+                        {/* <VStack spacing={5}>
                             <Heading w="full" size="sm">
                                 Transaction Summary
                             </Heading>
@@ -108,14 +107,14 @@ function ClosePositionModal() {
                                 </Table>
                             </Box>
                             <Divider />
-                        </VStack>
+                        </VStack> */}
                     </ModalBody>
                     <ModalFooter>
                         <Button
                             isFullWidth
                             colorScheme="blue"
                             size="md"
-                            onClick={handleOnClick}
+                            onClick={() => console.log("FIX")}
                             isLoading={isTxLoading}
                         >
                             Close Position
@@ -124,19 +123,7 @@ function ClosePositionModal() {
                 </ModalContent>
             </Modal>
         ),
-        [
-            isClosePositionModalOpen,
-            closeClosePositionModal,
-            baseAssetSymbol,
-            displayInfo.exitPriceStr,
-            displayInfo.marginStr,
-            displayInfo.unrPnlStr,
-            displayInfo.feeStr,
-            displayInfo.totalStr,
-            quoteAssetSymbol,
-            handleOnClick,
-            isTxLoading,
-        ],
+        [isClosePositionModalOpen, closeClosePositionModal, baseAssetSymbol, isTxLoading],
     )
 }
 

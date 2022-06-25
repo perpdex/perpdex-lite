@@ -11,7 +11,7 @@ import { PerpdexMarketContainer } from "../perpdexMarketContainer"
 import { BigNumber } from "ethers"
 import _ from "lodash"
 import { contractConfigs } from "../../../constant/contract"
-import { ExchangeState, MakerInfo, TakerInfo, TakerPositionsInfo } from "../../../constant/types"
+import { ExchangeState, MakerInfo, PositionState, TakerInfo, TakerPositionsInfo } from "../../../constant/types"
 import produce from "immer"
 import { useInterval } from "../../../hook/useInterval"
 import { usePageVisibility } from "react-page-visibility"
@@ -85,27 +85,59 @@ function usePerpdexExchangeContainer() {
         return exchangeStates[currentExchange]?.myAccountInfo.takerInfos[currentMarket]
     }, [exchangeStates, currentExchange, currentMarket])
 
-    // FIX: inverse-related bugs
-    const currentMyTakerPositions: TakerPositionsInfo | undefined = useMemo(() => {
-        if (currentMyTakerInfo?.baseBalanceShare && currentMyTakerInfo?.quoteBalance && currentMarketState?.markPrice) {
+    // // FIX: inverse-related bugs
+    // const currentMyTakerPositions: TakerPositionsInfo | undefined = useMemo(() => {
+    //     if (currentMyTakerInfo?.baseBalanceShare && currentMyTakerInfo?.quoteBalance && currentMarketState?.markPrice) {
+    //         const takerOpenNotional = currentMyTakerInfo.quoteBalance
+    //         const size = currentMyTakerInfo.baseBalanceShare
+    //         const margin = Big(0)
+    //         if (size.eq(0)) return
+
+    //         const entryPrice = takerOpenNotional.abs().div(size.abs())
+    //         const unrealizedPnl = currentMarketState.markPrice.div(entryPrice).sub(1).mul(takerOpenNotional.mul(-1))
+
+    //         const exitPrice = size.div(takerOpenNotional).abs()
+    //         const fee = takerOpenNotional.mul(Big("0.003"))
+    //         const total = margin.add(unrealizedPnl).sub(fee)
+
+    //         return {
+    //             notional: takerOpenNotional,
+    //             size,
+    //             margin,
+    //             unrealizedPnl,
+    //             fee,
+    //             exitPrice,
+    //             total
+    //         }
+    //     }
+    //     return
+    // }, [currentMarketState?.markPrice, currentMyTakerInfo?.baseBalanceShare, currentMyTakerInfo?.quoteBalance])
+
+    const currentMyTakerPositions: PositionState | undefined = useMemo(() => {
+        if (currentMarketState && currentMyTakerInfo) {
+            const { inverse, markPrice, quoteSymbol, baseSymbol } = currentMarketState
+
+            const market = inverse ? `${quoteSymbol}${baseSymbol}` : `${baseSymbol}${quoteSymbol}`
+
             const takerOpenNotional = currentMyTakerInfo.quoteBalance
             const size = currentMyTakerInfo.baseBalanceShare
-            const margin = Big(0)
-            if (size.eq(0)) return
 
+            const positionValue = size.mul(markPrice)
             const entryPrice = takerOpenNotional.abs().div(size.abs())
-            const unrealizedPnl = currentMarketState.markPrice.div(entryPrice).sub(1).mul(takerOpenNotional.mul(-1))
+            const unrealizedPnl = markPrice.div(entryPrice).sub(1).mul(takerOpenNotional.mul(-1))
 
             return {
-                notional: takerOpenNotional,
-                size,
-                margin,
+                market,
+                positionQuantity: size,
+                positionValue,
+                entryPrice,
+                markPrice,
+                liqPrice: Big(0),
                 unrealizedPnl,
-                fee: takerOpenNotional.mul(Big("0.003")),
             }
         }
         return
-    }, [currentMarketState?.markPrice, currentMyTakerInfo?.baseBalanceShare, currentMyTakerInfo?.quoteBalance])
+    }, [currentMarketState, currentMyTakerInfo])
 
     useEffect(() => {
         ;(async () => {

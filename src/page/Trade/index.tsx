@@ -5,8 +5,9 @@ import { VStack, Flex, Box } from "@chakra-ui/react"
 import MarketSelector from "component/Perpetual/MarketSelector"
 import Summary from "./Summary"
 import FrameContainer from "component/FrameContainer"
-import TradeInput from "./TradeInput.tsx"
+import TradeInput from "./TradeInput"
 import Position from "./Position"
+import PositionTab from "./PositionTab"
 
 function Trade() {
     return (
@@ -16,6 +17,7 @@ function Trade() {
                     <MarketSelector />
                     Chart
                     <Position />
+                    <PositionTab />
                 </Box>
                 <Box w="360px">
                     <VStack spacing={6} p={0}>

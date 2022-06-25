@@ -50,3 +50,13 @@ export interface LpCollateralState {
     base: Big
     quote: Big
 }
+
+export interface PositionState {
+    market: string
+    positionQuantity: Big
+    positionValue: Big
+    entryPrice: Big
+    markPrice: Big
+    liqPrice: Big
+    unrealizedPnl: Big
+}
