@@ -53,6 +53,7 @@ export interface LpCollateralState {
 
 export interface PositionState {
     market: string
+    isLong: boolean
     positionQuantity: Big
     positionValue: Big
     entryPrice: Big

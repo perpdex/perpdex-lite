@@ -128,6 +128,7 @@ function usePerpdexExchangeContainer() {
 
             return {
                 market,
+                isLong: size.gt(0),
                 positionQuantity: size,
                 positionValue,
                 entryPrice,

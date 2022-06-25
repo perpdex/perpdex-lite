@@ -24,6 +24,7 @@ function PositionTab() {
         if (currentMyTakerPositions) {
             return {
                 market: currentMyTakerPositions.market,
+                isLong: currentMyTakerPositions.isLong,
                 positionQuantity: currentMyTakerPositions.positionQuantity.abs().toFixed(2),
                 positionValue: currentMyTakerPositions.positionValue.abs().toFixed(2),
                 entryPrice: currentMyTakerPositions.entryPrice.toFixed(7),
@@ -75,6 +76,7 @@ function PositionTab() {
                     {positionTableData && (
                         <PositionTable
                             market={positionTableData.market}
+                            isLong={positionTableData.isLong}
                             positionQuantity={positionTableData.positionQuantity}
                             positionValue={positionTableData.positionValue}
                             entryPrice={positionTableData.entryPrice}

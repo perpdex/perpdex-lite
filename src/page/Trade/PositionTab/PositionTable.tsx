@@ -1,7 +1,8 @@
-import { Table, Thead, Tbody, Tr, Th, Td, Button } from "@chakra-ui/react"
+import { Table, Thead, Tbody, Tr, Th, Td, Button, Text } from "@chakra-ui/react"
 
 export interface PositionTableState {
     market: string
+    isLong: boolean
     positionQuantity: string
     positionValue: string
     entryPrice: string
@@ -13,6 +14,7 @@ export interface PositionTableState {
 
 function PositionTable({
     market,
+    isLong,
     positionQuantity,
     positionValue,
     entryPrice,
@@ -38,7 +40,9 @@ function PositionTable({
             <Tbody>
                 <Tr>
                     <Td>{market}</Td>
-                    <Td>{positionQuantity}</Td>
+                    <Td>
+                        <Text color={isLong ? "green.300" : "red.300"}>{positionQuantity}</Text>
+                    </Td>
                     <Td>{positionValue}</Td>
                     <Td>{entryPrice}</Td>
                     <Td>{markPrice}</Td>
