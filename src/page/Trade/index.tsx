@@ -6,7 +6,6 @@ import MarketSelector from "component/Perpetual/MarketSelector"
 import Summary from "./Summary"
 import FrameContainer from "component/FrameContainer"
 import TradeInput from "./TradeInput"
-import Position from "./Position"
 import PositionTab from "./PositionTab"
 
 function Trade() {
@@ -16,7 +15,6 @@ function Trade() {
                 <Box flex="1" mr="2">
                     <MarketSelector />
                     Chart
-                    <Position />
                     <PositionTab />
                 </Box>
                 <Box w="360px">

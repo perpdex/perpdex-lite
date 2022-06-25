@@ -122,6 +122,7 @@ function usePerpdexExchangeContainer() {
 
             const takerOpenNotional = currentMyTakerInfo.quoteBalance
             const size = currentMyTakerInfo.baseBalanceShare
+            if (size.eq(0)) return
 
             const positionValue = size.mul(markPrice)
             const entryPrice = takerOpenNotional.abs().div(size.abs())

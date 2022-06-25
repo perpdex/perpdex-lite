@@ -25,8 +25,8 @@ function PositionTab() {
             return {
                 market: `${currentMyTakerPositions.baseAssetSymbolDisplay}${currentMyTakerPositions.quoteAssetSymbolDisplay}`,
                 isLong: currentMyTakerPositions.isLong,
-                positionQuantity: currentMyTakerPositions.positionQuantity.abs().toFixed(2),
-                positionValue: currentMyTakerPositions.positionValue.abs().toFixed(2),
+                positionQuantity: currentMyTakerPositions.positionQuantity.abs().toFixed(7),
+                positionValue: currentMyTakerPositions.positionValue.abs().toFixed(7),
                 entryPrice: currentMyTakerPositions.entryPrice.toFixed(7),
                 markPrice: currentMyTakerPositions.markPrice.toFixed(7),
                 liqPrice: currentMyTakerPositions.liqPrice.toFixed(7),
