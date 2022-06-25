@@ -2,7 +2,7 @@ import { FormControl, InputGroup, InputRightElement, NumberInput, NumberInputFie
 import { useCallback, useEffect, useMemo, useState } from "react"
 
 import Big from "big.js"
-import SmallFormLabel from "component/SmallFormLabel"
+import SmallFormLabel from "component/base/SmallFormLabel"
 import { BIG_ZERO, USDC_PRECISION } from "constant"
 import { formatInput } from "util/format"
 import { LpCollateralState, MarketState } from "constant/types"

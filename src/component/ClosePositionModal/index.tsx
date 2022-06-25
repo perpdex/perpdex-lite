@@ -8,10 +8,13 @@ import {
     ModalFooter,
     Button,
 } from "@chakra-ui/react"
-import { useMemo } from "react"
+import { useCallback, useMemo, useState } from "react"
 import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
 import { Transaction } from "container/connection/transaction"
 import { Modal as ModalContainer } from "container/modal"
+import DiscreteInputModifier from "component/base/DiscreteInputModifier"
+import Big from "big.js"
+import { BIG_ZERO } from "constant"
 
 function ClosePositionModal() {
     // address is base token address
@@ -20,6 +23,7 @@ function ClosePositionModal() {
         actions: { togglePositionCloseModal },
     } = ModalContainer.useContainer()
     const { isLoading: isTxLoading } = Transaction.useContainer()
+    const [closeValue, setCloseValue] = useState<Big>(BIG_ZERO)
 
     const { currentMyTakerPositions } = PerpdexExchangeContainer.useContainer()
     // const { closePosition, currentMyTakerPositions } = PerpdexExchangeContainer.useContainer()
@@ -37,6 +41,23 @@ function ClosePositionModal() {
     //     }
     // }, [address, closePosition, currentMyTakerPositions, slippage])
 
+    const isDisabled = useMemo(() => {
+        return (
+            !closeValue ||
+            !closeValue.gt(0) ||
+            !currentMyTakerPositions ||
+            closeValue.gt(currentMyTakerPositions.positionQuantity)
+        )
+    }, [closeValue, currentMyTakerPositions])
+
+    const handleUpdate = useCallback((value: Big) => {
+        setCloseValue(value)
+    }, [])
+
+    const handleCloseMarket = useCallback(() => {
+        console.log("close value", closeValue.toFixed(6))
+    }, [closeValue])
+
     return useMemo(
         () => (
             <Modal
@@ -44,18 +65,29 @@ function ClosePositionModal() {
                 motionPreset="slideInBottom"
                 isOpen={positionCloseModalIsOpen}
                 onClose={togglePositionCloseModal}
+                size="md"
             >
                 <ModalOverlay />
                 <ModalContent borderRadius="2xl" pb={3}>
-                    <ModalHeader>Close Position ({currentMyTakerPositions?.baseAssetSymbolDisplay})</ModalHeader>
+                    <ModalHeader>Close Position</ModalHeader>
                     <ModalCloseButton />
-                    <ModalBody></ModalBody>
+                    <ModalBody>
+                        {currentMyTakerPositions && (
+                            <DiscreteInputModifier
+                                inputLabel={`Closed qty ${currentMyTakerPositions.baseAssetSymbolDisplay}`}
+                                assetSymbol={currentMyTakerPositions.baseAssetSymbolDisplay}
+                                maxValue={currentMyTakerPositions.positionQuantity}
+                                handleUpdate={handleUpdate}
+                            />
+                        )}
+                    </ModalBody>
                     <ModalFooter>
                         <Button
                             isFullWidth
                             colorScheme="blue"
                             size="md"
-                            onClick={() => console.log("FIX")}
+                            onClick={handleCloseMarket}
+                            isDisabled={isDisabled}
                             isLoading={isTxLoading}
                         >
                             Close Position
@@ -67,7 +99,10 @@ function ClosePositionModal() {
         [
             positionCloseModalIsOpen,
             togglePositionCloseModal,
-            currentMyTakerPositions?.baseAssetSymbolDisplay,
+            currentMyTakerPositions,
+            handleUpdate,
+            handleCloseMarket,
+            isDisabled,
             isTxLoading,
         ],
     )

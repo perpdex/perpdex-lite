@@ -1,7 +1,7 @@
 import { FormControl, Input, InputGroup, InputRightElement, Text } from "@chakra-ui/react"
 
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
-import SmallFormLabel from "component/SmallFormLabel"
+import SmallFormLabel from "component/base/SmallFormLabel"
 import { usePositionSize } from "./usePositionSize"
 
 function Position() {

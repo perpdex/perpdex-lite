@@ -1,5 +1,5 @@
 import { FormControl, Select } from "@chakra-ui/react"
-import SmallFormLabel from "component/SmallFormLabel"
+import SmallFormLabel from "component/base/SmallFormLabel"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import _ from "lodash"
 
