@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { SimpleGrid, VStack, Box } from "@chakra-ui/react"
 
 import TitleBar from "./TitleBar"
@@ -13,6 +13,7 @@ import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeCo
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import Big from "big.js"
 import { useHistory, useParams } from "react-router-dom"
+import Breadcrumb, { BreadcrumbUnit } from "component/base/Breadcumb"
 
 export interface MakerPositionInfo {
     unrealizedPnl: Big
@@ -29,6 +30,10 @@ function LiquidityProvider() {
     const history = useHistory()
     const { currentMyMakerInfo, removeLiquidity } = PerpdexExchangeContainer.useContainer()
     const { currentMarketState, marketStates, setCurrentMarket } = PerpdexMarketContainer.useContainer()
+
+    const marketPairStr = useMemo(() => {
+        return `${currentMarketState?.baseSymbol}/${currentMarketState?.quoteSymbol}`
+    }, [currentMarketState?.baseSymbol, currentMarketState?.quoteSymbol])
 
     useEffect(() => {
         if (marketAddress && marketStates) {
@@ -98,8 +103,15 @@ function LiquidityProvider() {
         )
     }, [makerPositionInfo, removeLiquidity])
 
+    const breadcrumbLayers: BreadcrumbUnit[] = [
+        { name: "Home", path: "/" },
+        { name: "Pools", path: "/pools" },
+        { name: marketPairStr },
+    ]
+
     return (
         <FrameContainer>
+            <Breadcrumb layers={breadcrumbLayers} />
             <TitleBar />
             <SimpleGrid columns={2} spacing={8} mt="6">
                 <Box borderStyle="solid" borderWidth="1px" borderRadius="12px" p="4">
