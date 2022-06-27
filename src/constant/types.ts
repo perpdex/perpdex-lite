@@ -68,13 +68,6 @@ export interface PositionState {
     unrealizedPnl: Big
 }
 
-interface settlementTokenMetadataUnit {
-    decimals: number
-    address: string
-}
-
-export type settlementTokenMetadataState = settlementTokenMetadataUnit[]
-
 export interface LongTokenState {
     symbol: string
     assetAddress: string
