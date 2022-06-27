@@ -14,6 +14,8 @@ import { PerpdexMarketContainer } from "container/connection/perpdexMarketContai
 import Big from "big.js"
 import { useHistory, useParams } from "react-router-dom"
 import Breadcrumb, { BreadcrumbUnit } from "component/base/Breadcumb"
+import { PoolSummary } from "constant/types"
+import { createPoolSummary } from "util/market"
 
 export interface MakerPositionInfo {
     unrealizedPnl: Big
@@ -29,7 +31,7 @@ function LiquidityProvider() {
     const { marketAddress } = useParams<{ marketAddress: string }>()
     const history = useHistory()
     const { currentMyMakerInfo, removeLiquidity } = PerpdexExchangeContainer.useContainer()
-    const { currentMarketState, marketStates, setCurrentMarket } = PerpdexMarketContainer.useContainer()
+    const { currentMarket, currentMarketState, marketStates, setCurrentMarket } = PerpdexMarketContainer.useContainer()
 
     const marketPairStr = useMemo(() => {
         return `${currentMarketState?.baseSymbol}/${currentMarketState?.quoteSymbol}`
@@ -109,6 +111,12 @@ function LiquidityProvider() {
         { name: marketPairStr },
     ]
 
+    const poolSummary: PoolSummary | undefined = useMemo(() => {
+        return currentMarket && currentMarketState && markPrice
+            ? createPoolSummary({ ...currentMarketState, address: currentMarket, markPrice })
+            : undefined
+    }, [currentMarket, currentMarketState, markPrice])
+
     return (
         <FrameContainer>
             <Breadcrumb layers={breadcrumbLayers} />
@@ -117,7 +125,14 @@ function LiquidityProvider() {
                 <Box borderStyle="solid" borderWidth="1px" borderRadius="12px" p="4">
                     <VStack spacing={6} p={0}>
                         {/*<Mining />*/}
-                        <PoolInfo />
+                        {poolSummary && markPrice && (
+                            <PoolInfo
+                                quoteSymbol={poolSummary.quoteSymbol}
+                                tvl={poolSummary.tvl}
+                                volume24h={poolSummary.volume24h}
+                                markPrice={markPrice.toFixed(6)}
+                            />
+                        )}
                     </VStack>
                 </Box>
                 <Box borderStyle="solid" borderWidth="1px" borderRadius="12px" p="4">

@@ -1,11 +1,7 @@
 import { Table, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react"
+import { PoolSummary } from "constant/types"
 
-export interface PoolsTableUnit {
-    address: string
-    poolName: string
-    tvl: string
-    volume24h: string
-}
+export type PoolsTableUnit = PoolSummary
 
 export interface PoolsTableState {
     data: PoolsTableUnit[]

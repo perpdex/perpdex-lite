@@ -6,6 +6,14 @@ export interface PoolInfo {
     totalLiquidity: Big
 }
 
+export interface PoolSummary {
+    address: string
+    quoteSymbol: string
+    poolName: string
+    tvl: string
+    volume24h: string
+}
+
 export interface MarketState {
     exchangeAddress: string
     baseSymbol: string
@@ -15,6 +23,10 @@ export interface MarketState {
     priceFeedQuote: string
     indexPriceQuote: Big
     inverse: boolean
+}
+
+export interface MarketStateWithAddress extends MarketState {
+    address: string
 }
 
 export interface MakerInfo {
