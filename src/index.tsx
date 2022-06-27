@@ -8,6 +8,7 @@ import { HashRouter } from "react-router-dom"
 import { ChakraProvider } from "@chakra-ui/react"
 import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
+import { PerpdexLongTokenContainer } from "container/connection/perpdexLongTokenContainer"
 import { Connection } from "./container/connection"
 import { Reload } from "./container/connection/reload"
 import { Fonts } from "component/Font"
@@ -50,6 +51,7 @@ const Providers = ((...providers: any[]) => ({ children }: { children: React.Rea
     Transaction.Provider,
     PerpdexMarketContainer.Provider,
     PerpdexExchangeContainer.Provider,
+    PerpdexLongTokenContainer.Provider,
     AccountPerpdex.Provider,
     Trade.Provider,
     Position.Provider,

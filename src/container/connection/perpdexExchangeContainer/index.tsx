@@ -11,14 +11,7 @@ import { PerpdexMarketContainer } from "../perpdexMarketContainer"
 import { BigNumber, constants } from "ethers"
 import _ from "lodash"
 import { contractConfigs } from "../../../constant/contract"
-import {
-    ExchangeState,
-    MakerInfo,
-    TakerInfo,
-    AccountInfo,
-    PositionState,
-    settlementTokenMetadataState,
-} from "../../../constant/types"
+import { ExchangeState, MakerInfo, TakerInfo, AccountInfo, PositionState } from "../../../constant/types"
 import { useInterval } from "../../../hook/useInterval"
 import { usePageVisibility } from "react-page-visibility"
 import {
@@ -26,6 +19,13 @@ import {
     createExchangeContract,
     createExchangeContractMulticall,
 } from "../contractFactory"
+
+interface settlementTokenMetadataUnit {
+    decimals: number
+    address: string
+}
+
+type settlementTokenMetadataState = settlementTokenMetadataUnit[]
 
 export const PerpdexExchangeContainer = createContainer(usePerpdexExchangeContainer)
 
