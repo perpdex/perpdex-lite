@@ -4,9 +4,11 @@ import { Heading, Text, Box } from "@chakra-ui/react"
 import FrameContainer from "component/FrameContainer"
 import PoolsTable, { PoolsTableUnit } from "./PoolsTable"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
+import { useHistory } from "react-router-dom"
 
 function Pools() {
     const { marketStates } = PerpdexMarketContainer.useContainer()
+    const history = useHistory()
 
     const poolsInfo: PoolsTableUnit[] = useMemo(() => {
         const poolsArray = Object.keys(marketStates).map((key: string) => ({ ...marketStates[key], address: key }))
@@ -25,9 +27,12 @@ function Pools() {
         })
     }, [marketStates])
 
-    const handleOnClick = useCallback((address: string) => {
-        console.log("transit to ", address)
-    }, [])
+    const handleOnClick = useCallback(
+        (address: string) => {
+            history.push(`pools/${address}`)
+        },
+        [history],
+    )
 
     return (
         <FrameContainer>

@@ -20,8 +20,8 @@ export const App = () => (
         <Switch>
             <Route exact path="/" component={Home} />
             <Route exact path="/trade" component={Trade} />
-            <Route exact path="/pool" component={LiquidityProvider} />
             <Route exact path="/pools" component={Pools} />
+            <Route exact path="/pools/:marketAddress" component={LiquidityProvider} />
         </Switch>
         <LiquidityProviderModal />
         <WalletListModal />

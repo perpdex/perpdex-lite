@@ -12,6 +12,7 @@ import { useCallback } from "react"
 import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import Big from "big.js"
+import { useHistory, useParams } from "react-router-dom"
 
 export interface MakerPositionInfo {
     unrealizedPnl: Big
@@ -24,8 +25,17 @@ export interface MakerPositionInfo {
 }
 
 function LiquidityProvider() {
+    const { marketAddress } = useParams<{ marketAddress: string }>()
+    const history = useHistory()
     const { currentMyMakerInfo, removeLiquidity } = PerpdexExchangeContainer.useContainer()
-    const { currentMarketState } = PerpdexMarketContainer.useContainer()
+    const { currentMarketState, marketStates, setCurrentMarket } = PerpdexMarketContainer.useContainer()
+
+    useEffect(() => {
+        if (marketAddress && marketStates) {
+            if (marketStates[marketAddress]) setCurrentMarket(marketAddress)
+            else history.push("/pools")
+        }
+    }, [history, marketAddress, marketStates, setCurrentMarket])
 
     const {
         actions: { toggleLpModal },
