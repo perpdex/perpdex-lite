@@ -17,7 +17,7 @@ import {
     Box,
 } from "@chakra-ui/react"
 import { AccountPerpdex } from "container/perpetual/account"
-import ButtonPerpdex from "component/ButtonPerpdex"
+import ButtonPerpdex from "component/base/Button"
 import SmallFormLabel from "../base/SmallFormLabel"
 import { formatInput } from "../../util/format"
 import { INPUT_PRECISION } from "../../constant"

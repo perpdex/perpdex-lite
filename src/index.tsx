@@ -4,7 +4,6 @@ import * as serviceWorker from "./serviceWorker"
 import { createErrorBoundary, setupBugsnag } from "./lib/bugsnag"
 
 import { App } from "./App"
-import { HashRouter } from "react-router-dom"
 import { ChakraProvider } from "@chakra-ui/react"
 import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
@@ -44,7 +43,6 @@ const Providers = ((...providers: any[]) => ({ children }: { children: React.Rea
 })(
     { component: ChakraProvider, props: { theme } },
     Web3Provider,
-    HashRouter,
     Connection.Provider,
     Reload.Provider,
     User.Provider,

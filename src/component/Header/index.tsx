@@ -21,7 +21,7 @@ function Header() {
                     <Link to="/trade">
                         <Button variant="link">Trade</Button>
                     </Link>
-                    <Link to="/pool">
+                    <Link to="/pools">
                         <Button variant="link">Pool</Button>
                     </Link>
                     <Link to="/tokens">
