@@ -26,6 +26,15 @@ export interface MarketState {
     inverse: boolean
 }
 
+export interface MarketSummary extends Omit<Partial<MarketState>, "markPrice"> {
+    address: string
+    quoteSymbolDisplay: string
+    baseSymbolDisplay: string
+    marketName: string
+    markPrice: string
+    volume24h: string
+}
+
 export interface MarketStateWithAddress extends MarketState {
     address: string
 }

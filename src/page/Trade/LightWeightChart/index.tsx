@@ -3,6 +3,8 @@ import { createChart } from "lightweight-charts"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 
 const chartOptions = {
+    width: 1200,
+    height: 600,
     layout: {
         background: { color: "#17181e" },
     },
@@ -20,7 +22,7 @@ function LightWeightChart() {
         if (chartElement && currentMarket && chartMarket !== currentMarket) {
             if (chart) chart.remove()
 
-            const _chart = createChart(chartElement, { width: 1200, height: 600, ...chartOptions })
+            const _chart = createChart(chartElement, { ...chartOptions })
 
             const lineSeries = _chart.addLineSeries()
             lineSeries.setData([

@@ -2,7 +2,7 @@ import React from "react"
 import { VStack, Flex, Box } from "@chakra-ui/react"
 
 // import Leverage from "./Leverage"
-import MarketSelector from "component/Perpetual/MarketSelector"
+import ChartHead from "./ChartHead"
 import Summary from "./Summary"
 import FrameContainer from "component/FrameContainer"
 import TradeInput from "./TradeInput"
@@ -11,14 +11,14 @@ import LightWeightChart from "./LightWeightChart"
 
 function Trade() {
     return (
-        <FrameContainer>
+        <FrameContainer removeMarginTop>
             <Flex>
-                <Box flex="1" mr="2">
-                    <MarketSelector />
+                <Box flex="1" mr="2" mt="0">
+                    <ChartHead />
                     <LightWeightChart />
                     <PositionTab />
                 </Box>
-                <Box w="360px">
+                <Box w="360px" mt="8">
                     <VStack spacing={6} p={0}>
                         <TradeInput />
                         {/* <Leverage /> */}
