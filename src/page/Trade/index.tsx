@@ -7,6 +7,7 @@ import Summary from "./Summary"
 import FrameContainer from "component/FrameContainer"
 import TradeInput from "./TradeInput"
 import PositionTab from "./PositionTab"
+import LightWeightChart from "./LightWeightChart"
 
 function Trade() {
     return (
@@ -14,7 +15,7 @@ function Trade() {
             <Flex>
                 <Box flex="1" mr="2">
                     <MarketSelector />
-                    Chart
+                    <LightWeightChart />
                     <PositionTab />
                 </Box>
                 <Box w="360px">
