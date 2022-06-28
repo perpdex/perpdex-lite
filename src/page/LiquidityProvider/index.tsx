@@ -17,6 +17,16 @@ import { PoolSummary } from "constant/types"
 import { createPoolSummary } from "util/market"
 import Button from "component/base/Button"
 
+const initMakerPositionInfo = {
+    unrealizedPnl: Big(0),
+    liquidityValue: Big(0),
+    liquidity: Big(0),
+    baseAmount: Big(0),
+    quoteAmount: Big(0),
+    baseDebt: Big(0),
+    quoteDebt: Big(0),
+}
+
 export interface MakerPositionInfo {
     unrealizedPnl: Big
     liquidityValue: Big
@@ -39,6 +49,7 @@ function LiquidityProvider() {
 
     useEffect(() => {
         if (marketAddress && marketStates) {
+            console.log("updated", marketAddress)
             if (marketStates[marketAddress]) setCurrentMarket(marketAddress)
             else history.push("/pools")
         }
@@ -48,22 +59,14 @@ function LiquidityProvider() {
         actions: { toggleLpModal },
     } = Modal.useContainer()
 
-    const [makerPositionInfo, setMakerPositionInfo] = useState<MakerPositionInfo>({
-        unrealizedPnl: Big(0),
-        liquidityValue: Big(0),
-        liquidity: Big(0),
-        baseAmount: Big(0),
-        quoteAmount: Big(0),
-        baseDebt: Big(0),
-        quoteDebt: Big(0),
-    })
+    const [makerPositionInfo, setMakerPositionInfo] = useState<MakerPositionInfo>(initMakerPositionInfo)
 
     const markPrice = currentMarketState.markPrice
     const poolInfo = currentMarketState.poolInfo
 
     useEffect(() => {
         if (!currentMyMakerInfo || !poolInfo || !markPrice || !currentMarketState) return
-        if (poolInfo.totalLiquidity.eq(0)) return
+        if (poolInfo.totalLiquidity.eq(0)) return setMakerPositionInfo(initMakerPositionInfo)
 
         // const _markPrice = currentMarketState.inverse ? Big(0).div(markPrice) : markPrice
 
@@ -152,17 +155,17 @@ function LiquidityProvider() {
                     </VStack>
                 </Center>
             </Flex>
-            <Box borderStyle="solid" borderWidth="1px" borderRadius="12px" p="4" mt="6">
-                <VStack spacing={6} p={0}>
-                    {haveLiquidity && (
+            {haveLiquidity && (
+                <Box borderStyle="solid" borderWidth="1px" borderRadius="12px" p="4" mt="6">
+                    <VStack spacing={6} p={0}>
                         <YourLiquidity marketInfo={currentMarketState} makerPositionInfo={makerPositionInfo} />
-                    )}
-                    {/* <Position
-                        handleOnAddLiquidityClick={toggleLpModal}
-                        handleOnRemoveLiquidityClick={handleOnRemoveLiquidityClick}
-                    /> */}
-                </VStack>
-            </Box>
+                        {/* <Position
+                            handleOnAddLiquidityClick={toggleLpModal}
+                            handleOnRemoveLiquidityClick={handleOnRemoveLiquidityClick}
+                        /> */}
+                    </VStack>
+                </Box>
+            )}
         </FrameContainer>
     )
 }

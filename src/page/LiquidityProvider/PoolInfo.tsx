@@ -9,8 +9,6 @@ interface PoolInfoState {
 }
 
 function PoolInfo({ quoteSymbol, tvl, volume24h, markPrice }: PoolInfoState) {
-    console.log("PoolInfo", tvl, volume24h, markPrice)
-
     const DataRow = (data: { text: string; value: string }) => (
         <>
             <Box mb="2">
