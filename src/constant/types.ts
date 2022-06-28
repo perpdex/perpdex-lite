@@ -6,6 +6,15 @@ export interface PoolInfo {
     totalLiquidity: Big
 }
 
+export interface PoolSummary {
+    address: string
+    quoteSymbolDisplay: string
+    baseSymbolDisplay: string
+    poolName: string
+    tvl: string
+    volume24h: string
+}
+
 export interface MarketState {
     exchangeAddress: string
     baseSymbol: string
@@ -15,6 +24,10 @@ export interface MarketState {
     priceFeedQuote: string
     indexPriceQuote: Big
     inverse: boolean
+}
+
+export interface MarketStateWithAddress extends MarketState {
+    address: string
 }
 
 export interface MakerInfo {
@@ -68,9 +81,17 @@ export interface PositionState {
     unrealizedPnl: Big
 }
 
-interface settlementTokenMetadataUnit {
-    decimals: number
-    address: string
+export interface LongTokenState {
+    symbol: string
+    assetAddress: string
+    assetSymbol: string
+    assetDecimals: number
+    totalSupply: Big
+    totalAssets: Big
+    myShares: Big
+    myAssets: Big
+    maxDeposit: Big
+    maxMint: Big
+    maxWithdraw: Big
+    maxRedeem: Big
 }
-
-export type settlementTokenMetadataState = settlementTokenMetadataUnit[]

@@ -101,7 +101,7 @@ function usePerpdexMarketContainer() {
 
                 const address = marketAddresses[i]
                 const inverse = baseSymbol === "USD"
-                let markPrice = x96ToBig(markPriceX96, inverse)
+                const markPrice = x96ToBig(markPriceX96, inverse)
 
                 const quoteSymbol =
                     settlementTokens[i] === constants.AddressZero
