@@ -10,16 +10,14 @@ import MarketTable from "./MarketTable"
 import { MarketStateWithAddress } from "constant/types"
 
 function ChartHead() {
-    const { currentMarketState, setCurrentMarket, marketStates } = PerpdexMarketContainer.useContainer()
+    const { currentMarketState, currentMarket, setCurrentMarket, marketStates } = PerpdexMarketContainer.useContainer()
 
-    const baseSymbolDisplay = currentMarketState.inverse
-        ? currentMarketState.quoteSymbol
-        : currentMarketState.baseSymbol
-    const quoteSymbolDisplay = currentMarketState.inverse
-        ? currentMarketState.baseSymbol
-        : currentMarketState.quoteSymbol
+    const currentMarketSummary = useMemo(() => createMarketSummary({ address: currentMarket, ...currentMarketState }), [
+        currentMarket,
+        currentMarketState,
+    ])
 
-    const QuoteIcon = getCurrencyIcon(baseSymbolDisplay)
+    const BaseSymbolIcon = getCurrencyIcon(currentMarketSummary.baseSymbolDisplay)
 
     const marketSummary = useMemo(() => {
         const poolsArray: MarketStateWithAddress[] = Object.keys(marketStates).map((key: string) => ({
@@ -45,8 +43,8 @@ function ChartHead() {
                                     <HStack spacing={2}>
                                         {currentMarketState && (
                                             <>
-                                                {QuoteIcon && <QuoteIcon width={8} height={8} />}
-                                                <Text>{`${baseSymbolDisplay}${quoteSymbolDisplay}`}</Text>
+                                                {BaseSymbolIcon && <BaseSymbolIcon width={8} height={8} />}
+                                                <Text>{currentMarketSummary.marketName}</Text>
                                                 <Box px="2">
                                                     <TriangleDownIcon w={3} h={3} />
                                                 </Box>
@@ -69,6 +67,9 @@ function ChartHead() {
                         </>
                     )}
                 </Popover>
+                <Box>
+                    <Text fontSize="xl">{currentMarketSummary.markPrice}</Text>
+                </Box>
             </HStack>
         </>
     )
