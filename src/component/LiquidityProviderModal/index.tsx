@@ -11,7 +11,6 @@ import {
     Button,
     Text,
 } from "@chakra-ui/react"
-import MarketSelector from "../Perpetual/MarketSelector"
 import Collateral from "./Collateral"
 import Slippage from "./Slippage"
 import { useCallback, useEffect, useState } from "react"
@@ -62,7 +61,6 @@ function LiquidityProviderModal() {
                 <ModalCloseButton />
                 <ModalBody>
                     <VStack spacing={5}>
-                        <MarketSelector />
                         <Text align="center" fontSize="medium" fontWeight="bold" lineHeight="1.4">
                             Mark Price: {currentMarketState.markPrice.toString()}
                         </Text>

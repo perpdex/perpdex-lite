@@ -1,35 +1,33 @@
 import { QuestionOutlineIcon } from "@chakra-ui/icons"
 import {
     Text,
-    Heading,
     SimpleGrid,
     Box,
     Popover,
     PopoverTrigger,
     PopoverContent,
     PopoverBody,
-    Divider,
-    Center,
-    VStack,
-    Flex,
-    HStack,
+    // Divider,
+    // Center,
+    // VStack,
+    // Flex,
+    // HStack,
 } from "@chakra-ui/react"
 import { MarketState } from "../../constant/types"
 import { MakerPositionInfo } from "."
+import CardHeading from "component/base/CardHeading"
 
-interface ProvidedInfoTableProps {
+interface YourLiquidityState {
     marketInfo?: MarketState
     makerPositionInfo: MakerPositionInfo
 }
 
-function ProvidedInfoTable({ marketInfo, makerPositionInfo }: ProvidedInfoTableProps) {
+function YourLiquidity({ marketInfo, makerPositionInfo }: YourLiquidityState) {
     const collateralSymbol = marketInfo && marketInfo.quoteSymbol
 
     return (
         <>
-            <Heading w="full" size="sm">
-                Provided Liquidity
-            </Heading>
+            <CardHeading text="Your Liquidity" />
             <SimpleGrid width="100%" columns={2} spacing={6}>
                 <Box>
                     <Text fontSize="xs" color="gray.500">
@@ -96,7 +94,7 @@ function ProvidedInfoTable({ marketInfo, makerPositionInfo }: ProvidedInfoTableP
                     </Text>
                 </Box>
             </SimpleGrid>
-            <Divider orientation="horizontal" />
+            {/* <Divider orientation="horizontal" />
             <Flex direction="row" width="100%" justifyContent="space-between">
                 <VStack pr="6" flexGrow={2}>
                     <Box width="100%">
@@ -162,9 +160,9 @@ function ProvidedInfoTable({ marketInfo, makerPositionInfo }: ProvidedInfoTableP
                     </Box>
                 </VStack>
             </Flex>
-            <Divider orientation="horizontal" />
+            <Divider orientation="horizontal" /> */}
         </>
     )
 }
 
-export default ProvidedInfoTable
+export default YourLiquidity
