@@ -134,7 +134,7 @@ function LiquidityProvider() {
                         {/*<Mining />*/}
                         {poolSummary && markPrice && (
                             <PoolInfo
-                                quoteSymbol={poolSummary.quoteSymbol}
+                                quoteSymbol={poolSummary.quoteSymbolDisplay}
                                 tvl={poolSummary.tvl}
                                 volume24h={poolSummary.volume24h}
                                 markPrice={markPrice.toFixed(6)}
