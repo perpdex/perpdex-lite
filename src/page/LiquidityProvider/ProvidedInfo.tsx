@@ -162,7 +162,7 @@ function ProvidedInfoTable({ marketInfo, makerPositionInfo }: ProvidedInfoTableP
                     </Box>
                 </VStack>
             </Flex>
-            <Divider orientation="horizontal" />
+            {/* <Divider orientation="horizontal" /> */}
         </>
     )
 }

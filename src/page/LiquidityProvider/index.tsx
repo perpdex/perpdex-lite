@@ -1,10 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react"
-import { SimpleGrid, VStack, Box } from "@chakra-ui/react"
+import { VStack, Box, Center, Flex } from "@chakra-ui/react"
 
 import TitleBar from "./TitleBar"
 // import Mining from "./Mining"
 import ProvidedInfo from "./ProvidedInfo"
-import Position from "./Position"
 import PoolInfo from "./PoolInfo"
 import FrameContainer from "component/FrameContainer"
 import { Modal } from "container/modal"
@@ -16,6 +15,7 @@ import { useHistory, useParams } from "react-router-dom"
 import Breadcrumb, { BreadcrumbUnit } from "component/base/Breadcumb"
 import { PoolSummary } from "constant/types"
 import { createPoolSummary } from "util/market"
+import Button from "component/base/Button"
 
 export interface MakerPositionInfo {
     unrealizedPnl: Big
@@ -121,8 +121,8 @@ function LiquidityProvider() {
         <FrameContainer>
             <Breadcrumb layers={breadcrumbLayers} />
             <TitleBar />
-            <SimpleGrid columns={2} spacing={8} mt="6">
-                <Box borderStyle="solid" borderWidth="1px" borderRadius="12px" p="4">
+            <Flex mt="6">
+                <Box borderStyle="solid" borderWidth="1px" borderRadius="12px" p="4" width={400}>
                     <VStack spacing={6} p={0}>
                         {/*<Mining />*/}
                         {poolSummary && markPrice && (
@@ -135,16 +135,28 @@ function LiquidityProvider() {
                         )}
                     </VStack>
                 </Box>
-                <Box borderStyle="solid" borderWidth="1px" borderRadius="12px" p="4">
-                    <VStack spacing={6} p={0}>
-                        <ProvidedInfo marketInfo={currentMarketState} makerPositionInfo={makerPositionInfo} />
-                        <Position
-                            handleOnAddLiquidityClick={toggleLpModal}
-                            handleOnRemoveLiquidityClick={handleOnRemoveLiquidityClick}
-                        />
+                <Center width="100%">
+                    <VStack>
+                        <Button text="Add Liquidity" customType="big-green-plus" onClick={toggleLpModal} />
+                        {makerPositionInfo.liquidity.gt(0) && (
+                            <Button
+                                text="Close Liquidity"
+                                customType="big-pink-minus"
+                                onClick={handleOnRemoveLiquidityClick}
+                            />
+                        )}
                     </VStack>
-                </Box>
-            </SimpleGrid>
+                </Center>
+            </Flex>
+            <Box borderStyle="solid" borderWidth="1px" borderRadius="12px" p="4" mt="6">
+                <VStack spacing={6} p={0}>
+                    <ProvidedInfo marketInfo={currentMarketState} makerPositionInfo={makerPositionInfo} />
+                    {/* <Position
+                        handleOnAddLiquidityClick={toggleLpModal}
+                        handleOnRemoveLiquidityClick={handleOnRemoveLiquidityClick}
+                    /> */}
+                </VStack>
+            </Box>
         </FrameContainer>
     )
 }
