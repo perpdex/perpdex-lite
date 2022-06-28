@@ -10,7 +10,7 @@ interface ButtonState extends Partial<ButtonProps> {
     onClick?: () => void
 }
 
-function Button({ text, customType, onClick }: ButtonState) {
+function Button({ text, customType, onClick, ...props }: ButtonState) {
     switch (customType) {
         case "big-green-plus":
             return (
@@ -20,6 +20,7 @@ function Button({ text, customType, onClick }: ButtonState) {
                     colorScheme="green"
                     variant="outline"
                     leftIcon={<AddIcon />}
+                    {...props}
                 >
                     {text}
                 </ChakuraButton>
@@ -28,12 +29,13 @@ function Button({ text, customType, onClick }: ButtonState) {
         case "big-pink-minus":
             return (
                 <ChakuraButton
-                    size="lg"
+                    size="md"
                     height={8}
                     onClick={onClick!}
                     colorScheme="pink"
                     variant="outline"
                     leftIcon={<MinusIcon />}
+                    {...props}
                 >
                     {text}
                 </ChakuraButton>
@@ -41,7 +43,7 @@ function Button({ text, customType, onClick }: ButtonState) {
 
         default:
             return (
-                <ChakuraButton size="md" onClick={onClick!} colorScheme="gray" variant="outline">
+                <ChakuraButton size="md" onClick={onClick!} colorScheme="gray" variant="outline" {...props}>
                     {text}
                 </ChakuraButton>
             )

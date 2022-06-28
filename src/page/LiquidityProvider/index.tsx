@@ -3,7 +3,7 @@ import { VStack, Box, Center, Flex } from "@chakra-ui/react"
 
 import TitleBar from "./TitleBar"
 // import Mining from "./Mining"
-import ProvidedInfo from "./ProvidedInfo"
+import YourLiquidity from "./YourLiquidity"
 import PoolInfo from "./PoolInfo"
 import FrameContainer from "component/FrameContainer"
 import { Modal } from "container/modal"
@@ -117,6 +117,10 @@ function LiquidityProvider() {
             : undefined
     }, [currentMarket, currentMarketState, markPrice])
 
+    const haveLiquidity = useMemo(() => {
+        return makerPositionInfo.liquidity.gt(0)
+    }, [makerPositionInfo.liquidity])
+
     return (
         <FrameContainer>
             <Breadcrumb layers={breadcrumbLayers} />
@@ -138,9 +142,9 @@ function LiquidityProvider() {
                 <Center width="100%">
                     <VStack>
                         <Button text="Add Liquidity" customType="big-green-plus" onClick={toggleLpModal} />
-                        {makerPositionInfo.liquidity.gt(0) && (
+                        {haveLiquidity && (
                             <Button
-                                text="Close Liquidity"
+                                text="Remove Liquidity"
                                 customType="big-pink-minus"
                                 onClick={handleOnRemoveLiquidityClick}
                             />
@@ -150,7 +154,9 @@ function LiquidityProvider() {
             </Flex>
             <Box borderStyle="solid" borderWidth="1px" borderRadius="12px" p="4" mt="6">
                 <VStack spacing={6} p={0}>
-                    <ProvidedInfo marketInfo={currentMarketState} makerPositionInfo={makerPositionInfo} />
+                    {haveLiquidity && (
+                        <YourLiquidity marketInfo={currentMarketState} makerPositionInfo={makerPositionInfo} />
+                    )}
                     {/* <Position
                         handleOnAddLiquidityClick={toggleLpModal}
                         handleOnRemoveLiquidityClick={handleOnRemoveLiquidityClick}

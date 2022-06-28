@@ -1,4 +1,5 @@
-import { Box, Heading, SimpleGrid, Text } from "@chakra-ui/react"
+import { Box, SimpleGrid, Text } from "@chakra-ui/react"
+import CardHeading from "component/base/CardHeading"
 
 interface PoolInfoState {
     quoteSymbol: string
@@ -29,9 +30,7 @@ function PoolInfo({ quoteSymbol, tvl, volume24h, markPrice }: PoolInfoState) {
 
     return (
         <>
-            <Heading w="full" size="md" color="whiteAlpha.700">
-                Pool Info
-            </Heading>
+            <CardHeading text="Pool Info" />
             <SimpleGrid width="100%" columns={2}>
                 <DataRow text="TVL" value={tvl} />
                 <DataRow text="Volume (24h)" value={volume24h} />
