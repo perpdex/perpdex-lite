@@ -32,52 +32,57 @@ function AccountPanel() {
     const collateralBalanceUsd = collateralBalance.mul(currentMarketState.indexPriceQuote)
 
     return (
-        <HStack justifyContent="space-evenly" divider={<StackDivider borderColor="#627EEA" />}>
+        <HStack justifyContent="space-evenly" divider={<StackDivider borderColor="#627EEA" />} spacing={10}>
             <VStack>
                 <Box
-                    w="100%"
+                    w="90%"
                     bgGradient="linear(180deg, rgba(98, 126, 234, 0.5) 0%, rgba(249, 0, 119, 0.5) 100%);"
                     borderRadius={20}
                     p={59}
+                    m={10}
                 >
                     <VStack spacing={28} alignItems="stretch">
                         <HStack w="100%" justifyContent="space-between" alignItems="center">
                             <LogoWhite></LogoWhite>
                             <Box></Box>
                         </HStack>
-                        <HStack w="100%" justifyContent="space-between" alignItems="center">
-                            <Box>
-                                <VStack spacing={0}>
-                                    <Text fontSize="xs">Net USD Value</Text>
-                                    <HStack w="100%" justifyContent="start">
-                                        <Text as="span" fontSize="xl" fontWeight="bold">
-                                            {totalAccountValue?.toFixed()} {quoteSymbol}
-                                        </Text>
-                                        <Text as="span" fontSize="xl" marginLeft={2}>
-                                            (${totalAccountValueUsd?.toFixed()})
-                                        </Text>
-                                    </HStack>
-                                </VStack>
-                            </Box>
-
-                            <Box>
-                                <VStack spacing={0}>
-                                    <Text fontSize="xs">Free Collateral</Text>
-                                    <HStack w="100%" justifyContent="start">
-                                        <Text as="span" fontSize="xl" fontWeight="bold">
-                                            {collateralBalance?.toFixed()} {quoteSymbol}
-                                        </Text>
-                                        <Text as="span" fontSize="xl" marginLeft={2}>
-                                            (${collateralBalanceUsd?.toFixed()})
-                                        </Text>
-                                    </HStack>
-                                </VStack>
-                            </Box>
-                        </HStack>
-                        <HStack w="100%" justifyContent="space-between" alignItems="center">
-                            <Box></Box>
-                            <ETHIcon boxSize={12}></ETHIcon>
-                        </HStack>
+                        <VStack spacing={8}>
+                            <HStack w="100%" justifyContent="space-between" alignItems="center">
+                                <Box>
+                                    <VStack spacing={0}>
+                                        <Text fontSize="xs">Net USD Value</Text>
+                                        <HStack w="100%" justifyContent="start">
+                                            <Text as="span" fontSize="xl" fontWeight="bold">
+                                                {totalAccountValue?.toFixed()} {quoteSymbol}
+                                            </Text>
+                                            <Text as="span" fontSize="xl" marginLeft={2}>
+                                                (${totalAccountValueUsd?.toFixed()})
+                                            </Text>
+                                        </HStack>
+                                    </VStack>
+                                </Box>
+                                <HStack spacing={12}>
+                                    <Box>
+                                        <VStack spacing={0}>
+                                            <Text fontSize="xs">Free Collateral</Text>
+                                            <HStack w="100%" justifyContent="start">
+                                                <Text as="span" fontSize="xl" fontWeight="bold">
+                                                    {collateralBalance?.toFixed()} {quoteSymbol}
+                                                </Text>
+                                                <Text as="span" fontSize="xl" marginLeft={2}>
+                                                    (${collateralBalanceUsd?.toFixed()})
+                                                </Text>
+                                            </HStack>
+                                        </VStack>
+                                    </Box>
+                                    <Box></Box>
+                                </HStack>
+                            </HStack>
+                            <HStack w="100%" justifyContent="space-between" alignItems="center">
+                                <Box></Box>
+                                <ETHIcon boxSize={12}></ETHIcon>
+                            </HStack>
+                        </VStack>
                     </VStack>
                 </Box>
                 <Table variant="simple">
@@ -93,16 +98,26 @@ function AccountPanel() {
                     <Tbody>
                         <Tr>
                             <Td border="0px">
-                                <ETHIcon boxSize={6}></ETHIcon>ETH/wETH
+                                <HStack>
+                                    <ETHIcon boxSize={6} mr={1}></ETHIcon>
+                                    <Text>ETH/wETH</Text>
+                                </HStack>
                             </Td>
                             <Td border="0px">20</Td>
-                            <Td border="0px">1.2($35,140)</Td>
-                            <Td border="0px">1.1($32,210)</Td>
+                            <Td border="0px">
+                                <HStack>
+                                    <Text>1.2</Text>
+                                    <Text color="gray.400">($35,140)</Text>
+                                </HStack>
+                            </Td>
+                            <Td border="0px">
+                                <HStack>
+                                    <Text>1.1</Text>
+                                    <Text color="gray.400">($32,210)</Text>
+                                </HStack>
+                            </Td>
                             <Td border="0px">
                                 <ButtonGroup spacing="6">
-                                    <Button mb={[4, 0]} bgColor="#D9D9D9" borderRadius="10px">
-                                        Deposit
-                                    </Button>
                                     <Button
                                         mb={[4, 0]}
                                         color="white"
@@ -113,14 +128,17 @@ function AccountPanel() {
                                     >
                                         Withdraw
                                     </Button>
+                                    <Button mb={[4, 0]} bgColor="#D9D9D9" borderRadius="10px">
+                                        Deposit
+                                    </Button>
                                 </ButtonGroup>
                             </Td>
                         </Tr>
                     </Tbody>
                 </Table>
             </VStack>
-            <VStack>
-                <HStack w="100%" justifyContent="space-evenly">
+            <VStack spacing={10}>
+                <HStack w="100%" justifyContent="space-evenly" mt={10}>
                     <Box w={44} h={40} borderColor="#728BEC" borderWidth="1px" borderRadius="10px" p={6}>
                         <Flex h="100%" flexDirection="column" justifyContent="space-around" alignItems="center">
                             <Text>Margin Ratio</Text>
@@ -150,10 +168,12 @@ function AccountPanel() {
                 </HStack>
                 <Box borderColor="#728BEC" borderWidth="1px" borderRadius="10px" p={6}>
                     <Text>Open Positions</Text>
-                    <Table variant="simple">
+                    <Table variant="simple" overflowY="scroll">
                         <Thead>
                             <Tr>
-                                <Th border="0px">Assets</Th>
+                                <Th border="0px" pl={0}>
+                                    Assets
+                                </Th>
                                 <Th border="0px">Profit/Loss</Th>
                                 <Th border="0px">Position</Th>
                                 <Th border="0px">Avg. Open Price</Th>
@@ -161,7 +181,9 @@ function AccountPanel() {
                         </Thead>
                         <Tbody>
                             <Tr>
-                                <Td border="0px">0.0234 BTC</Td>
+                                <Td border="0px" pl={0}>
+                                    0.0234 BTC
+                                </Td>
                                 <Td border="0px">+2.34</Td>
                                 <Td border="0px">
                                     <Button mb={[4, 0]} bgColor="#353E80" borderRadius="10px" color="white">
