@@ -1,6 +1,5 @@
 import WalletListModal from "component/WalletModal"
-import { Route, Switch, Router } from "react-router-dom"
-import { createBrowserHistory } from "history"
+import { Route, Switch } from "react-router-dom"
 import Header from "./component/Header"
 import Home from "./page/Home"
 import Trade from "./page/Trade"
@@ -15,27 +14,23 @@ import LiquidityProvider from "page/LiquidityProvider"
 import Pools from "page/Pools"
 
 export const App = () => {
-    const history = createBrowserHistory()
-
     return (
         <Container maxW="container.2xl" pb={20} px={6}>
-            <Router history={history}>
-                <Header />
-                <Divider />
-                <Switch>
-                    <Route exact path="/" component={Home} />
-                    <Route exact path="/trade" component={Trade} />
-                    <Route exact path="/pools" component={Pools} />
-                    <Route exact path="/pools/:marketAddress" component={LiquidityProvider} />
-                </Switch>
-                <LiquidityProviderModal />
-                <WalletListModal />
-                <ClosePositionModal />
-                <UserAgreementModal />
-                {/* NOTE: BlockedRegionModal should be in the last one */}
-                <BlockedRegionModal />
-                <AccountPerpdexModal />
-            </Router>
+            <Header />
+            <Divider />
+            <Switch>
+                <Route exact path="/" component={Home} />
+                <Route exact path="/trade" component={Trade} />
+                <Route exact path="/pools" component={Pools} />
+                <Route exact path="/pools/:marketAddress" component={LiquidityProvider} />
+            </Switch>
+            <LiquidityProviderModal />
+            <WalletListModal />
+            <ClosePositionModal />
+            <UserAgreementModal />
+            {/* NOTE: BlockedRegionModal should be in the last one */}
+            <BlockedRegionModal />
+            <AccountPerpdexModal />
         </Container>
     )
 }
