@@ -21,6 +21,7 @@ export interface MarketState {
     quoteSymbol: string
     poolInfo: PoolInfo
     markPrice: Big
+    markPriceDisplay: Big
     priceFeedQuote: string
     indexPriceQuote: Big
     inverse: boolean
