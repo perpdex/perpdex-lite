@@ -82,11 +82,13 @@ export interface PositionState {
 }
 
 export interface LongTokenState {
+    address: string
     symbol: string
     name: string
     assetAddress: string
     assetSymbol: string
     assetDecimals: number
+    assetIsWeth: boolean
     totalSupply: Big
     totalAssets: Big
     myShares: Big
