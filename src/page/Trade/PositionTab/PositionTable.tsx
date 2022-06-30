@@ -1,52 +1,63 @@
 import { Table, Thead, Tbody, Tr, Th, Td, Button, Text } from "@chakra-ui/react"
+import { createPoolSummary } from "../../../util/market"
+import { MarketState } from "../../../constant/types"
+import Big from "big.js"
 
 export interface PositionTableState {
-    market: string
+    marketState: MarketState
     isLong: boolean
     positionQuantity: string
     positionValue: string
-    entryPrice: string
-    markPrice: string
-    liqPrice: string
+    entryPriceDisplay: Big
+    markPriceDisplay: Big
+    liqPriceDisplay: Big
     unrealizedPnl: string
     handleOnClick: () => void
 }
 
 function PositionTable({
-    market,
     isLong,
     positionQuantity,
     positionValue,
-    entryPrice,
-    markPrice,
-    liqPrice,
+    entryPriceDisplay,
+    markPriceDisplay,
+    liqPriceDisplay,
     unrealizedPnl,
     handleOnClick,
+    marketState,
 }: PositionTableState) {
+    const poolSummary = createPoolSummary(marketState)
+
     return (
         <Table variant="simple">
             <Thead>
                 <Tr>
-                    <Th>Markert</Th>
-                    <Th>Qty</Th>
-                    <Th>Value</Th>
-                    <Th>Entry Price</Th>
-                    <Th>Mark Price</Th>
-                    <Th>Liq. price</Th>
-                    <Th>Unrealzied PNL</Th>
+                    <Th>Market</Th>
+                    <Th>Qty ({marketState.baseSymbol})</Th>
+                    <Th>Value ({marketState.quoteSymbol})</Th>
+                    <Th>
+                        Entry Price ({marketState.baseSymbolDisplay}/{marketState.quoteSymbolDisplay})
+                    </Th>
+                    <Th>
+                        Mark Price ({marketState.baseSymbolDisplay}/{marketState.quoteSymbolDisplay})
+                    </Th>
+                    <Th>
+                        Liq. price ({marketState.baseSymbolDisplay}/{marketState.quoteSymbolDisplay})
+                    </Th>
+                    <Th>Unrealzied PNL ({marketState.quoteSymbol})</Th>
                     <Th>Close Position</Th>
                 </Tr>
             </Thead>
             <Tbody>
                 <Tr>
-                    <Td>{market}</Td>
+                    <Td>{poolSummary.poolName}</Td>
                     <Td>
                         <Text color={isLong ? "green.300" : "red.300"}>{positionQuantity}</Text>
                     </Td>
                     <Td>{positionValue}</Td>
-                    <Td>{entryPrice}</Td>
-                    <Td>{markPrice}</Td>
-                    <Td>{liqPrice}</Td>
+                    <Td>{entryPriceDisplay.toFixed(7)}</Td>
+                    <Td>{markPriceDisplay.toFixed(7)}</Td>
+                    <Td>{liqPriceDisplay.toFixed(7)}</Td>
                     <Td>{unrealizedPnl}</Td>
                     <Td>
                         <Button onClick={handleOnClick} mb={[4, 0]} colorScheme="blue">
