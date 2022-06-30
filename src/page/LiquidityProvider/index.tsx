@@ -99,10 +99,8 @@ function LiquidityProvider() {
     }, [makerPositionInfo, removeLiquidity])
 
     const poolSummary: PoolSummary | undefined = useMemo(() => {
-        return currentMarket && currentMarketState && markPrice
-            ? createPoolSummary({ ...currentMarketState, address: currentMarket, markPrice })
-            : undefined
-    }, [currentMarket, currentMarketState, markPrice])
+        return currentMarketState ? createPoolSummary(currentMarketState) : undefined
+    }, [currentMarketState])
 
     const breadcrumbLayers: BreadcrumbUnit[] = [
         { name: "Home", to: "/" },

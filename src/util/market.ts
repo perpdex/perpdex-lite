@@ -1,8 +1,8 @@
-import { MarketStateWithAddress } from "constant/types"
+import { MarketState } from "constant/types"
 import { BTCIcon, ETHIcon, MATICIcon, USDIcon, LINKIcon } from "component/Icon"
 import { ASTRIcon } from "component/Icon/astr"
 
-export function createPoolSummary(marketState: MarketStateWithAddress) {
+export function createPoolSummary(marketState: MarketState) {
     const poolName = marketState.inverse
         ? `${marketState.quoteSymbol}-${marketState.baseSymbol} (inverse)`
         : `${marketState.baseSymbol}-${marketState.quoteSymbol}`

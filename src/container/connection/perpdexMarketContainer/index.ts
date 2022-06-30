@@ -19,6 +19,7 @@ import { useInterval } from "../../../hook/useInterval"
 import produce from "immer"
 
 const nullMarketState: MarketState = {
+    address: constants.AddressZero,
     exchangeAddress: constants.AddressZero,
     baseSymbol: "",
     quoteSymbol: "",
@@ -113,6 +114,7 @@ function usePerpdexMarketContainer() {
                         : quoteSymbols[i]
 
                 newMarketStates[address] = {
+                    address,
                     exchangeAddress,
                     baseSymbol,
                     quoteSymbol,

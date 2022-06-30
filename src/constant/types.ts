@@ -16,6 +16,7 @@ export interface PoolSummary {
 }
 
 export interface MarketState {
+    address: string
     exchangeAddress: string
     baseSymbol: string
     quoteSymbol: string
@@ -27,10 +28,6 @@ export interface MarketState {
     priceFeedQuote: string
     indexPriceQuote: Big
     inverse: boolean
-}
-
-export interface MarketStateWithAddress extends MarketState {
-    address: string
 }
 
 export interface MakerInfo {
