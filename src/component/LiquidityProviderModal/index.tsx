@@ -63,6 +63,7 @@ function LiquidityProviderModal() {
                     <VStack spacing={5}>
                         <Text align="center" fontSize="medium" fontWeight="bold" lineHeight="1.4">
                             Mark Price: {currentMarketState.markPrice.toString()}
+                            {currentMarketState.baseSymbol}/{currentMarketState.quoteSymbol}
                         </Text>
                         <Collateral
                             currentMarketState={currentMarketState}
