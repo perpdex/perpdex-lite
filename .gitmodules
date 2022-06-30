@@ -3,4 +3,4 @@
 	url = https://github.com/perpdex/perpdex-contract.git
 [submodule "deps/perpdex-stablecoin"]
 	path = deps/perpdex-stablecoin
-	url = git@github.com:perpdex/perpdex-stablecoin.git
+	url = https://github.com/perpdex/perpdex-stablecoin.git
