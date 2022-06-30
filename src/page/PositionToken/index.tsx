@@ -1,28 +1,29 @@
 import React from "react"
-import { VStack, Flex, Box, Heading } from "@chakra-ui/react"
+import { SimpleGrid, Heading, Text } from "@chakra-ui/react"
 
-import MarketSelector from "component/Perpetual/MarketSelector"
 import FrameContainer from "component/FrameContainer"
 import TokenPanel from "./TokenPanel"
 import { PerpdexLongTokenContainer } from "../../container/connection/perpdexLongTokenContainer"
 import _ from "lodash"
 
-function Trade() {
+function PositionToken() {
     const { longTokenStates } = PerpdexLongTokenContainer.useContainer()
-    const panels = _.map(longTokenStates, state => {
-        return <TokenPanel longTokenState={state}></TokenPanel>
+    const panels = _.map(longTokenStates, (_value, marketAddress) => {
+        return <TokenPanel marketAddress={marketAddress} key={marketAddress}></TokenPanel>
     })
 
     return (
         <FrameContainer>
             <Heading size="md">Position Tokens</Heading>
-            <p>
+            <Text marginTop={3} marginBottom={6}>
                 Position tokens are ERC20 vault tokens composed of PerpDEX based perpatual futures contracts. These
                 tokens have the qualities such as liquidation free, and 100% capital efficient.
-            </p>
-            <Flex>{panels}</Flex>
+            </Text>
+            <SimpleGrid width="100%" columns={4} spacing={6}>
+                {panels}
+            </SimpleGrid>
         </FrameContainer>
     )
 }
 
-export default Trade
+export default PositionToken

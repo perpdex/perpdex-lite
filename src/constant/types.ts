@@ -83,6 +83,7 @@ export interface PositionState {
 
 export interface LongTokenState {
     symbol: string
+    name: string
     assetAddress: string
     assetSymbol: string
     assetDecimals: number

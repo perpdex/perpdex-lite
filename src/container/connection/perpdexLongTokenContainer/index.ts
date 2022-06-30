@@ -14,6 +14,7 @@ import { PerpdexMarketContainer } from "../perpdexMarketContainer"
 
 const nullLongTokenState: LongTokenState = {
     symbol: "",
+    name: "",
     assetAddress: "",
     assetSymbol: "",
     assetDecimals: 0,
@@ -65,6 +66,7 @@ function usePerpdexLongTokenContainer() {
                 return [
                     contract.asset(),
                     contractErc20.symbol(),
+                    contractErc20.name(),
                     contractErc20.totalSupply(),
                     contract.totalAssets(),
                     contractErc20.balanceOf(account),
@@ -86,6 +88,7 @@ function usePerpdexLongTokenContainer() {
                     const [
                         assetAddress,
                         symbol,
+                        name,
                         totalSupply,
                         totalAssets,
                         balanceOf,
@@ -93,13 +96,14 @@ function usePerpdexLongTokenContainer() {
                         maxMint,
                         maxWithdraw,
                         maxRedeem,
-                    ] = multicallResult.slice(resultIdx, resultIdx + 9)
-                    resultIdx += 9
+                    ] = multicallResult.slice(resultIdx, resultIdx + 10)
+                    resultIdx += 10
 
                     if (!_.has(draft, marketAddress)) {
                         draft[marketAddress] = {
                             ...nullLongTokenState,
                             symbol: symbol,
+                            name: name,
                             assetAddress: assetAddress,
                         }
                     }

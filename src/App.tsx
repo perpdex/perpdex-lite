@@ -4,6 +4,7 @@ import Header from "./component/Header"
 import Home from "./page/Home"
 import Trade from "./page/Trade"
 import PositionToken from "./page/PositionToken"
+import PositionTokenDetail from "./page/PositionToken/PositionTokenDetail"
 import "focus-visible/dist/focus-visible"
 import { Container, Divider } from "@chakra-ui/react"
 import ClosePositionModal from "component/ClosePositionModal"
@@ -25,6 +26,7 @@ export const App = () => {
                 <Route exact path="/pools" component={Pools} />
                 <Route exact path="/pools/:marketAddress" component={LiquidityProvider} />
                 <Route exact path="/tokens" component={PositionToken} />
+                <Route exact path="/tokens/:marketAddress" component={PositionTokenDetail} />
             </Switch>
             <LiquidityProviderModal />
             <WalletListModal />
