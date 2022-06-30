@@ -43,10 +43,6 @@ function LiquidityProvider() {
     const { currentMyMakerInfo, removeLiquidity } = PerpdexExchangeContainer.useContainer()
     const { currentMarket, currentMarketState, marketStates, setCurrentMarket } = PerpdexMarketContainer.useContainer()
 
-    const marketPairStr = useMemo(() => {
-        return `${currentMarketState?.baseSymbol}/${currentMarketState?.quoteSymbol}`
-    }, [currentMarketState?.baseSymbol, currentMarketState?.quoteSymbol])
-
     useEffect(() => {
         if (marketAddress && marketStates) {
             console.log("updated", marketAddress)
@@ -102,17 +98,17 @@ function LiquidityProvider() {
         )
     }, [makerPositionInfo, removeLiquidity])
 
-    const breadcrumbLayers: BreadcrumbUnit[] = [
-        { name: "Home", path: "/" },
-        { name: "Pools", path: "/pools" },
-        { name: marketPairStr },
-    ]
-
     const poolSummary: PoolSummary | undefined = useMemo(() => {
         return currentMarket && currentMarketState && markPrice
             ? createPoolSummary({ ...currentMarketState, address: currentMarket, markPrice })
             : undefined
     }, [currentMarket, currentMarketState, markPrice])
+
+    const breadcrumbLayers: BreadcrumbUnit[] = [
+        { name: "Home", path: "/" },
+        { name: "Pools", path: "/pools" },
+        { name: poolSummary?.poolName || "-" },
+    ]
 
     const haveLiquidity = useMemo(() => {
         return makerPositionInfo.liquidity.gt(0)
@@ -121,17 +117,16 @@ function LiquidityProvider() {
     return (
         <FrameContainer>
             <Breadcrumb layers={breadcrumbLayers} />
-            <TitleBar />
+            <TitleBar title={poolSummary?.poolName || "-"} />
             <Flex mt="6">
                 <Box borderStyle="solid" borderWidth="1px" borderRadius="12px" p="4" width={400}>
                     <VStack spacing={6} p={0}>
                         {/*<Mining />*/}
-                        {poolSummary && markPrice && (
+                        {poolSummary && currentMarketState && markPrice && (
                             <PoolInfo
-                                quoteSymbol={poolSummary.quoteSymbolDisplay}
+                                marketState={currentMarketState}
                                 tvl={poolSummary.tvl}
                                 volume24h={poolSummary.volume24h}
-                                markPrice={markPrice.toFixed(6)}
                             />
                         )}
                     </VStack>

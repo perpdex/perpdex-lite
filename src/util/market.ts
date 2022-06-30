@@ -4,7 +4,7 @@ import { ASTRIcon } from "component/Icon/astr"
 
 export function createPoolSummary(marketState: MarketStateWithAddress) {
     const poolName = marketState.inverse
-        ? `${marketState.quoteSymbol}-${marketState.baseSymbol}`
+        ? `${marketState.quoteSymbol}-${marketState.baseSymbol} (inverse)`
         : `${marketState.baseSymbol}-${marketState.quoteSymbol}`
 
     return {

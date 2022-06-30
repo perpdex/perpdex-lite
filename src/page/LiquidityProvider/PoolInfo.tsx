@@ -1,14 +1,14 @@
 import { Box, SimpleGrid, Text } from "@chakra-ui/react"
 import CardHeading from "component/base/CardHeading"
+import { MarketState } from "../../constant/types"
 
-interface PoolInfoState {
-    quoteSymbol: string
+interface Props {
+    marketState: MarketState
     tvl: string
     volume24h: string
-    markPrice: string
 }
 
-function PoolInfo({ quoteSymbol, tvl, volume24h, markPrice }: PoolInfoState) {
+function PoolInfo({ marketState, tvl, volume24h }: Props) {
     const DataRow = (data: { text: string; value: string }) => (
         <>
             <Box mb="2">
@@ -32,8 +32,13 @@ function PoolInfo({ quoteSymbol, tvl, volume24h, markPrice }: PoolInfoState) {
             <SimpleGrid width="100%" columns={2}>
                 <DataRow text="TVL" value={tvl} />
                 <DataRow text="Volume (24h)" value={volume24h} />
-                <DataRow text="24h Fees" value={`- ${quoteSymbol}`} />
-                <DataRow text="Mark Price" value={`${markPrice} ${quoteSymbol}`} />
+                <DataRow text="24h Fees" value={`- ${marketState.quoteSymbol}`} />
+                <DataRow
+                    text="Mark Price"
+                    value={`${marketState.markPriceDisplay.toFixed(6)} ${marketState.baseSymbolDisplay}/${
+                        marketState.quoteSymbolDisplay
+                    }`}
+                />
             </SimpleGrid>
         </>
     )

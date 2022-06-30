@@ -19,6 +19,8 @@ export interface MarketState {
     exchangeAddress: string
     baseSymbol: string
     quoteSymbol: string
+    baseSymbolDisplay: string
+    quoteSymbolDisplay: string
     poolInfo: PoolInfo
     markPrice: Big
     markPriceDisplay: Big
