@@ -12,7 +12,7 @@ import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeCo
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import Big from "big.js"
 import { useHistory, useParams } from "react-router-dom"
-import Breadcrumb, { BreadcrumbUnit } from "component/base/Breadcumb"
+import Breadcrumb, { BreadcrumbUnit } from "component/base/Breadcrumb"
 import { PoolSummary } from "constant/types"
 import { createPoolSummary } from "util/market"
 import Button from "component/base/Button"
@@ -105,8 +105,8 @@ function LiquidityProvider() {
     }, [currentMarket, currentMarketState, markPrice])
 
     const breadcrumbLayers: BreadcrumbUnit[] = [
-        { name: "Home", path: "/" },
-        { name: "Pools", path: "/pools" },
+        { name: "Home", to: "/" },
+        { name: "Pools", to: "/pools" },
         { name: poolSummary?.poolName || "-" },
     ]
 
