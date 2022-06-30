@@ -23,9 +23,12 @@ yarn-debug.log*
 yarn-error.log*
 
 /src/types
+/src/deployments/*
 /script/tmp
 /.nova
 /.idea/
 
 # vscode
 /.vscode
+
+!.gitkeep
