@@ -101,7 +101,6 @@ function Collateral({ currentMarketState, collateralValues, setCollateralValues 
         [
             baseValue,
             currentMarketState.baseSymbol,
-            currentMarketState.inverse,
             currentMarketState.quoteSymbol,
             handleOnBaseInput,
             handleOnQuoteInput,
