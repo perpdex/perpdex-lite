@@ -5,7 +5,6 @@ import FrameContainer from "component/FrameContainer"
 import PoolsTable, { PoolsTableUnit } from "./PoolsTable"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import { useHistory } from "react-router-dom"
-import { createPoolSummary } from "util/market"
 import _ from "lodash"
 
 function Pools() {
@@ -13,7 +12,7 @@ function Pools() {
     const history = useHistory()
 
     const poolsInfo: PoolsTableUnit[] = useMemo(() => {
-        return _.map(marketStates, createPoolSummary)
+        return _.values(marketStates)
     }, [marketStates])
 
     const handleOnClick = useCallback(

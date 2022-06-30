@@ -7,9 +7,6 @@ export interface PoolInfo {
 }
 
 export interface PoolSummary {
-    address: string
-    quoteSymbolDisplay: string
-    baseSymbolDisplay: string
     poolName: string
     tvl: string
     volume24h: string
