@@ -17,9 +17,11 @@ export function ethFormatUnits(val: BigNumber) {
 }
 
 export function x96ToBig(val: BigNumber, isInverse: boolean = false) {
+    const outputDecimals = 32 // 32 is sufficient larger than log10(2^96)
+    const X10_D = BigNumber.from(10).pow(outputDecimals)
     const X96 = BigNumber.from(2).pow(96)
-    const valBN = isInverse && !val.eq(0) ? X96.div(val) : val.div(X96)
-    return bigNum2Big(valBN, 0)
+    const valBN = isInverse && !val.eq(0) ? X96.mul(X10_D).div(val) : val.mul(X10_D).div(X96)
+    return bigNum2Big(valBN, outputDecimals)
 }
 
 // Big Number to...
