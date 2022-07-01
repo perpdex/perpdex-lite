@@ -28,14 +28,14 @@ function PositionTokenDetail() {
         e => {
             setFromAmount(e.target.value)
         },
-        [setFromAmount, setToAmount, toAmount],
+        [setFromAmount],
     )
 
     const handleOnToInput = useCallback(
         e => {
             setToAmount(e.target.value)
         },
-        [setFromAmount, setToAmount, fromAmount],
+        [setToAmount],
     )
 
     const handleOnProceed = useCallback(
@@ -48,7 +48,7 @@ function PositionTokenDetail() {
                 deposit(marketAddress, Big(fromAmount))
             }
         },
-        [isRedeem, fromAmount, toAmount, marketAddress],
+        [isRedeem, fromAmount, toAmount, marketAddress, deposit, redeem],
     )
 
     return (

@@ -1,19 +1,9 @@
-// import { PositionInfo } from "constant/position"
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@chakra-ui/react"
 import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
 import { Modal } from "container/modal"
 import { useMemo } from "react"
-// import { Position } from "container/perpetual/position"
 import PositionTable, { PositionTableState } from "./PositionTable"
 import { PerpdexMarketContainer } from "../../../container/connection/perpdexMarketContainer"
-// import NoPosition from "./NoPosition"
-// import NoWallet from "./NoWallet"
-// import PositionUnit from "./PositionUnit"
-// import { SimpleGrid } from "@chakra-ui/layout"
-// import FrameContainer from "component/FrameContainer"
-// import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
-// import { BIG_ZERO } from "constant"
-// import { useMemo } from "react"
 
 function PositionTab() {
     const { currentMyTakerPositions } = PerpdexExchangeContainer.useContainer()
@@ -36,7 +26,7 @@ function PositionTab() {
             }
         }
         return undefined
-    }, [currentMyTakerPositions])
+    }, [currentMyTakerPositions, currentMarketState])
 
     return (
         <Tabs>

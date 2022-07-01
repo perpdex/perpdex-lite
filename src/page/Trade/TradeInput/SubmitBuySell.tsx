@@ -38,7 +38,7 @@ function SubmitBuySell({
                 await trade(isBuy, baseOrderValue, slippage)
             }
         },
-        [baseOrderValue, previewTrade, quoteOrderValue, slippage, trade],
+        [baseOrderValue, previewTrade, slippage, trade],
     )
 
     const handleBuyTrade = useCallback(() => handleOnTrade(true), [handleOnTrade])

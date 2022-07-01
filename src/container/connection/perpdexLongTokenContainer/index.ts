@@ -51,7 +51,7 @@ function usePerpdexLongTokenContainer() {
         return longTokenStates[currentMarket] || nullLongTokenState
     }, [longTokenStates, currentMarket])
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         if (!chainId) return
         if (!account) return
         if (!multicallNetworkProvider) return
@@ -139,37 +139,35 @@ function usePerpdexLongTokenContainer() {
                 }
             }),
         )
-    }
+    }, [account, chainId, longTokenStates, multicallNetworkProvider])
 
     useEffect(() => {
         fetchData()
-    }, [chainId, signer, account, multicallNetworkProvider])
+    }, [fetchData])
 
     useInterval(async () => {
         if (!isVisible) return
 
         console.log("perpdexLongTokenContainer polling")
-        fetchData()
+        await fetchData()
     }, 5000)
 
     const deposit = useCallback(
-        (marketAddress: string, amount: Big) => {
-            ;(async () => {
-                if (!account) return
-                const state = longTokenStates[marketAddress]
-                if (!state) return
+        async (marketAddress: string, amount: Big) => {
+            if (!account) return
+            const state = longTokenStates[marketAddress]
+            if (!state) return
 
-                const contract = createLongTokenContract(state.address, signer)
-                const amountBigNum = big2BigNum(amount, state.assetDecimals)
+            const contract = createLongTokenContract(state.address, signer)
+            const amountBigNum = big2BigNum(amount, state.assetDecimals)
 
-                if (state.assetIsWeth) {
-                    await contract.depositETH(account, {
-                        value: amountBigNum,
-                    })
-                } else {
-                    await contract.deposit(amountBigNum, account)
-                }
-            })()
+            if (state.assetIsWeth) {
+                await contract.depositETH(account, {
+                    value: amountBigNum,
+                })
+            } else {
+                await contract.deposit(amountBigNum, account)
+            }
         },
         [longTokenStates, account, signer],
     )

@@ -125,7 +125,7 @@ function usePerpdexExchangeContainer() {
             const settlementTokens = await multicallNetworkProvider.all(multicallRequest2)
 
             const multicallRequest3 = _.flattenDeep(
-                _.map(settlementTokens, (settlementToken, idx) => {
+                _.map(settlementTokens, settlementToken => {
                     return [
                         settlementToken === constants.AddressZero
                             ? multicallNetworkProvider.getEthBalance(constants.AddressZero) // dummy

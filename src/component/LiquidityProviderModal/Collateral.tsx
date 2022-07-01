@@ -56,7 +56,7 @@ function Collateral({ currentMarketState, collateralValues, setCollateralValues 
                 }
             }
         },
-        [setCollateralValues, currentMarketState.markPrice],
+        [setCollateralValues, currentMarketState.markPrice, baseValue, quoteValue],
     )
 
     useEffect(() => {

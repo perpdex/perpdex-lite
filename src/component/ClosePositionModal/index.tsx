@@ -108,6 +108,7 @@ function ClosePositionModal() {
             handleCloseMarket,
             isDisabled,
             isTxLoading,
+            currentMarketState?.baseSymbol,
         ],
     )
 }
