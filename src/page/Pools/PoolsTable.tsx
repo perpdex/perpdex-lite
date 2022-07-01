@@ -1,8 +1,8 @@
 import { Table, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react"
-import { PoolSummary } from "constant/types"
-import { getCurrencyIcon } from "util/market"
+import { createPoolSummary, getCurrencyIcon } from "util/market"
+import { MarketState } from "../../constant/types"
 
-export type PoolsTableUnit = PoolSummary
+export type PoolsTableUnit = MarketState
 
 export interface PoolsTableState {
     data: PoolsTableUnit[]
@@ -23,7 +23,7 @@ function PoolsTable({ data, handleOnClick }: PoolsTableState) {
                 {data.map((row: PoolsTableUnit) => {
                     const BaseIcon = getCurrencyIcon(row.baseSymbolDisplay)
                     const QuoteIcon = getCurrencyIcon(row.quoteSymbolDisplay)
-                    // const QuoteIcon = getCurrencyIcon("ASTR")
+                    const poolSummary = createPoolSummary(row)
 
                     return (
                         <Tr
@@ -33,10 +33,10 @@ function PoolsTable({ data, handleOnClick }: PoolsTableState) {
                             <Td borderBottom={0} verticalAlign="middle">
                                 {BaseIcon && <BaseIcon />}
                                 {QuoteIcon && <QuoteIcon />}{" "}
-                                <span style={{ verticalAlign: "middle" }}>{row.poolName}</span>
+                                <span style={{ verticalAlign: "middle" }}>{poolSummary.poolName}</span>
                             </Td>
-                            <Td borderBottom={0}>{row.tvl}</Td>
-                            <Td borderBottom={0}>{row.volume24h}</Td>
+                            <Td borderBottom={0}>{poolSummary.tvl}</Td>
+                            <Td borderBottom={0}>{poolSummary.volume24h}</Td>
                         </Tr>
                     )
                 })}

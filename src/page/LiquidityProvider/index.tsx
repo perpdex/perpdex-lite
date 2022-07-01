@@ -12,7 +12,7 @@ import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeCo
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import Big from "big.js"
 import { useHistory, useParams } from "react-router-dom"
-import Breadcrumb, { BreadcrumbUnit } from "component/base/Breadcumb"
+import Breadcrumb, { BreadcrumbUnit } from "component/base/Breadcrumb"
 import { PoolSummary } from "constant/types"
 import { createPoolSummary } from "util/market"
 import Button from "component/base/Button"
@@ -43,10 +43,6 @@ function LiquidityProvider() {
     const { currentMyMakerInfo, removeLiquidity } = PerpdexExchangeContainer.useContainer()
     const { currentMarket, currentMarketState, marketStates, setCurrentMarket } = PerpdexMarketContainer.useContainer()
 
-    const marketPairStr = useMemo(() => {
-        return `${currentMarketState?.baseSymbol}/${currentMarketState?.quoteSymbol}`
-    }, [currentMarketState?.baseSymbol, currentMarketState?.quoteSymbol])
-
     useEffect(() => {
         if (marketAddress && marketStates) {
             console.log("updated", marketAddress)
@@ -68,8 +64,6 @@ function LiquidityProvider() {
         if (!currentMyMakerInfo || !poolInfo || !markPrice || !currentMarketState) return
         if (poolInfo.totalLiquidity.eq(0)) return setMakerPositionInfo(initMakerPositionInfo)
 
-        // const _markPrice = currentMarketState.inverse ? Big(0).div(markPrice) : markPrice
-
         const liquidity = currentMyMakerInfo.liquidity
 
         const baseAmount = liquidity.mul(poolInfo.base).div(poolInfo.totalLiquidity)
@@ -78,14 +72,10 @@ function LiquidityProvider() {
         const baseDebt = Big(0)
         const quoteDebt = Big(0)
 
-        const unrealizedPnl = currentMarketState.inverse
-            ? baseAmount.sub(baseDebt).div(markPrice).add(quoteAmount.sub(quoteDebt))
-            : baseAmount.sub(baseDebt).mul(markPrice).add(quoteAmount.sub(quoteDebt))
+        const unrealizedPnl = baseAmount.sub(baseDebt).mul(markPrice).add(quoteAmount.sub(quoteDebt))
 
         console.log("markPrice", markPrice.toString())
-        const liquidityValue = currentMarketState.inverse
-            ? baseAmount.div(markPrice).add(quoteAmount)
-            : baseAmount.mul(markPrice).add(quoteAmount)
+        const liquidityValue = baseAmount.mul(markPrice).add(quoteAmount)
 
         const info = {
             unrealizedPnl, // FIX: consider funding
@@ -108,17 +98,15 @@ function LiquidityProvider() {
         )
     }, [makerPositionInfo, removeLiquidity])
 
-    const breadcrumbLayers: BreadcrumbUnit[] = [
-        { name: "Home", path: "/" },
-        { name: "Pools", path: "/pools" },
-        { name: marketPairStr },
-    ]
-
     const poolSummary: PoolSummary | undefined = useMemo(() => {
-        return currentMarket && currentMarketState && markPrice
-            ? createPoolSummary({ ...currentMarketState, address: currentMarket, markPrice })
-            : undefined
-    }, [currentMarket, currentMarketState, markPrice])
+        return currentMarketState ? createPoolSummary(currentMarketState) : undefined
+    }, [currentMarketState])
+
+    const breadcrumbLayers: BreadcrumbUnit[] = [
+        { name: "Home", to: "/" },
+        { name: "Pools", to: "/pools" },
+        { name: poolSummary?.poolName || "-" },
+    ]
 
     const haveLiquidity = useMemo(() => {
         return makerPositionInfo.liquidity.gt(0)
@@ -127,17 +115,16 @@ function LiquidityProvider() {
     return (
         <FrameContainer>
             <Breadcrumb layers={breadcrumbLayers} />
-            <TitleBar />
+            <TitleBar title={poolSummary?.poolName || "-"} />
             <Flex mt="6">
                 <Box borderStyle="solid" borderWidth="1px" borderRadius="12px" p="4" width={400}>
                     <VStack spacing={6} p={0}>
                         {/*<Mining />*/}
-                        {poolSummary && markPrice && (
+                        {poolSummary && currentMarketState && markPrice && (
                             <PoolInfo
-                                quoteSymbol={poolSummary.quoteSymbolDisplay}
+                                marketState={currentMarketState}
                                 tvl={poolSummary.tvl}
                                 volume24h={poolSummary.volume24h}
-                                markPrice={markPrice.toFixed(6)}
                             />
                         )}
                     </VStack>

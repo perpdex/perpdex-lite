@@ -19,15 +19,19 @@ import { useInterval } from "../../../hook/useInterval"
 import produce from "immer"
 
 const nullMarketState: MarketState = {
+    address: constants.AddressZero,
     exchangeAddress: constants.AddressZero,
     baseSymbol: "",
     quoteSymbol: "",
+    baseSymbolDisplay: "",
+    quoteSymbolDisplay: "",
     poolInfo: {
         base: Big(0),
         quote: Big(0),
         totalLiquidity: Big(0),
     },
     markPrice: Big(0),
+    markPriceDisplay: Big(0),
     priceFeedQuote: "",
     indexPriceQuote: Big(0),
     inverse: false,
@@ -101,7 +105,8 @@ function usePerpdexMarketContainer() {
 
                 const address = marketAddresses[i]
                 const inverse = baseSymbol === "USD"
-                const markPrice = x96ToBig(markPriceX96, inverse)
+                const markPrice = x96ToBig(markPriceX96)
+                const markPriceDisplay = x96ToBig(markPriceX96, inverse)
 
                 const quoteSymbol =
                     settlementTokens[i] === constants.AddressZero
@@ -109,15 +114,19 @@ function usePerpdexMarketContainer() {
                         : quoteSymbols[i]
 
                 newMarketStates[address] = {
+                    address,
                     exchangeAddress,
                     baseSymbol,
                     quoteSymbol,
+                    baseSymbolDisplay: inverse ? quoteSymbol : baseSymbol,
+                    quoteSymbolDisplay: inverse ? baseSymbol : quoteSymbol,
                     poolInfo: {
                         base: bigNum2Big(poolInfo.base),
                         quote: bigNum2Big(poolInfo.quote),
                         totalLiquidity: bigNum2Big(poolInfo.totalLiquidity),
                     },
                     markPrice: markPrice,
+                    markPriceDisplay: markPriceDisplay,
                     priceFeedQuote: priceFeedQuote,
                     indexPriceQuote: Big(0),
                     inverse: inverse,
@@ -173,7 +182,8 @@ function usePerpdexMarketContainer() {
                             quote: bigNum2Big(poolInfo.quote),
                             totalLiquidity: bigNum2Big(poolInfo.totalLiquidity),
                         }
-                        draft[marketAddress].markPrice = x96ToBig(markPriceX96, inverse)
+                        draft[marketAddress].markPrice = x96ToBig(markPriceX96)
+                        draft[marketAddress].markPriceDisplay = x96ToBig(markPriceX96, inverse)
                         draft[marketAddress].indexPriceQuote =
                             draft[marketAddress].priceFeedQuote === constants.AddressZero
                                 ? Big(1)

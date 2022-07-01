@@ -74,9 +74,7 @@ function Collateral({ currentMarketState, collateralValues, setCollateralValues 
                                 color="blue.500"
                                 textTransform="uppercase"
                             >
-                                {currentMarketState.inverse
-                                    ? currentMarketState.quoteSymbol
-                                    : currentMarketState.baseSymbol}
+                                {currentMarketState.baseSymbol}
                             </Text>
                         </InputRightElement>
                     </InputGroup>
@@ -93,9 +91,7 @@ function Collateral({ currentMarketState, collateralValues, setCollateralValues 
                                 color="blue.500"
                                 textTransform="uppercase"
                             >
-                                {currentMarketState.inverse
-                                    ? currentMarketState.baseSymbol
-                                    : currentMarketState.quoteSymbol}
+                                {currentMarketState.quoteSymbol}
                             </Text>
                         </InputRightElement>
                     </InputGroup>
@@ -105,7 +101,6 @@ function Collateral({ currentMarketState, collateralValues, setCollateralValues 
         [
             baseValue,
             currentMarketState.baseSymbol,
-            currentMarketState.inverse,
             currentMarketState.quoteSymbol,
             handleOnBaseInput,
             handleOnQuoteInput,

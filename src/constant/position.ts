@@ -1,13 +1,4 @@
 import Big from "big.js"
-import { Amm } from "./amm"
-
-export interface PositionInfo extends Amm {
-    unrealizedPnl: Big
-    size: Big
-    margin: Big
-    openNotional: Big
-    marginRatio: Big
-}
 
 export enum Side {
     Long = 1,

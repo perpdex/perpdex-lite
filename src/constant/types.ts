@@ -7,27 +7,24 @@ export interface PoolInfo {
 }
 
 export interface PoolSummary {
-    address: string
-    quoteSymbolDisplay: string
-    baseSymbolDisplay: string
     poolName: string
     tvl: string
     volume24h: string
 }
 
 export interface MarketState {
+    address: string
     exchangeAddress: string
     baseSymbol: string
     quoteSymbol: string
+    baseSymbolDisplay: string
+    quoteSymbolDisplay: string
     poolInfo: PoolInfo
     markPrice: Big
+    markPriceDisplay: Big
     priceFeedQuote: string
     indexPriceQuote: Big
     inverse: boolean
-}
-
-export interface MarketStateWithAddress extends MarketState {
-    address: string
 }
 
 export interface MakerInfo {
@@ -70,14 +67,11 @@ export interface LpCollateralState {
 }
 
 export interface PositionState {
-    baseAssetSymbolDisplay: string
-    quoteAssetSymbolDisplay: string
     isLong: boolean
     positionQuantity: Big
     positionValue: Big
-    entryPrice: Big
-    markPrice: Big
-    liqPrice: Big
+    entryPriceDisplay: Big
+    liqPriceDisplay: Big
     unrealizedPnl: Big
 }
 

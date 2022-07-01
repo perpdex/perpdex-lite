@@ -16,7 +16,8 @@ function TradeInput() {
     const [baseOrderValue, setBaseOrderValue] = useState<Big>(BIG_ZERO)
     const [slippage, setSlippage] = useState<number>(0.5)
 
-    const baseSymbol = currentMarketState.inverse ? currentMarketState.quoteSymbol : currentMarketState.baseSymbol
+    const baseSymbol = currentMarketState.baseSymbol
+    const quoteSymbol = currentMarketState.quoteSymbol
 
     const handlePositionInput = useCallback((value: Big | null) => {
         if (value !== null) {
@@ -27,10 +28,6 @@ function TradeInput() {
     const quoteOrderValue = useMemo(() => {
         return baseOrderValue.mul(currentMarketState.markPrice)
     }, [baseOrderValue, currentMarketState.markPrice])
-
-    const quoteSymbol = useMemo(() => {
-        return currentMarketState.inverse ? currentMarketState.baseSymbol : currentMarketState.quoteSymbol
-    }, [currentMarketState.baseSymbol, currentMarketState.inverse, currentMarketState.quoteSymbol])
 
     const isSubmitDisabled = useMemo(() => {
         return baseOrderValue.eq(0) || isLoading

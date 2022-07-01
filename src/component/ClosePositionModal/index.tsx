@@ -15,6 +15,7 @@ import { Modal as ModalContainer } from "container/modal"
 import DiscreteInputModifier from "component/base/DiscreteInputModifier"
 import Big from "big.js"
 import { BIG_ZERO } from "constant"
+import { PerpdexMarketContainer } from "../../container/connection/perpdexMarketContainer"
 
 function ClosePositionModal() {
     const [closeValue, setCloseValue] = useState<Big>(BIG_ZERO)
@@ -25,6 +26,7 @@ function ClosePositionModal() {
 
     const { isLoading: isTxLoading } = Transaction.useContainer()
     const { currentMyTakerPositions, trade } = PerpdexExchangeContainer.useContainer()
+    const { currentMarketState } = PerpdexMarketContainer.useContainer()
 
     // const handleOnClick = useCallback(async () => {
     //     if (address && currentMyTakerPositions && currentMyTakerPositions.notional && currentMyTakerPositions.size) {
@@ -52,12 +54,11 @@ function ClosePositionModal() {
 
     const handleCloseMarket = useCallback(() => {
         if (currentMyTakerPositions) {
-            const isBaseToQuote = currentMyTakerPositions.isLong
+            const isLong = !currentMyTakerPositions.isLong
             const baseAmount = closeValue
-            const quoteAmount = baseAmount.mul(currentMyTakerPositions.markPrice)
             const slippage = 40 // Future fix
 
-            trade(isBaseToQuote, baseAmount, quoteAmount, slippage)
+            trade(isLong, baseAmount, slippage)
         }
     }, [closeValue, currentMyTakerPositions, trade])
 
@@ -77,8 +78,8 @@ function ClosePositionModal() {
                     <ModalBody>
                         {currentMyTakerPositions && (
                             <DiscreteInputModifier
-                                inputLabel={`Closed qty ${currentMyTakerPositions.baseAssetSymbolDisplay}`}
-                                assetSymbol={currentMyTakerPositions.baseAssetSymbolDisplay}
+                                inputLabel={`Closed qty ${currentMarketState.baseSymbol}`}
+                                assetSymbol={currentMarketState.baseSymbol}
                                 maxValue={currentMyTakerPositions.positionQuantity}
                                 handleUpdate={handleUpdate}
                             />
