@@ -1,7 +1,6 @@
 import { HStack, StackDivider, VStack } from "@chakra-ui/react"
 
 import FrameContainer from "component/FrameContainer"
-import AssetInfo from "./AssetInfo"
 import AccountPanel from "../../component/AccountPanel"
 import AccountInfoTable from "component/AccountInfoTable"
 import TradeInfoPanel from "component/TradeInfoPanel"
