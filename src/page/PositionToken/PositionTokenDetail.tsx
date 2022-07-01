@@ -1,24 +1,10 @@
 import React, { useCallback, useState } from "react"
-import {
-    VStack,
-    Flex,
-    Box,
-    HStack,
-    SimpleGrid,
-    Button,
-    NumberInput,
-    InputGroup,
-    NumberInputField,
-    InputRightElement,
-    Text,
-} from "@chakra-ui/react"
+import { VStack, Flex, Box, Button, NumberInput, NumberInputField } from "@chakra-ui/react"
 
 import FrameContainer from "component/FrameContainer"
 import { PerpdexLongTokenContainer } from "../../container/connection/perpdexLongTokenContainer"
 import { useParams } from "react-router-dom"
 import Big from "big.js"
-import { BIG_ZERO, USDC_PRECISION } from "../../constant"
-import { formatInput } from "../../util/format"
 
 function PositionTokenDetail() {
     type Param = {
