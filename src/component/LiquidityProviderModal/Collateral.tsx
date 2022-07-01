@@ -26,15 +26,26 @@ function Collateral({ currentMarketState, collateralValues, setCollateralValues 
 
                     let base
                     let quote
-                    if (isBase) {
-                        base = Big(value)
-                        quote = base.mul(currentMarketState.markPrice)
-                    } else {
-                        quote = Big(value)
-                        base = quote.div(currentMarketState.markPrice)
-                    }
 
-                    isBase ? setQuoteValue(quote.toString()) : setBaseValue(base.toString())
+                    if (currentMarketState.markPrice.eq(0)) {
+                        if (isBase) {
+                            base = Big(value)
+                            quote = Big(quoteValue)
+                        } else {
+                            quote = Big(value)
+                            base = Big(baseValue)
+                        }
+                    } else {
+                        if (isBase) {
+                            base = Big(value)
+                            quote = base.mul(currentMarketState.markPrice)
+                        } else {
+                            quote = Big(value)
+                            base = quote.div(currentMarketState.markPrice)
+                        }
+
+                        isBase ? setQuoteValue(quote.toString()) : setBaseValue(base.toString())
+                    }
 
                     setCollateralValues({
                         base,
