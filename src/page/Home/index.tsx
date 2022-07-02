@@ -27,7 +27,6 @@ function Home() {
                     <OpenPositionsTable />
                 </VStack>
             </Flex>
-            {/* <AssetInfo /> */}
         </FrameContainer>
     )
 }

@@ -1,12 +1,25 @@
 import { Button, ButtonGroup, HStack, Table, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react"
 import { CurrencyIcon } from "../Icon"
 import { MarketState } from "../../constant/types"
+import { User } from "../../container/connection/user"
+import { AccountPerpdex } from "../../container/perpetual/account"
 
 interface Props {
     marketState: MarketState
 }
 
 function AccountInfoTable(props: Props) {
+    const { marketState } = props
+
+    // TODO: move to page (component should not depend on container)
+    const {
+        state: { address },
+    } = User.useContainer()
+
+    const {
+        actions: { openAccountModal },
+    } = AccountPerpdex.useContainer()
+
     return (
         <Table variant="simple" mx={{ base: "auto", md: "0" }}>
             <Thead>
@@ -22,8 +35,8 @@ function AccountInfoTable(props: Props) {
                 <Tr>
                     <Td border="0px">
                         <HStack>
-                            <CurrencyIcon symbol={props.marketState.quoteSymbol} boxSize={6} mr={1}></CurrencyIcon>
-                            <Text>{props.marketState.quoteSymbol}</Text>
+                            <CurrencyIcon symbol={marketState.quoteSymbol} boxSize={6} mr={1} />
+                            <Text>{marketState.quoteSymbol}</Text>
                         </HStack>
                     </Td>
                     <Td border="0px">20</Td>
@@ -48,10 +61,22 @@ function AccountInfoTable(props: Props) {
                                 borderColor={"#D9D9D9"}
                                 borderRadius="10px"
                                 variant="solid"
+                                isDisabled={!address}
+                                onClick={() => {
+                                    openAccountModal(false)
+                                }}
                             >
                                 Withdraw
                             </Button>
-                            <Button mb={[4, 0]} bgColor="#D9D9D9" borderRadius="10px">
+                            <Button
+                                mb={[4, 0]}
+                                bgColor="#D9D9D9"
+                                borderRadius="10px"
+                                isDisabled={!address}
+                                onClick={() => {
+                                    openAccountModal(true)
+                                }}
+                            >
                                 Deposit
                             </Button>
                         </ButtonGroup>
