@@ -36,7 +36,7 @@ function Home() {
                     <Divider orientation="vertical" borderColor="#627EEA" />
                 </Center>
                 <VStack spacing={10} w="100%">
-                    <TradeInfoPanel />
+                    <TradeInfoPanel myAccountInfo={currentMyAccountInfo} />
                     <OpenPositionsTable />
                 </VStack>
             </Flex>
