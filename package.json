@@ -67,7 +67,6 @@
         "@types/testing-library__jest-dom": "^5.9.5",
         "@types/yargs": "^16.0.0",
         "create-chakra-icons": "^1.1.0",
-        "cryptocurrency-icons": "^0.18.0",
         "eslint-plugin-react-hooks": "^4.6.0",
         "eslint-plugin-unused-imports": "^2.0.0",
         "husky": "^5.1.3",
