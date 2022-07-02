@@ -66,7 +66,8 @@ function doNumberWithCommas(number: string) {
     return number.replace(regexUSLocaleNumber, "$&,")
 }
 
-export function numberWithCommas(number: Big, precision: number = 4) {
+export function numberWithCommas(number?: Big, precision: number = 4) {
+    if (!number) return "-"
     return doNumberWithCommas(number.toFixed(precision))
 }
 
