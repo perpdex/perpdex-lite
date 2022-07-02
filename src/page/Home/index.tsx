@@ -17,7 +17,7 @@ function Home() {
             <Flex direction={{ base: "column", lg: "row" }} w="100%" h="100%" justifyContent="space-evenly">
                 <VStack w="100%">
                     <AccountPanel myAccountInfo={currentMyAccountInfo} marketState={currentMarketState} />
-                    <AccountInfoTable marketState={currentMarketState} />
+                    <AccountInfoTable myAccountInfo={currentMyAccountInfo} marketState={currentMarketState} />
                 </VStack>
                 <Center h="100%" mx={10}>
                     <Divider orientation="vertical" borderColor="#627EEA" />
