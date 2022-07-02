@@ -5,14 +5,19 @@ import AccountPanel from "../../component/AccountPanel"
 import AccountInfoTable from "component/AccountInfoTable"
 import TradeInfoPanel from "component/TradeInfoPanel"
 import OpenPositionsTable from "component/OpenPositionsTable"
+import { PerpdexMarketContainer } from "../../container/connection/perpdexMarketContainer"
+import { PerpdexExchangeContainer } from "../../container/connection/perpdexExchangeContainer"
 
 function Home() {
+    const { currentMyAccountInfo } = PerpdexExchangeContainer.useContainer()
+    const { currentMarketState } = PerpdexMarketContainer.useContainer()
+
     return (
         <FrameContainer>
             <Flex direction={{ base: "column", lg: "row" }} w="100%" h="100%" justifyContent="space-evenly">
                 <VStack w="100%">
-                    <AccountPanel />
-                    <AccountInfoTable />
+                    <AccountPanel myAccountInfo={currentMyAccountInfo} marketState={currentMarketState} />
+                    <AccountInfoTable marketState={currentMarketState} />
                 </VStack>
                 <Center h="100%" mx={10}>
                     <Divider orientation="vertical" borderColor="#627EEA" />

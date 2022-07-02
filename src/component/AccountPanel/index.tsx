@@ -1,12 +1,16 @@
 import { Box, HStack, Text, VStack } from "@chakra-ui/react"
-import { ETHIcon, LogoWhite } from "../Icon"
+import { CurrencyIcon, LogoWhite } from "../Icon"
 import Big from "big.js"
-import { PerpdexExchangeContainer } from "../../container/connection/perpdexExchangeContainer"
-import { PerpdexMarketContainer } from "../../container/connection/perpdexMarketContainer"
+import { AccountInfo, MarketState } from "../../constant/types"
 
-function AccountPanel() {
-    const { currentMyAccountInfo } = PerpdexExchangeContainer.useContainer()
-    const { currentMarketState } = PerpdexMarketContainer.useContainer()
+interface Props {
+    marketState: MarketState
+    myAccountInfo: AccountInfo
+}
+
+function AccountPanel(props: Props) {
+    const currentMyAccountInfo = props.myAccountInfo
+    const currentMarketState = props.marketState
 
     const quoteSymbol = currentMarketState.quoteSymbol
     const totalAccountValue = currentMyAccountInfo?.totalAccountValue || Big(0)
@@ -61,7 +65,7 @@ function AccountPanel() {
                     </HStack>
                     <HStack w="100%" justifyContent="space-between" alignItems="center">
                         <Box></Box>
-                        <ETHIcon boxSize={12}></ETHIcon>
+                        <CurrencyIcon symbol={currentMarketState.quoteSymbol} boxSize={12}></CurrencyIcon>
                     </HStack>
                 </VStack>
             </VStack>
