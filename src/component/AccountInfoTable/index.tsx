@@ -1,27 +1,18 @@
 import { Button, ButtonGroup, HStack, Table, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react"
 import { CurrencyIcon } from "../Icon"
 import { AccountInfo, MarketState } from "../../constant/types"
-import { User } from "../../container/connection/user"
-import { AccountPerpdex } from "../../container/perpetual/account"
 import { numberWithCommas } from "../../util/format"
 import Big from "big.js"
 
 interface Props {
     marketState: MarketState
     myAccountInfo: AccountInfo
+    accountAvailable: boolean
+    openAccountModal: (isDeposit: boolean) => void
 }
 
 function AccountInfoTable(props: Props) {
-    const { marketState, myAccountInfo } = props
-
-    // TODO: move to page (component should not depend on container)
-    const {
-        state: { address },
-    } = User.useContainer()
-
-    const {
-        actions: { openAccountModal },
-    } = AccountPerpdex.useContainer()
+    const { marketState, myAccountInfo, accountAvailable, openAccountModal } = props
 
     const totalAccountValue = myAccountInfo?.totalAccountValue || Big(0)
     const totalAccountValueUsd = totalAccountValue.mul(marketState.indexPriceQuote)
@@ -69,7 +60,7 @@ function AccountInfoTable(props: Props) {
                                 borderColor={"#D9D9D9"}
                                 borderRadius="10px"
                                 variant="solid"
-                                isDisabled={!address}
+                                isDisabled={!accountAvailable}
                                 onClick={() => {
                                     openAccountModal(false)
                                 }}
@@ -80,7 +71,7 @@ function AccountInfoTable(props: Props) {
                                 mb={[4, 0]}
                                 bgColor="#D9D9D9"
                                 borderRadius="10px"
-                                isDisabled={!address}
+                                isDisabled={!accountAvailable}
                                 onClick={() => {
                                     openAccountModal(true)
                                 }}
