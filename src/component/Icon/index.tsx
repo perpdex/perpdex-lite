@@ -1,5 +1,6 @@
 import React from "react"
 import { Icon, Image, useColorMode } from "@chakra-ui/react"
+import { ASTRIcon } from "./astr"
 
 // 貼上 svg 然後把 svg tag 改成 Icon，然後
 // Icon 加上 {...props}
@@ -280,7 +281,9 @@ export const USDIcon = (props: any) => (
     </Icon>
 )
 
-export const BTCIcon = (props: any) => (
+// do not export cryptocurrency icons
+// use CurrencyIcon
+const BTCIcon = (props: any) => (
     <Icon viewBox="0 0 32 32" {...props}>
         <g fill="none" fillRule="evenodd">
             <circle cx={16} cy={16} r={16} fill="#F7931A" />
@@ -293,7 +296,7 @@ export const BTCIcon = (props: any) => (
     </Icon>
 )
 
-export const ETHIcon = (props: any) => (
+const ETHIcon = (props: any) => (
     <Icon viewBox="0 0 32 32" {...props}>
         <g fill="none" fillRule="evenodd">
             <circle cx={16} cy={16} r={16} fill="#627EEA" />
@@ -309,7 +312,7 @@ export const ETHIcon = (props: any) => (
     </Icon>
 )
 
-export const LINKIcon = (props: any) => (
+const LINKIcon = (props: any) => (
     <Icon viewBox="0 0 32 32" {...props}>
         <g fill="none">
             <circle fill="#2A5ADA" cx={16} cy={16} r={16} />
@@ -321,7 +324,7 @@ export const LINKIcon = (props: any) => (
     </Icon>
 )
 
-export const MATICIcon = (props: any) => (
+const MATICIcon = (props: any) => (
     <Icon viewBox="0 0 32 32" {...props}>
         <g fill="none">
             <circle fill="#6F41D8" cx={16} cy={16} r={16} />
@@ -332,3 +335,23 @@ export const MATICIcon = (props: any) => (
         </g>
     </Icon>
 )
+
+export const CurrencyIcon = (props: any) => {
+    const { symbol, ...rest } = props
+    const icons: { [key: string]: any } = {
+        eth: ETHIcon,
+        btc: BTCIcon,
+        usd: USDIcon,
+        matic: MATICIcon,
+        link: LINKIcon,
+        astr: ASTRIcon,
+        sby: ASTRIcon,
+    }
+    const SelectedIcon = icons[symbol.toLowerCase()]
+
+    if (SelectedIcon) {
+        return <SelectedIcon {...rest}></SelectedIcon>
+    } else {
+        return <span></span>
+    }
+}

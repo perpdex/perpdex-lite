@@ -143,7 +143,7 @@ function usePerpdexLongTokenContainer() {
 
     useEffect(() => {
         fetchData()
-    }, [fetchData])
+    }, [])
 
     useInterval(async () => {
         if (!isVisible) return
