@@ -1,4 +1,4 @@
-import { ERC20_DECIMAL_DIGITS, USDC_PRECISION, DISPLAY_DIGITS } from "../constant/number"
+import { ERC20_DECIMAL_DIGITS, DISPLAY_DIGITS } from "../constant/number"
 
 import Big from "big.js"
 import { BigNumber, ethers } from "ethers"
@@ -62,12 +62,12 @@ export function decimal2Big(decimal: Decimal): Big {
 const regexUSLocaleNumber = new RegExp(/\d(?=(\d{3})+\.)/g)
 
 // format number like 1000 => 1,000
-export function numberWithCommas(number: string = "") {
+function doNumberWithCommas(number: string) {
     return number.replace(regexUSLocaleNumber, "$&,")
 }
 
-export function numberWithCommasUsdc(number: Big = new Big(0)) {
-    return numberWithCommas(number.toFixed(USDC_PRECISION))
+export function numberWithCommas(number: Big, precision: number = 4) {
+    return doNumberWithCommas(number.toFixed(precision))
 }
 
 // TODO: check is valid number
