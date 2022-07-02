@@ -8,7 +8,7 @@ interface FrameContainerProps {
 function FrameContainer({ children }: FrameContainerProps) {
     return (
         <Flex justifyContent="center">
-            <Box mt={8} minWidth={1200} maxWidth={1600}>
+            <Box mt={8} maxWidth={1600} w="100%">
                 {children}
             </Box>
         </Flex>
