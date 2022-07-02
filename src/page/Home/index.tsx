@@ -7,8 +7,16 @@ import TradeInfoPanel from "component/TradeInfoPanel"
 import OpenPositionsTable from "component/OpenPositionsTable"
 import { PerpdexMarketContainer } from "../../container/connection/perpdexMarketContainer"
 import { PerpdexExchangeContainer } from "../../container/connection/perpdexExchangeContainer"
+import { User } from "../../container/connection/user"
+import { AccountPerpdex } from "../../container/perpetual/account"
 
 function Home() {
+    const {
+        state: { address },
+    } = User.useContainer()
+    const {
+        actions: { openAccountModal },
+    } = AccountPerpdex.useContainer()
     const { currentMyAccountInfo } = PerpdexExchangeContainer.useContainer()
     const { currentMarketState } = PerpdexMarketContainer.useContainer()
 
@@ -17,17 +25,21 @@ function Home() {
             <Flex direction={{ base: "column", lg: "row" }} w="100%" h="100%" justifyContent="space-evenly">
                 <VStack w="100%">
                     <AccountPanel myAccountInfo={currentMyAccountInfo} marketState={currentMarketState} />
-                    <AccountInfoTable marketState={currentMarketState} />
+                    <AccountInfoTable
+                        accountAvailable={!!address}
+                        openAccountModal={openAccountModal}
+                        myAccountInfo={currentMyAccountInfo}
+                        marketState={currentMarketState}
+                    />
                 </VStack>
                 <Center h="100%" mx={10}>
                     <Divider orientation="vertical" borderColor="#627EEA" />
                 </Center>
                 <VStack spacing={10} w="100%">
-                    <TradeInfoPanel />
+                    <TradeInfoPanel myAccountInfo={currentMyAccountInfo} />
                     <OpenPositionsTable />
                 </VStack>
             </Flex>
-            {/* <AssetInfo /> */}
         </FrameContainer>
     )
 }

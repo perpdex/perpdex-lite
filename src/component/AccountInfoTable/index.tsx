@@ -1,20 +1,32 @@
 import { Button, ButtonGroup, HStack, Table, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react"
 import { CurrencyIcon } from "../Icon"
-import { MarketState } from "../../constant/types"
+import { AccountInfo, MarketState } from "../../constant/types"
+import { numberWithCommas } from "../../util/format"
+import Big from "big.js"
 
 interface Props {
     marketState: MarketState
+    myAccountInfo: AccountInfo
+    accountAvailable: boolean
+    openAccountModal: (isDeposit: boolean) => void
 }
 
 function AccountInfoTable(props: Props) {
+    const { marketState, myAccountInfo, accountAvailable, openAccountModal } = props
+
+    const totalAccountValue = myAccountInfo?.totalAccountValue || Big(0)
+    const totalAccountValueUsd = totalAccountValue.mul(marketState.indexPriceQuote)
+    const collateralBalance = myAccountInfo?.collateralBalance || Big(0)
+    const collateralBalanceUsd = collateralBalance.mul(marketState.indexPriceQuote)
+
     return (
         <Table variant="simple" mx={{ base: "auto", md: "0" }}>
             <Thead>
                 <Tr>
                     <Th border="0px">COIN</Th>
-                    <Th border="0px">WALLET</Th>
-                    <Th border="0px">AMOUNT</Th>
-                    <Th border="0px">AVAILABLE</Th>
+                    <Th border="0px">WALLET BALANCE</Th>
+                    <Th border="0px">TOTAL ACCOUNT VALUE</Th>
+                    <Th border="0px">COLLATERAL</Th>
                     <Th border="0px">ACTION</Th>
                 </Tr>
             </Thead>
@@ -22,21 +34,21 @@ function AccountInfoTable(props: Props) {
                 <Tr>
                     <Td border="0px">
                         <HStack>
-                            <CurrencyIcon symbol={props.marketState.quoteSymbol} boxSize={6} mr={1}></CurrencyIcon>
-                            <Text>{props.marketState.quoteSymbol}</Text>
+                            <CurrencyIcon symbol={marketState.quoteSymbol} boxSize={6} mr={1} />
+                            <Text>{marketState.quoteSymbol}</Text>
                         </HStack>
                     </Td>
-                    <Td border="0px">20</Td>
+                    <Td border="0px">{numberWithCommas(myAccountInfo?.settlementTokenBalance)}</Td>
                     <Td border="0px">
                         <HStack>
-                            <Text>1.2</Text>
-                            <Text color="gray.400">($35,140)</Text>
+                            <Text>{numberWithCommas(totalAccountValue)}</Text>
+                            <Text color="gray.400">(${numberWithCommas(totalAccountValueUsd)})</Text>
                         </HStack>
                     </Td>
                     <Td border="0px">
                         <HStack>
-                            <Text>1.1</Text>
-                            <Text color="gray.400">($32,210)</Text>
+                            <Text>{numberWithCommas(collateralBalance)}</Text>
+                            <Text color="gray.400">(${numberWithCommas(collateralBalanceUsd)})</Text>
                         </HStack>
                     </Td>
                     <Td border="0px">
@@ -48,10 +60,22 @@ function AccountInfoTable(props: Props) {
                                 borderColor={"#D9D9D9"}
                                 borderRadius="10px"
                                 variant="solid"
+                                isDisabled={!accountAvailable}
+                                onClick={() => {
+                                    openAccountModal(false)
+                                }}
                             >
                                 Withdraw
                             </Button>
-                            <Button mb={[4, 0]} bgColor="#D9D9D9" borderRadius="10px">
+                            <Button
+                                mb={[4, 0]}
+                                bgColor="#D9D9D9"
+                                borderRadius="10px"
+                                isDisabled={!accountAvailable}
+                                onClick={() => {
+                                    openAccountModal(true)
+                                }}
+                            >
                                 Deposit
                             </Button>
                         </ButtonGroup>

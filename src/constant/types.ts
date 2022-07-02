@@ -52,7 +52,7 @@ export interface AccountInfo {
     settlementTokenBalance: Big
     collateralBalance: Big
     totalAccountValue: Big
-    // totalPositionNotional: Big
+    mmRatio: Big
 }
 
 export interface ExchangeState {

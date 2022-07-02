@@ -155,6 +155,7 @@ function usePerpdexExchangeContainer() {
                         : createERC20ContractMulticall(settlementTokenMetadataLocal[idx].address).balanceOf(account),
                     contract.accountInfos(account),
                     contract.getTotalAccountValue(account),
+                    contract.getTotalPositionNotional(account),
                     _.map(exchange.markets, market => {
                         return [
                             contract.getTakerInfo(account, market.address),
@@ -170,11 +171,15 @@ function usePerpdexExchangeContainer() {
 
         let resultIdx = 0
         _.each(exchanges, (exchange, idx) => {
-            const [imRatio, mmRatio, settlementTokenBalance, accountInfo, totalAccountValue] = multicallResult.slice(
-                resultIdx,
-                resultIdx + 5,
-            )
-            resultIdx += 5
+            const [
+                imRatio,
+                mmRatio,
+                settlementTokenBalance,
+                accountInfo,
+                totalAccountValue,
+                totalPositionNotionalBigNum,
+            ] = multicallResult.slice(resultIdx, resultIdx + 6)
+            resultIdx += 6
 
             const takerInfos: { [key: string]: any } = {}
             const makerInfos: { [key: string]: any } = {}
@@ -194,6 +199,8 @@ function usePerpdexExchangeContainer() {
                 }
             })
 
+            const totalPositionNotional = bigNum2Big(totalPositionNotionalBigNum)
+
             newExchangeStates[exchange.address] = {
                 imRatio: bigNum2Big(imRatio, 6),
                 mmRatio: bigNum2Big(mmRatio, 6),
@@ -206,6 +213,9 @@ function usePerpdexExchangeContainer() {
                     ),
                     collateralBalance: bigNum2Big(accountInfo.collateralBalance),
                     totalAccountValue: bigNum2Big(totalAccountValue),
+                    mmRatio: totalPositionNotional.eq(0)
+                        ? Big(0)
+                        : bigNum2Big(totalAccountValue).div(totalPositionNotional),
                 },
             }
         })
