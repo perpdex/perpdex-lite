@@ -8,7 +8,7 @@ interface Props {
 
 function AccountInfoTable(props: Props) {
     return (
-        <Table variant="simple">
+        <Table variant="simple" mx={{ base: "auto", md: "0" }}>
             <Thead>
                 <Tr>
                     <Th border="0px">COIN</Th>

@@ -2,7 +2,7 @@ import { Box, Button, Table, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/r
 
 function OpenPositionsTable() {
     return (
-        <Box borderColor="#728BEC" borderWidth="1px" borderRadius="10px" p={6}>
+        <Box borderColor="#728BEC" borderWidth="1px" borderRadius="10px" p={6} mx={{ base: "auto", md: "0" }}>
             <Text>Open Positions</Text>
             <Table variant="simple" overflowY="scroll">
                 <Thead>

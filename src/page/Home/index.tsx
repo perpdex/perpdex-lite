@@ -1,4 +1,4 @@
-import { HStack, StackDivider, VStack } from "@chakra-ui/react"
+import { Center, Divider, Flex, VStack } from "@chakra-ui/react"
 
 import FrameContainer from "component/FrameContainer"
 import AccountPanel from "../../component/AccountPanel"
@@ -14,16 +14,19 @@ function Home() {
 
     return (
         <FrameContainer>
-            <HStack justifyContent="space-evenly" divider={<StackDivider borderColor="#627EEA" />} spacing={10}>
-                <VStack>
+            <Flex direction={{ base: "column", lg: "row" }} w="100%" h="100%" justifyContent="space-evenly">
+                <VStack w="100%">
                     <AccountPanel myAccountInfo={currentMyAccountInfo} marketState={currentMarketState} />
                     <AccountInfoTable marketState={currentMarketState} />
                 </VStack>
-                <VStack spacing={10}>
+                <Center h="100%" mx={10}>
+                    <Divider orientation="vertical" borderColor="#627EEA" />
+                </Center>
+                <VStack spacing={10} w="100%">
                     <TradeInfoPanel />
                     <OpenPositionsTable />
                 </VStack>
-            </HStack>
+            </Flex>
             {/* <AssetInfo /> */}
         </FrameContainer>
     )
