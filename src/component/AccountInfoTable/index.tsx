@@ -1,7 +1,12 @@
 import { Button, ButtonGroup, HStack, Table, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react"
-import { ETHIcon } from "../Icon"
+import { CurrencyIcon } from "../Icon"
+import { MarketState } from "../../constant/types"
 
-function AccountInfoTable() {
+interface Props {
+    marketState: MarketState
+}
+
+function AccountInfoTable(props: Props) {
     return (
         <Table variant="simple">
             <Thead>
@@ -17,8 +22,8 @@ function AccountInfoTable() {
                 <Tr>
                     <Td border="0px">
                         <HStack>
-                            <ETHIcon boxSize={6} mr={1}></ETHIcon>
-                            <Text>ETH/wETH</Text>
+                            <CurrencyIcon symbol={props.marketState.quoteSymbol} boxSize={6} mr={1}></CurrencyIcon>
+                            <Text>{props.marketState.quoteSymbol}</Text>
                         </HStack>
                     </Td>
                     <Td border="0px">20</Td>

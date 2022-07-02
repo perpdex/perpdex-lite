@@ -1,6 +1,7 @@
 import { Table, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react"
-import { createPoolSummary, getCurrencyIcon } from "util/market"
+import { createPoolSummary } from "util/market"
 import { MarketState } from "../../constant/types"
+import { CurrencyIcon } from "../../component/Icon"
 
 export type PoolsTableUnit = MarketState
 
@@ -21,18 +22,15 @@ function PoolsTable({ data, handleOnClick }: PoolsTableState) {
             </Thead>
             <Tbody>
                 {data.map((row: PoolsTableUnit) => {
-                    const BaseIcon = getCurrencyIcon(row.baseSymbolDisplay)
-                    const QuoteIcon = getCurrencyIcon(row.quoteSymbolDisplay)
                     const poolSummary = createPoolSummary(row)
-
                     return (
                         <Tr
                             _hover={{ backgroundColor: "black.alpha800", opacity: "0.7", cursor: "pointer" }}
                             onClick={() => handleOnClick(row.address)}
                         >
                             <Td borderBottom={0} verticalAlign="middle">
-                                {BaseIcon && <BaseIcon />}
-                                {QuoteIcon && <QuoteIcon />}{" "}
+                                <CurrencyIcon symbol={row.baseSymbolDisplay} />
+                                <CurrencyIcon symbol={row.quoteSymbolDisplay} />{" "}
                                 <span style={{ verticalAlign: "middle" }}>{poolSummary.poolName}</span>
                             </Td>
                             <Td borderBottom={0}>{poolSummary.tvl}</Td>
