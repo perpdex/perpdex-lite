@@ -17,9 +17,9 @@ import Pools from "page/Pools"
 
 export const App = () => {
     return (
-        <Container maxW="container.2xl" pb={20} px={6}>
+        <Container maxW="container.2xl" pb={20} px={0}>
             <Header />
-            <Divider />
+            <Divider borderColor="#627EEA" />
             <Switch>
                 <Route exact path="/" component={Home} />
                 <Route exact path="/trade" component={Trade} />

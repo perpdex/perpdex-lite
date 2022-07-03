@@ -1,12 +1,12 @@
 import React from "react"
-import { Icon, Image, useColorMode } from "@chakra-ui/react"
+import { Icon } from "@chakra-ui/react"
 import { ASTRIcon } from "./astr"
 
 // 貼上 svg 然後把 svg tag 改成 Icon，然後
 // Icon 加上 {...props}
 // fill="currentColor"
 
-export const PerpCoin = (props: any) => {
+const PerpCoin = (props: any) => {
     return (
         <Icon width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
             <path
@@ -17,7 +17,7 @@ export const PerpCoin = (props: any) => {
     )
 }
 
-export const PerpCoinFill = (props: any) => {
+const PerpCoinFill = (props: any) => {
     return (
         <Icon width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
             <path d="M10.625 8.5268L12.2769 10.0714L9.25 12.9018L7.59811 11.3571L10.625 8.5268Z" fill="currentColor" />
@@ -31,7 +31,7 @@ export const PerpCoinFill = (props: any) => {
     )
 }
 
-export const PerpSymbol = (props: any) => {
+const PerpSymbol = (props: any) => {
     return (
         <Icon width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
             <path
@@ -42,7 +42,7 @@ export const PerpSymbol = (props: any) => {
     )
 }
 
-export const Reward = (props: any) => {
+const Reward = (props: any) => {
     return (
         <Icon width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
             <path
@@ -59,7 +59,7 @@ export const Reward = (props: any) => {
     )
 }
 
-export const RewardFill = (props: any) => {
+const RewardFill = (props: any) => {
     return (
         <Icon width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
             <path
@@ -100,7 +100,7 @@ export const WalletFill = (props: any) => {
     )
 }
 
-export const CoinStackFilled = (props: any) => {
+const CoinStackFilled = (props: any) => {
     return (
         <Icon
             xmlns="http://www.w3.org/2000/svg"
@@ -118,7 +118,7 @@ export const CoinStackFilled = (props: any) => {
     )
 }
 
-export const CoinStack = (props: any) => {
+const CoinStack = (props: any) => {
     return (
         <Icon
             xmlns="http://www.w3.org/2000/svg"
@@ -133,7 +133,7 @@ export const CoinStack = (props: any) => {
     )
 }
 
-export const Xmark = (props: any) => {
+const Xmark = (props: any) => {
     return (
         <Icon width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
             <path
@@ -145,15 +145,29 @@ export const Xmark = (props: any) => {
 }
 
 export const Logo = (props: any) => {
-    const { colorMode } = useColorMode()
-    const logoColor = () => {
-        if (props.always) {
-            return props.always.toString()
-        } else {
-            return colorMode
-        }
-    }
-    return <Image {...props} border="none" src={logoColor() === "light" ? "img/logo-color.svg" : "img/logo-bw.svg"} />
+    return (
+        <Icon viewBox="0 0 53 53" w={53} h={53} {...props}>
+            <svg width="54" height="54" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M2 8.09725L1.45199 6.97378L0.75 7.3162V8.09725H2ZM14.5 2L15.048 0.876529L14.5 0.609221L13.952 0.876529L14.5 2ZM2 23.9513H0.75V24.7323L1.45197 25.0747L2 23.9513ZM52 8.09725H53.25V7.3162L52.548 6.97378L52 8.09725ZM39.5 2L40.048 0.876529L39.5 0.609221L38.952 0.876529L39.5 2ZM52 23.9513L52.548 25.0747L53.25 24.7323V23.9513H52ZM27 52L26.452 53.1235L27 53.3908L27.548 53.1235L27 52ZM14.5 45.9024H13.25V46.6834L13.952 47.0258L14.5 45.9024ZM39.5 45.9024L40.048 47.0258L40.75 46.6834V45.9024H39.5ZM1.45197 9.22071L13.952 15.3183L15.048 13.0714L2.54803 6.97379L1.45197 9.22071ZM15.048 15.3183L27.548 9.22071L26.452 6.97379L13.952 13.0714L15.048 15.3183ZM27.548 6.97378L15.048 0.876529L13.952 3.12347L26.452 9.22073L27.548 6.97378ZM13.952 0.876529L1.45199 6.97378L2.54801 9.22073L15.048 3.12347L13.952 0.876529ZM0.75 8.09725V23.9513H3.25V8.09725H0.75ZM1.45197 25.0747L13.952 31.1723L15.048 28.9254L2.54803 22.8278L1.45197 25.0747ZM15.048 31.1723L27.548 25.0747L26.452 22.8278L13.952 28.9254L15.048 31.1723ZM28.25 23.9513V8.09725H25.75V23.9513H28.25ZM13.25 14.1948V30.0489H15.75V14.1948H13.25ZM26.452 9.22071L38.952 15.3183L40.048 13.0714L27.548 6.97379L26.452 9.22071ZM40.048 15.3183L52.548 9.22071L51.452 6.97379L38.952 13.0714L40.048 15.3183ZM52.548 6.97378L40.048 0.876529L38.952 3.12347L51.452 9.22073L52.548 6.97378ZM38.952 0.876529L26.452 6.97378L27.548 9.22073L40.048 3.12347L38.952 0.876529ZM26.452 25.0747L38.952 31.1723L40.048 28.9254L27.548 22.8278L26.452 25.0747ZM40.048 31.1723L52.548 25.0747L51.452 22.8278L38.952 28.9254L40.048 31.1723ZM53.25 23.9513V8.09725H50.75V23.9513H53.25ZM38.25 14.1948V30.0489H40.75V14.1948H38.25ZM13.952 31.1723L26.452 37.2701L27.548 35.0232L15.048 28.9254L13.952 31.1723ZM27.548 37.2701L40.048 31.1723L38.952 28.9254L26.452 35.0232L27.548 37.2701ZM25.75 36.1466V52H28.25V36.1466H25.75ZM13.25 30.0489V45.9024H15.75V30.0489H13.25ZM13.952 47.0258L26.452 53.1235L27.548 50.8765L15.048 44.7789L13.952 47.0258ZM27.548 53.1235L40.048 47.0258L38.952 44.7789L26.452 50.8765L27.548 53.1235ZM40.75 45.9024V30.0489H38.25V45.9024H40.75Z"
+                    fill="url(#paint0_linear_1571_1124)"
+                />
+                <defs>
+                    <linearGradient
+                        id="paint0_linear_1571_1124"
+                        x1="27"
+                        y1="2"
+                        x2="27"
+                        y2="52"
+                        gradientUnits="userSpaceOnUse"
+                    >
+                        <stop stop-color="#FA1A85" />
+                        <stop offset="1" stop-color="#627EEA" />
+                    </linearGradient>
+                </defs>
+            </svg>
+        </Icon>
+    )
 }
 
 export const LogoWhite = (props: any) => {
@@ -227,7 +241,7 @@ export const UnStakeIcon = (props: any) => (
     </Icon>
 )
 
-export const PerpStakingLogo = (props: any) => (
+const PerpStakingLogo = (props: any) => (
     <Icon w={69} h={18} viewBox="0 0 69 18">
         <svg width="69" height="18" viewBox="0 0 69 18" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
@@ -269,7 +283,9 @@ export const PerpStakingLogo = (props: any) => (
     </Icon>
 )
 
-export const USDIcon = (props: any) => (
+// do not export cryptocurrency icons
+// use CurrencyIcon
+const USDIcon = (props: any) => (
     <Icon viewBox="0 0 32 32" {...props}>
         <g fill="none" fillRule="evenodd">
             <circle cx={16} cy={16} fill="#6cde07" r={16} />
@@ -281,8 +297,6 @@ export const USDIcon = (props: any) => (
     </Icon>
 )
 
-// do not export cryptocurrency icons
-// use CurrencyIcon
 const BTCIcon = (props: any) => (
     <Icon viewBox="0 0 32 32" {...props}>
         <g fill="none" fillRule="evenodd">
