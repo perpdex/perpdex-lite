@@ -1,13 +1,11 @@
-import React, { useEffect, useMemo, useState } from "react"
+import React, { useEffect, useMemo } from "react"
 import { VStack, Box, Center, Flex } from "@chakra-ui/react"
 
 import TitleBar from "./TitleBar"
-// import Mining from "./Mining"
 import YourLiquidity from "./YourLiquidity"
 import PoolInfo from "./PoolInfo"
 import FrameContainer from "component/FrameContainer"
 import { Modal } from "container/modal"
-import { useCallback } from "react"
 import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import Big from "big.js"
@@ -17,16 +15,6 @@ import { PoolSummary } from "constant/types"
 import { createPoolSummary } from "util/market"
 import Button from "component/base/Button"
 
-const initMakerPositionInfo = {
-    unrealizedPnl: Big(0),
-    liquidityValue: Big(0),
-    liquidity: Big(0),
-    baseAmount: Big(0),
-    quoteAmount: Big(0),
-    baseDeleveraged: Big(0),
-    quoteDeleveraged: Big(0),
-}
-
 export interface MakerPositionInfo {
     unrealizedPnl: Big
     liquidityValue: Big
@@ -35,6 +23,16 @@ export interface MakerPositionInfo {
     quoteAmount: Big
     baseDeleveraged: Big
     quoteDeleveraged: Big
+}
+
+const initMakerPositionInfo: MakerPositionInfo = {
+    unrealizedPnl: Big(0),
+    liquidityValue: Big(0),
+    liquidity: Big(0),
+    baseAmount: Big(0),
+    quoteAmount: Big(0),
+    baseDeleveraged: Big(0),
+    quoteDeleveraged: Big(0),
 }
 
 function LiquidityProvider() {
@@ -52,18 +50,16 @@ function LiquidityProvider() {
     }, [history, marketAddress, marketStates, setCurrentMarket])
 
     const {
-        actions: { toggleLpModal },
+        actions: { toggleLpModal, toggleRemoveLiquidityModal },
     } = Modal.useContainer()
-
-    const [makerPositionInfo, setMakerPositionInfo] = useState<MakerPositionInfo>(initMakerPositionInfo)
 
     const markPrice = currentMarketState.markPrice
     const poolInfo = currentMarketState.poolInfo
 
     // TODO: move calculation logic to common place
-    useEffect(() => {
-        if (!currentMyMakerInfo || !poolInfo || !markPrice || !currentMarketState) return
-        if (poolInfo.totalLiquidity.eq(0)) return setMakerPositionInfo(initMakerPositionInfo)
+    const makerPositionInfo = useMemo<MakerPositionInfo>(() => {
+        if (!currentMyMakerInfo || !poolInfo || !markPrice || !currentMarketState) return initMakerPositionInfo
+        if (poolInfo.totalLiquidity.eq(0)) return initMakerPositionInfo
 
         const liquidity = currentMyMakerInfo.liquidity
 
@@ -85,8 +81,8 @@ function LiquidityProvider() {
         console.log("markPrice", markPrice.toString())
         const liquidityValue = quoteAmount.mul(2)
 
-        const info = {
-            unrealizedPnl, // FIX: consider funding
+        return {
+            unrealizedPnl,
             liquidityValue,
             liquidity,
             baseAmount,
@@ -94,17 +90,7 @@ function LiquidityProvider() {
             baseDeleveraged,
             quoteDeleveraged,
         }
-        setMakerPositionInfo(info)
     }, [currentMarketState, currentMyMakerInfo, markPrice, poolInfo])
-
-    const handleOnRemoveLiquidityClick = useCallback(async () => {
-        if (!makerPositionInfo) return
-        removeLiquidity(
-            makerPositionInfo.liquidity,
-            makerPositionInfo.baseAmount.mul(0.9),
-            makerPositionInfo.quoteAmount.mul(0.9),
-        )
-    }, [makerPositionInfo, removeLiquidity])
 
     const poolSummary: PoolSummary | undefined = useMemo(() => {
         return currentMarketState ? createPoolSummary(currentMarketState) : undefined
@@ -139,12 +125,13 @@ function LiquidityProvider() {
                 </Box>
                 <Center width="100%">
                     <VStack>
-                        <Button text="Add Liquidity" customType="big-green-plus" onClick={toggleLpModal} />
+                        <Button text="Add Liquidity" customType="big-green-plus" width="15em" onClick={toggleLpModal} />
                         {haveLiquidity && (
                             <Button
                                 text="Remove Liquidity"
                                 customType="big-pink-minus"
-                                onClick={handleOnRemoveLiquidityClick}
+                                width="15em"
+                                onClick={toggleRemoveLiquidityModal}
                             />
                         )}
                     </VStack>
@@ -154,10 +141,6 @@ function LiquidityProvider() {
                 <Box borderStyle="solid" borderWidth="1px" borderRadius="12px" p="4" mt="6">
                     <VStack spacing={6} p={0}>
                         <YourLiquidity marketInfo={currentMarketState} makerPositionInfo={makerPositionInfo} />
-                        {/* <Position
-                            handleOnAddLiquidityClick={toggleLpModal}
-                            handleOnRemoveLiquidityClick={handleOnRemoveLiquidityClick}
-                        /> */}
                     </VStack>
                 </Box>
             )}

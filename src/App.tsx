@@ -12,6 +12,7 @@ import BlockedRegionModal from "component/BlockedRegionModal"
 import UserAgreementModal from "component/UserAgreementModal"
 import AccountPerpdexModal from "component/AccountModal"
 import LiquidityProviderModal from "component/LiquidityProviderModal"
+import RemoveLiquidityModal from "component/LiquidityProviderModal/RemoveLiquidityModal"
 import LiquidityProvider from "page/LiquidityProvider"
 import Pools from "page/Pools"
 
@@ -31,6 +32,7 @@ export const App = () => {
                 </Switch>
             </Box>
             <LiquidityProviderModal />
+            <RemoveLiquidityModal />
             <WalletListModal />
             <ClosePositionModal />
             <UserAgreementModal />
