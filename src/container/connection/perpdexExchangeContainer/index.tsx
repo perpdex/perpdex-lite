@@ -11,7 +11,7 @@ import { PerpdexMarketContainer } from "../perpdexMarketContainer"
 import { BigNumber, constants } from "ethers"
 import _ from "lodash"
 import { contractConfigs } from "../../../constant/contract"
-import { ExchangeState, MakerInfo, TakerInfo, AccountInfo, PositionState } from "../../../constant/types"
+import { ExchangeState, MakerInfo, TakerInfo, AccountInfo, PositionState, MarketState } from "../../../constant/types"
 import { useInterval } from "../../../hook/useInterval"
 import { usePageVisibility } from "react-page-visibility"
 import {
@@ -33,14 +33,16 @@ const createExchangeExecutor = (address: string, signer: any) => {
     return new ContractExecutor(createExchangeContract(address, signer), signer)
 }
 
-function calcTrade(isLong: boolean, amount: Big, markPrice: Big, slippage: number) {
+function calcTrade(isLong: boolean, amount: Big, marketState: MarketState, slippage: number) {
     const _slippage = slippage / 100
+    const { markPrice, baseBalancePerShare } = marketState
+    const share = amount.div(baseBalancePerShare)
 
     let oppositeAmountBound
     if (isLong) {
-        oppositeAmountBound = amount.mul(markPrice).mul(1 + _slippage)
+        oppositeAmountBound = share.mul(markPrice).mul(1 + _slippage)
     } else {
-        oppositeAmountBound = amount.mul(markPrice).mul(1 - _slippage)
+        oppositeAmountBound = share.mul(markPrice).mul(1 - _slippage)
     }
 
     console.log("@@@@", isLong, amount.toString(), oppositeAmountBound.toString())
@@ -90,7 +92,7 @@ function usePerpdexExchangeContainer() {
             const { markPrice } = currentMarketState
 
             const takerOpenNotional = currentMyTakerInfo.quoteBalance
-            const size = currentMyTakerInfo.baseBalanceShare
+            const size = currentMyTakerInfo.baseBalanceShare.mul(currentMarketState.baseBalancePerShare)
             if (size.eq(0)) return
 
             const positionValue = size.mul(markPrice)
@@ -258,7 +260,7 @@ function usePerpdexExchangeContainer() {
             const { isBaseToQuote, isExactInput, oppositeAmountBound } = calcTrade(
                 isLong,
                 amount,
-                currentMarketState.markPrice,
+                currentMarketState,
                 slippage,
             )
 
@@ -284,7 +286,7 @@ function usePerpdexExchangeContainer() {
                 const { isBaseToQuote, isExactInput, oppositeAmountBound } = calcTrade(
                     isLong,
                     amount,
-                    currentMarketState.markPrice,
+                    currentMarketState,
                     slippage,
                 )
 
@@ -340,11 +342,11 @@ function usePerpdexExchangeContainer() {
 
     const addLiquidity = useCallback(
         (base: Big, quote: Big, minBase: Big, minQuote: Big) => {
-            if (contractExecuter && account && currentMarket) {
+            if (contractExecuter && account && currentMarketState) {
                 execute(
                     contractExecuter.addLiquidity(
                         currentMarket,
-                        big2BigNum(base),
+                        big2BigNum(base.div(currentMarketState.baseBalancePerShare)),
                         big2BigNum(quote),
                         big2BigNum(minBase),
                         big2BigNum(minQuote),
@@ -352,7 +354,7 @@ function usePerpdexExchangeContainer() {
                 )
             }
         },
-        [account, contractExecuter, execute, currentMarket],
+        [account, contractExecuter, execute, currentMarketState],
     )
 
     const removeLiquidity = useCallback(

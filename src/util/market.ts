@@ -5,11 +5,12 @@ export function createPoolSummary(marketState: MarketState): PoolSummary {
     const poolName = marketState.inverse
         ? `${marketState.quoteSymbol}-${marketState.baseSymbol} (inverse)`
         : `${marketState.baseSymbol}-${marketState.quoteSymbol}`
+    const tvl = marketState.poolInfo.quote.mul(2)
 
     return {
         poolName,
-        tvl: `${numberWithCommas(marketState.poolInfo.quote)} ${marketState.quoteSymbol}`,
-        tvlUsd: `$${numberWithCommas(marketState.poolInfo.quote.mul(marketState.indexPriceQuote))}`,
+        tvl: `${numberWithCommas(tvl)} ${marketState.quoteSymbol}`,
+        tvlUsd: `$${numberWithCommas(tvl.mul(marketState.indexPriceQuote))}`,
         volume24h: `10000000 ${marketState.quoteSymbol}`,
     }
 }

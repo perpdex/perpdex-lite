@@ -1,6 +1,7 @@
 import { Box, SimpleGrid, Text } from "@chakra-ui/react"
 import CardHeading from "component/base/CardHeading"
 import { MarketState } from "../../constant/types"
+import { numberWithCommas } from "../../util/format"
 
 interface Props {
     marketState: MarketState
@@ -35,7 +36,7 @@ function PoolInfo({ marketState, tvl, volume24h }: Props) {
                 <DataRow text="24h Fees" value={`- ${marketState.quoteSymbol}`} />
                 <DataRow
                     text="Mark Price"
-                    value={`${marketState.markPriceDisplay.toFixed(6)} ${marketState.baseSymbolDisplay}/${
+                    value={`${numberWithCommas(marketState.markPriceDisplay)} ${marketState.baseSymbolDisplay}/${
                         marketState.quoteSymbolDisplay
                     }`}
                 />

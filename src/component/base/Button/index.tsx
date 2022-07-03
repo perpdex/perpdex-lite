@@ -15,7 +15,7 @@ function Button({ text, customType, onClick, ...props }: ButtonState) {
         case "big-green-plus":
             return (
                 <ChakuraButton
-                    size="lg"
+                    size="md"
                     onClick={onClick!}
                     colorScheme="green"
                     variant="outline"
@@ -30,7 +30,6 @@ function Button({ text, customType, onClick, ...props }: ButtonState) {
             return (
                 <ChakuraButton
                     size="md"
-                    height={8}
                     onClick={onClick!}
                     colorScheme="pink"
                     variant="outline"

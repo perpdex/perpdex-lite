@@ -6,12 +6,13 @@ import Trade from "./page/Trade"
 import PositionToken from "./page/PositionToken"
 import PositionTokenDetail from "./page/PositionToken/PositionTokenDetail"
 import "focus-visible/dist/focus-visible"
-import { Container, Divider } from "@chakra-ui/react"
+import { Container, Divider, Box } from "@chakra-ui/react"
 import ClosePositionModal from "component/ClosePositionModal"
 import BlockedRegionModal from "component/BlockedRegionModal"
 import UserAgreementModal from "component/UserAgreementModal"
 import AccountPerpdexModal from "component/AccountModal"
 import LiquidityProviderModal from "component/LiquidityProviderModal"
+import RemoveLiquidityModal from "component/LiquidityProviderModal/RemoveLiquidityModal"
 import LiquidityProvider from "page/LiquidityProvider"
 import Pools from "page/Pools"
 
@@ -20,15 +21,18 @@ export const App = () => {
         <Container maxW="container.2xl" pb={20} px={0}>
             <Header />
             <Divider borderColor="#627EEA" />
-            <Switch>
-                <Route exact path="/" component={Home} />
-                <Route exact path="/trade" component={Trade} />
-                <Route exact path="/pools" component={Pools} />
-                <Route exact path="/pools/:marketAddress" component={LiquidityProvider} />
-                <Route exact path="/tokens" component={PositionToken} />
-                <Route exact path="/tokens/:marketAddress" component={PositionTokenDetail} />
-            </Switch>
+            <Box px={6}>
+                <Switch>
+                    <Route exact path="/" component={Home} />
+                    <Route exact path="/trade" component={Trade} />
+                    <Route exact path="/pools" component={Pools} />
+                    <Route exact path="/pools/:marketAddress" component={LiquidityProvider} />
+                    <Route exact path="/tokens" component={PositionToken} />
+                    <Route exact path="/tokens/:marketAddress" component={PositionTokenDetail} />
+                </Switch>
+            </Box>
             <LiquidityProviderModal />
+            <RemoveLiquidityModal />
             <WalletListModal />
             <ClosePositionModal />
             <UserAgreementModal />
