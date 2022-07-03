@@ -16,6 +16,7 @@ import {
 import { MarketState } from "../../constant/types"
 import { MakerPositionInfo } from "."
 import CardHeading from "component/base/CardHeading"
+import { numberWithCommas } from "../../util/format"
 
 interface YourLiquidityState {
     marketInfo?: MarketState
@@ -34,8 +35,7 @@ function YourLiquidity({ marketInfo, makerPositionInfo }: YourLiquidityState) {
                         Total Liquidity
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
-                        {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.liquidityValue.toFixed(6)}{" "}
-                        {collateralSymbol}
+                        {numberWithCommas(makerPositionInfo.liquidityValue)} {collateralSymbol}
                     </Text>
                 </Box>
                 <Box>
@@ -53,8 +53,7 @@ function YourLiquidity({ marketInfo, makerPositionInfo }: YourLiquidityState) {
                         </Popover>
                     </Text>
                     <Text fontSize="xl" color="green.400" fontWeight="bold" lineHeight="1.4">
-                        {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.unrealizedPnl.toFixed(6)}{" "}
-                        {collateralSymbol}
+                        {numberWithCommas(makerPositionInfo.unrealizedPnl)} {collateralSymbol}
                     </Text>
                 </Box>
                 <Box>
@@ -62,8 +61,7 @@ function YourLiquidity({ marketInfo, makerPositionInfo }: YourLiquidityState) {
                         Base assets
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
-                        {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.baseAmount.toFixed(6)}{" "}
-                        {marketInfo?.baseSymbol}
+                        {numberWithCommas(makerPositionInfo.baseAmount)} {marketInfo?.baseSymbol}
                     </Text>
                 </Box>
                 <Box>
@@ -71,8 +69,7 @@ function YourLiquidity({ marketInfo, makerPositionInfo }: YourLiquidityState) {
                         Quote assets
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
-                        {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.quoteAmount.toFixed(6)}{" "}
-                        {marketInfo?.quoteSymbol}
+                        {numberWithCommas(makerPositionInfo.quoteAmount)} {marketInfo?.quoteSymbol}
                     </Text>
                 </Box>
                 <Box>
@@ -80,8 +77,7 @@ function YourLiquidity({ marketInfo, makerPositionInfo }: YourLiquidityState) {
                         Base debt
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
-                        {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.baseDeleveraged.toFixed(6)}{" "}
-                        {marketInfo?.baseSymbol}
+                        {numberWithCommas(makerPositionInfo.baseDeleveraged)} {marketInfo?.baseSymbol}
                     </Text>
                 </Box>
                 <Box>
@@ -89,8 +85,7 @@ function YourLiquidity({ marketInfo, makerPositionInfo }: YourLiquidityState) {
                         Quote debt
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
-                        {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.quoteDeleveraged.toFixed(6)}{" "}
-                        {marketInfo?.quoteSymbol}
+                        {numberWithCommas(makerPositionInfo.quoteDeleveraged)} {marketInfo?.quoteSymbol}
                     </Text>
                 </Box>
             </SimpleGrid>
