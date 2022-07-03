@@ -55,7 +55,8 @@ function AccountInfoTable(props: Props) {
                         <ButtonGroup spacing="6">
                             <Button
                                 mb={[4, 0]}
-                                bgColor="#D9D9D9"
+                                color="white"
+                                bgColor="#353E80"
                                 borderRadius="10px"
                                 isDisabled={!accountAvailable}
                                 onClick={() => {
@@ -68,7 +69,7 @@ function AccountInfoTable(props: Props) {
                                 mb={[4, 0]}
                                 color="white"
                                 border="1px"
-                                borderColor={"#D9D9D9"}
+                                borderColor={"#353E80"}
                                 borderRadius="10px"
                                 variant="solid"
                                 isDisabled={!accountAvailable}
