@@ -33,6 +33,8 @@ const nullMarketState: MarketState = {
     markPrice: Big(0),
     markPriceDisplay: Big(0),
     baseBalancePerShare: Big(0),
+    cumBasePerLiquidity: Big(0),
+    cumQuotePerLiquidity: Big(0),
     priceFeedQuote: "",
     indexPriceQuote: Big(0),
     inverse: false,
@@ -75,6 +77,7 @@ function usePerpdexMarketContainer() {
                         contract.symbol(),
                         contract.getMarkPriceX96(),
                         contract.baseBalancePerShareX96(),
+                        contract.getCumDeleveragedPerLiquidityX96(),
                         contract.priceFeedQuote(),
                     ]
                 }),
@@ -82,7 +85,7 @@ function usePerpdexMarketContainer() {
             const multicallResult = await multicallNetworkProvider.all(multicallRequest)
 
             const multicallRequest2 = _.map(_.range(marketAddresses.length), idx => {
-                const exchangeAddress = multicallResult[6 * idx]
+                const exchangeAddress = multicallResult[7 * idx]
                 const exchangeContract = createExchangeContractMulticall(exchangeAddress)
                 return exchangeContract.settlementToken()
             })
@@ -106,8 +109,9 @@ function usePerpdexMarketContainer() {
                     baseSymbol,
                     markPriceX96,
                     baseBalancePerShareX96,
+                    cumDeleveragedPerLiquidityX96,
                     priceFeedQuote,
-                ] = multicallResult.slice(6 * i, 6 * (i + 1))
+                ] = multicallResult.slice(7 * i, 7 * (i + 1))
 
                 const address = marketAddresses[i]
                 const inverse = baseSymbol === "USD"
@@ -134,6 +138,8 @@ function usePerpdexMarketContainer() {
                     markPrice: markPrice,
                     markPriceDisplay: markPriceDisplay,
                     baseBalancePerShare: x96ToBig(baseBalancePerShareX96),
+                    cumBasePerLiquidity: x96ToBig(cumDeleveragedPerLiquidityX96[0]),
+                    cumQuotePerLiquidity: x96ToBig(cumDeleveragedPerLiquidityX96[1]),
                     priceFeedQuote: priceFeedQuote,
                     indexPriceQuote: Big(0),
                     inverse: inverse,
@@ -163,6 +169,7 @@ function usePerpdexMarketContainer() {
                     contract.poolInfo(),
                     contract.getMarkPriceX96(),
                     contract.baseBalancePerShareX96(),
+                    contract.getCumDeleveragedPerLiquidityX96(),
                     priceFeedQuote
                         ? priceFeedQuote.decimals()
                         : multicallNetworkProvider.getEthBalance(constants.AddressZero), // dummy
@@ -182,9 +189,10 @@ function usePerpdexMarketContainer() {
                         poolInfo,
                         markPriceX96,
                         baseBalancePerShareX96,
+                        cumDeleveragedPerLiquidityX96,
                         priceFeedQuoteDecimals,
                         priceFeedQuotePrice,
-                    ] = multicallResult.slice(5 * i, 5 * (i + 1))
+                    ] = multicallResult.slice(6 * i, 6 * (i + 1))
 
                     if (_.has(draft, marketAddress)) {
                         const inverse = draft[marketAddress].inverse
@@ -196,6 +204,8 @@ function usePerpdexMarketContainer() {
                         draft[marketAddress].markPrice = x96ToBig(markPriceX96)
                         draft[marketAddress].markPriceDisplay = x96ToBig(markPriceX96, inverse)
                         draft[marketAddress].baseBalancePerShare = x96ToBig(baseBalancePerShareX96)
+                        draft[marketAddress].cumBasePerLiquidity = x96ToBig(cumDeleveragedPerLiquidityX96[0])
+                        draft[marketAddress].cumQuotePerLiquidity = x96ToBig(cumDeleveragedPerLiquidityX96[1])
                         draft[marketAddress].indexPriceQuote =
                             draft[marketAddress].priceFeedQuote === constants.AddressZero
                                 ? Big(1)

@@ -80,7 +80,7 @@ function YourLiquidity({ marketInfo, makerPositionInfo }: YourLiquidityState) {
                         Base debt
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
-                        {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.baseDebt.toFixed(6)}{" "}
+                        {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.baseDeleveraged.toFixed(6)}{" "}
                         {marketInfo?.baseSymbol}
                     </Text>
                 </Box>
@@ -89,7 +89,7 @@ function YourLiquidity({ marketInfo, makerPositionInfo }: YourLiquidityState) {
                         Quote debt
                     </Text>
                     <Text fontSize="xl" fontWeight="bold" lineHeight="1.4">
-                        {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.quoteDebt.toFixed(6)}{" "}
+                        {makerPositionInfo.liquidityValue.eq(0) ? "-" : makerPositionInfo.quoteDeleveraged.toFixed(6)}{" "}
                         {marketInfo?.quoteSymbol}
                     </Text>
                 </Box>

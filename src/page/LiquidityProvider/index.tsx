@@ -23,8 +23,8 @@ const initMakerPositionInfo = {
     liquidity: Big(0),
     baseAmount: Big(0),
     quoteAmount: Big(0),
-    baseDebt: Big(0),
-    quoteDebt: Big(0),
+    baseDeleveraged: Big(0),
+    quoteDeleveraged: Big(0),
 }
 
 export interface MakerPositionInfo {
@@ -33,8 +33,8 @@ export interface MakerPositionInfo {
     liquidity: Big
     baseAmount: Big
     quoteAmount: Big
-    baseDebt: Big
-    quoteDebt: Big
+    baseDeleveraged: Big
+    quoteDeleveraged: Big
 }
 
 function LiquidityProvider() {
@@ -60,6 +60,7 @@ function LiquidityProvider() {
     const markPrice = currentMarketState.markPrice
     const poolInfo = currentMarketState.poolInfo
 
+    // TODO: move calculation logic to common place
     useEffect(() => {
         if (!currentMyMakerInfo || !poolInfo || !markPrice || !currentMarketState) return
         if (poolInfo.totalLiquidity.eq(0)) return setMakerPositionInfo(initMakerPositionInfo)
@@ -68,14 +69,21 @@ function LiquidityProvider() {
 
         const baseAmount = liquidity.mul(poolInfo.base).div(poolInfo.totalLiquidity)
         const quoteAmount = liquidity.mul(poolInfo.quote).div(poolInfo.totalLiquidity)
-        // TODO:
-        const baseDebt = Big(0)
-        const quoteDebt = Big(0)
+        const baseDeleveraged = liquidity.mul(
+            currentMarketState.cumBasePerLiquidity.sub(currentMyMakerInfo.cumBaseSharePerLiquidity),
+        )
+        const quoteDeleveraged = liquidity.mul(
+            currentMarketState.cumQuotePerLiquidity.sub(currentMyMakerInfo.cumQuotePerLiquidity),
+        )
 
-        const unrealizedPnl = baseAmount.sub(baseDebt).mul(markPrice).add(quoteAmount.sub(quoteDebt))
+        const unrealizedPnl = baseAmount
+            .add(baseDeleveraged)
+            .div(currentMarketState.baseBalancePerShare)
+            .mul(markPrice)
+            .add(quoteAmount.add(quoteDeleveraged))
 
         console.log("markPrice", markPrice.toString())
-        const liquidityValue = baseAmount.mul(markPrice).add(quoteAmount)
+        const liquidityValue = quoteAmount.mul(2)
 
         const info = {
             unrealizedPnl, // FIX: consider funding
@@ -83,8 +91,8 @@ function LiquidityProvider() {
             liquidity,
             baseAmount,
             quoteAmount,
-            baseDebt,
-            quoteDebt,
+            baseDeleveraged,
+            quoteDeleveraged,
         }
         setMakerPositionInfo(info)
     }, [currentMarketState, currentMyMakerInfo, markPrice, poolInfo])

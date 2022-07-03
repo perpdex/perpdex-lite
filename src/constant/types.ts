@@ -24,6 +24,8 @@ export interface MarketState {
     markPrice: Big
     markPriceDisplay: Big
     baseBalancePerShare: Big
+    cumBasePerLiquidity: Big
+    cumQuotePerLiquidity: Big
     priceFeedQuote: string
     indexPriceQuote: Big
     inverse: boolean
