@@ -1,5 +1,5 @@
 import { BIG_NUMBER_ZERO } from "../../../constant"
-import { big2BigNum, bigNum2Big, bigNum2FixedStr, parseEther, x96ToBig } from "util/format"
+import { big2BigNum, bigNum2Big, bigNum2FixedStr, x96ToBig } from "util/format"
 import { useCallback, useEffect, useMemo, useState } from "react"
 
 import { Big } from "big.js"
@@ -233,18 +233,20 @@ function usePerpdexExchangeContainer() {
     }, [chainId, multicallNetworkProvider, account, fetchAll])
 
     const deposit = useCallback(
-        (amount: string) => {
+        (amount: Big) => {
             if (contractExecuter) {
-                execute(contractExecuter.deposit(parseEther(amount), BIG_NUMBER_ZERO))
+                // TODO: handle non native token
+                execute(contractExecuter.deposit(big2BigNum(amount), BIG_NUMBER_ZERO))
             }
         },
         [contractExecuter, execute],
     )
 
     const withdraw = useCallback(
-        (amount: string) => {
+        (amount: Big) => {
             if (contractExecuter) {
-                execute(contractExecuter.withdraw(parseEther(amount)))
+                // TODO: handle non native token
+                execute(contractExecuter.withdraw(big2BigNum(amount)))
             }
         },
         [contractExecuter, execute],

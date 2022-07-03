@@ -55,6 +55,17 @@ function AccountInfoTable(props: Props) {
                         <ButtonGroup spacing="6">
                             <Button
                                 mb={[4, 0]}
+                                bgColor="#D9D9D9"
+                                borderRadius="10px"
+                                isDisabled={!accountAvailable}
+                                onClick={() => {
+                                    openAccountModal(true)
+                                }}
+                            >
+                                Deposit
+                            </Button>
+                            <Button
+                                mb={[4, 0]}
                                 color="white"
                                 border="1px"
                                 borderColor={"#D9D9D9"}
@@ -66,17 +77,6 @@ function AccountInfoTable(props: Props) {
                                 }}
                             >
                                 Withdraw
-                            </Button>
-                            <Button
-                                mb={[4, 0]}
-                                bgColor="#D9D9D9"
-                                borderRadius="10px"
-                                isDisabled={!accountAvailable}
-                                onClick={() => {
-                                    openAccountModal(true)
-                                }}
-                            >
-                                Deposit
                             </Button>
                         </ButtonGroup>
                     </Td>

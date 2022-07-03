@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react"
+import React, { useCallback, useState, useMemo } from "react"
 import {
     Modal,
     ModalBody,
@@ -19,10 +19,11 @@ import {
 import { AccountPerpdex } from "container/perpetual/account"
 import ButtonPerpdex from "component/base/Button"
 import SmallFormLabel from "../base/SmallFormLabel"
-import { formatInput } from "../../util/format"
+import { formatInput, numberWithCommas } from "../../util/format"
 import { INPUT_PRECISION } from "../../constant"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
+import Big from "big.js"
 
 function AccountModal() {
     const {
@@ -33,10 +34,27 @@ function AccountModal() {
     } = AccountPerpdex.useContainer()
 
     const { currentMarketState } = PerpdexMarketContainer.useContainer()
-
     const { deposit, withdraw, currentMyAccountInfo } = PerpdexExchangeContainer.useContainer()
+    const collateralBalance = currentMyAccountInfo?.collateralBalance
+    const settlementTokenBalance = currentMyAccountInfo?.settlementTokenBalance
 
     const [amount, setAmount] = useState<string>("")
+
+    const isEnabled = useMemo(() => {
+        try {
+            if (Big(amount).lte(0)) return false
+            if (isDeposit) {
+                if (settlementTokenBalance && Big(amount).gt(settlementTokenBalance)) return false
+            } else {
+                // TODO: replace with free collateral
+                if (collateralBalance && Big(amount).gt(collateralBalance)) return false
+            }
+        } catch (err) {
+            console.log(err)
+            return false
+        }
+        return true
+    }, [amount, isDeposit])
 
     const handleOnInput = useCallback(
         e => {
@@ -50,7 +68,7 @@ function AccountModal() {
     )
 
     const handleSubmit = useCallback(() => {
-        isDeposit ? deposit(amount) : withdraw(amount)
+        isDeposit ? deposit(Big(amount)) : withdraw(Big(amount))
     }, [amount, isDeposit, deposit, withdraw])
 
     return (
@@ -84,18 +102,16 @@ function AccountModal() {
                             </NumberInput>
                         </FormControl>
                         {isDeposit ? (
-                            <Box>
-                                {currentMyAccountInfo ? currentMyAccountInfo.settlementTokenBalance.toFixed() : ""}{" "}
-                                available
-                            </Box>
+                            <Box>{numberWithCommas(currentMyAccountInfo?.settlementTokenBalance)} available</Box>
                         ) : (
-                            <Box>
-                                {currentMyAccountInfo ? currentMyAccountInfo.collateralBalance.toFixed() : ""} available
-                                to withdraw
-                            </Box>
+                            <Box>{numberWithCommas(currentMyAccountInfo?.collateralBalance)} available to withdraw</Box>
                         )}
                         <ButtonGroup>
-                            <ButtonPerpdex text={isDeposit ? "Deposit" : "Withdraw"} onClick={handleSubmit} />
+                            <ButtonPerpdex
+                                text={isDeposit ? "Deposit" : "Withdraw"}
+                                onClick={handleSubmit}
+                                isDisabled={!isEnabled}
+                            />
                         </ButtonGroup>
                     </Stack>
                 </ModalBody>
