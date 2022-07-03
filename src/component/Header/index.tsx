@@ -1,6 +1,6 @@
 import React from "react"
 import { Link } from "react-router-dom"
-import { Flex, Spacer, Button, HStack, Center } from "@chakra-ui/react"
+import { Flex, Spacer, Button, HStack, Center, Heading } from "@chakra-ui/react"
 import { Logo } from "../Icon"
 import ConnectBtn from "./ConnectBtn"
 
@@ -10,7 +10,11 @@ function Header() {
             <Center marginLeft="24px">
                 <Link to="/">
                     <Logo></Logo>
-                    {/*<Heading size="md">PerpDEX</Heading>*/}
+                </Link>
+            </Center>
+            <Center marginLeft="18px">
+                <Link to="/">
+                    <Heading size="md">PerpDEX</Heading>
                 </Link>
             </Center>
             <Spacer />
