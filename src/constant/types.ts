@@ -9,6 +9,7 @@ export interface PoolInfo {
 export interface PoolSummary {
     poolName: string
     tvl: string
+    tvlUsd: string
     volume24h: string
 }
 
