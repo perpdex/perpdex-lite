@@ -27,9 +27,10 @@ function Header() {
                     <Link to="/tokens">
                         <Button variant="link">Position Tokens</Button>
                     </Link>
-                    <Link to="/history">
-                        <Button variant="link">History</Button>
-                    </Link>
+                    {/*TODO: implement history*/}
+                    {/*<Link to="/history">*/}
+                    {/*    <Button variant="link">History</Button>*/}
+                    {/*</Link>*/}
                 </HStack>
             </Center>
             <Spacer />
