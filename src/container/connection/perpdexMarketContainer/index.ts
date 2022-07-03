@@ -32,6 +32,7 @@ const nullMarketState: MarketState = {
     },
     markPrice: Big(0),
     markPriceDisplay: Big(0),
+    baseBalancePerShare: Big(0),
     priceFeedQuote: "",
     indexPriceQuote: Big(0),
     inverse: false,
@@ -73,6 +74,7 @@ function usePerpdexMarketContainer() {
                         contract.poolInfo(),
                         contract.symbol(),
                         contract.getMarkPriceX96(),
+                        contract.baseBalancePerShareX96(),
                         contract.priceFeedQuote(),
                     ]
                 }),
@@ -80,7 +82,7 @@ function usePerpdexMarketContainer() {
             const multicallResult = await multicallNetworkProvider.all(multicallRequest)
 
             const multicallRequest2 = _.map(_.range(marketAddresses.length), idx => {
-                const exchangeAddress = multicallResult[5 * idx]
+                const exchangeAddress = multicallResult[6 * idx]
                 const exchangeContract = createExchangeContractMulticall(exchangeAddress)
                 return exchangeContract.settlementToken()
             })
@@ -98,10 +100,14 @@ function usePerpdexMarketContainer() {
             const newMarketStates: { [key: string]: MarketState } = {}
 
             for (let i = 0; i < marketAddresses.length; i++) {
-                const [exchangeAddress, poolInfo, baseSymbol, markPriceX96, priceFeedQuote] = multicallResult.slice(
-                    5 * i,
-                    5 * (i + 1),
-                )
+                const [
+                    exchangeAddress,
+                    poolInfo,
+                    baseSymbol,
+                    markPriceX96,
+                    baseBalancePerShareX96,
+                    priceFeedQuote,
+                ] = multicallResult.slice(6 * i, 6 * (i + 1))
 
                 const address = marketAddresses[i]
                 const inverse = baseSymbol === "USD"
@@ -127,6 +133,7 @@ function usePerpdexMarketContainer() {
                     },
                     markPrice: markPrice,
                     markPriceDisplay: markPriceDisplay,
+                    baseBalancePerShare: x96ToBig(baseBalancePerShareX96),
                     priceFeedQuote: priceFeedQuote,
                     indexPriceQuote: Big(0),
                     inverse: inverse,
@@ -155,6 +162,7 @@ function usePerpdexMarketContainer() {
                 return [
                     contract.poolInfo(),
                     contract.getMarkPriceX96(),
+                    contract.baseBalancePerShareX96(),
                     priceFeedQuote
                         ? priceFeedQuote.decimals()
                         : multicallNetworkProvider.getEthBalance(constants.AddressZero), // dummy
@@ -170,10 +178,13 @@ function usePerpdexMarketContainer() {
             produce(draft => {
                 for (let i = 0; i < marketAddresses.length; i++) {
                     const marketAddress = marketAddresses[i]
-                    const [poolInfo, markPriceX96, priceFeedQuoteDecimals, priceFeedQuotePrice] = multicallResult.slice(
-                        4 * i,
-                        4 * (i + 1),
-                    )
+                    const [
+                        poolInfo,
+                        markPriceX96,
+                        baseBalancePerShareX96,
+                        priceFeedQuoteDecimals,
+                        priceFeedQuotePrice,
+                    ] = multicallResult.slice(5 * i, 5 * (i + 1))
 
                     if (_.has(draft, marketAddress)) {
                         const inverse = draft[marketAddress].inverse
@@ -184,6 +195,7 @@ function usePerpdexMarketContainer() {
                         }
                         draft[marketAddress].markPrice = x96ToBig(markPriceX96)
                         draft[marketAddress].markPriceDisplay = x96ToBig(markPriceX96, inverse)
+                        draft[marketAddress].baseBalancePerShare = x96ToBig(baseBalancePerShareX96)
                         draft[marketAddress].indexPriceQuote =
                             draft[marketAddress].priceFeedQuote === constants.AddressZero
                                 ? Big(1)

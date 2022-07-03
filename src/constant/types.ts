@@ -23,6 +23,7 @@ export interface MarketState {
     poolInfo: PoolInfo
     markPrice: Big
     markPriceDisplay: Big
+    baseBalancePerShare: Big
     priceFeedQuote: string
     indexPriceQuote: Big
     inverse: boolean

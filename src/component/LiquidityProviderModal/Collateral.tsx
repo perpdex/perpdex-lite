@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 
 import Big from "big.js"
 import SmallFormLabel from "component/base/SmallFormLabel"
-import { BIG_ZERO, USDC_PRECISION } from "constant"
+import { BIG_ZERO, INPUT_PRECISION, USDC_PRECISION } from "constant"
 import { formatInput } from "util/format"
 import { LpCollateralState, MarketState } from "constant/types"
 
@@ -38,10 +38,10 @@ function Collateral({ currentMarketState, collateralValues, setCollateralValues 
                     } else {
                         if (isBase) {
                             base = Big(value)
-                            quote = base.mul(currentMarketState.markPrice)
+                            quote = base.mul(currentMarketState.markPrice).round(INPUT_PRECISION)
                         } else {
                             quote = Big(value)
-                            base = quote.div(currentMarketState.markPrice)
+                            base = quote.div(currentMarketState.markPrice).round(INPUT_PRECISION)
                         }
 
                         isBase ? setQuoteValue(quote.toString()) : setBaseValue(base.toString())
