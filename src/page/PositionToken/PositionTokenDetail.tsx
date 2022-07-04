@@ -4,8 +4,6 @@ import {
     Flex,
     Box,
     Button,
-    NumberInput,
-    NumberInputField,
     ButtonGroup,
     Text,
     Grid,
@@ -16,15 +14,20 @@ import {
     Th,
     Tbody,
     Td,
+    NumberInput,
+    NumberInputField,
     HStack,
 } from "@chakra-ui/react"
 
 import FrameContainer from "component/FrameContainer"
 import { PerpdexLongTokenContainer } from "../../container/connection/perpdexLongTokenContainer"
-import { useParams } from "react-router-dom"
+import { useHistory, useParams } from "react-router-dom"
 import Big from "big.js"
+import { CurrencyIcon } from "component/Icon"
 
 function PositionTokenDetail() {
+    const history = useHistory()
+
     type Param = {
         marketAddress: string
     }
@@ -72,7 +75,12 @@ function PositionTokenDetail() {
     return (
         <FrameContainer>
             <Flex direction={{ base: "column", lg: "row" }} width="100%">
-                <VStack flex="50" spacing={10}>
+                <VStack flex="50" spacing={10} mx={10}>
+                    <Box mr="auto">
+                        <Text as="button" onClick={history.goBack}>
+                            ←Back
+                        </Text>
+                    </Box>
                     <ButtonGroup spacing="6">
                         <Button
                             color="white"
@@ -82,7 +90,7 @@ function PositionTokenDetail() {
                                 setIsRedeem(false)
                             }}
                         >
-                            Mint
+                            Mint/Buy
                         </Button>
                         <Button
                             color="white"
@@ -94,10 +102,50 @@ function PositionTokenDetail() {
                                 setIsRedeem(true)
                             }}
                         >
-                            Redeem
+                            Redeem/Sell
                         </Button>
                     </ButtonGroup>
-                    <Box bgGradient="linear(to-b, #627EEA80, #F9007780)" borderRadius={20} w="80%" p={8}>
+                    <Box
+                        w="100%"
+                        borderColor="#728BEC"
+                        borderWidth={{ base: "0px", md: "1px" }}
+                        borderRadius="10px"
+                        p={20}
+                        mx={{ base: "auto", md: "0" }}
+                    >
+                        <HStack justifyContent={"center"}>
+                            <VStack mr="10px">
+                                <HStack>
+                                    <CurrencyIcon symbol="USD" boxSize={6} />
+                                    <Text fontSize={"lg"}>USDT</Text>
+                                </HStack>
+                                <HStack>
+                                    <Text fontSize={"xs"}>Balance:</Text>
+                                    <Text fontSize={"xs"}>390.23</Text>
+                                </HStack>
+                            </VStack>
+                            <VStack>
+                                <NumberInput defaultValue={0} value={0} w="100%">
+                                    <NumberInputField />
+                                </NumberInput>
+                                <ButtonGroup>
+                                    <Button variant="outline" borderRadius="20px" size="sm">
+                                        25%
+                                    </Button>
+                                    <Button variant="outline" borderRadius="20px" size="sm">
+                                        50%
+                                    </Button>
+                                    <Button variant="outline" borderRadius="20px" size="sm">
+                                        75%
+                                    </Button>
+                                    <Button variant="outline" borderRadius="20px" size="sm">
+                                        MAX
+                                    </Button>
+                                </ButtonGroup>
+                            </VStack>
+                        </HStack>
+                    </Box>
+                    {/* <Box bgGradient="linear(to-b, #627EEA80, #F9007780)" borderRadius={20} w="80%" p={8}>
                         <HStack justifyContent={"space-between"}>
                             <Text>From</Text>
                             <Text>
@@ -124,7 +172,7 @@ function PositionTokenDetail() {
                         >
                             <NumberInputField />
                         </NumberInput>
-                    </Box>
+                    </Box> */}
                     <Button
                         size="lg"
                         w="60%"
@@ -140,8 +188,9 @@ function PositionTokenDetail() {
                 <VStack flex="50" spacing={10}>
                     <Grid
                         templateColumns="repeat(2, 1fr)"
-                        bgGradient="linear(to-b, #627EEA80, #F9007780)"
-                        borderRadius={20}
+                        borderColor="#728BEC"
+                        borderWidth={{ base: "0px", md: "1px" }}
+                        borderRadius="10px"
                         p={10}
                         gap={2}
                     >
