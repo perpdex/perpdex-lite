@@ -13,6 +13,14 @@ export interface PoolSummary {
     volume24h: string
 }
 
+export interface MarketSummary {
+    address: string
+    quoteSymbolDisplay: string
+    baseSymbolDisplay: string
+    marketName: string
+    markPrice: string
+}
+
 export interface MarketState {
     address: string
     exchangeAddress: string
