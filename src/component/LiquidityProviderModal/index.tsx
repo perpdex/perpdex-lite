@@ -1,16 +1,4 @@
-import {
-    Divider,
-    Modal,
-    ModalBody,
-    ModalCloseButton,
-    ModalContent,
-    ModalFooter,
-    ModalHeader,
-    ModalOverlay,
-    VStack,
-    Button,
-    Text,
-} from "@chakra-ui/react"
+import { Divider, VStack, Text } from "@chakra-ui/react"
 import Collateral from "./Collateral"
 import Slippage from "./Slippage"
 import { useCallback, useEffect, useState } from "react"
@@ -22,6 +10,8 @@ import { LpCollateralState } from "constant/types"
 import { BIG_ZERO } from "constant"
 import { numberWithCommas } from "../../util/format"
 import { Trade } from "../../container/perpetual/trade"
+import Modal from "component/base/Modal"
+import Button from "component/base/Button"
 
 const initialLpCollateral = {
     base: BIG_ZERO,
@@ -56,41 +46,36 @@ function LiquidityProviderModal() {
     }, [currentMarketState.baseSymbol])
 
     return (
-        <Modal isCentered motionPreset="slideInBottom" isOpen={lpModalIsOpen} onClose={toggleLpModal}>
-            <ModalOverlay />
-            <ModalContent borderRadius="2xl" pb={3}>
-                <ModalHeader>Add Liquidity</ModalHeader>
-                <ModalCloseButton />
-                <ModalBody>
-                    <VStack spacing={5}>
-                        <Text align="center" fontSize="medium" fontWeight="bold" lineHeight="1.4">
-                            Mark Price: {numberWithCommas(currentMarketState.markPriceDisplay)}
-                            {currentMarketState.baseSymbolDisplay}/{currentMarketState.quoteSymbolDisplay}
-                        </Text>
-                        <Collateral
-                            currentMarketState={currentMarketState}
-                            collateralValues={collateralValues}
-                            setCollateralValues={setCollateralValues}
-                        />
-                        <Divider />
-                        <Slippage />
-                        <Divider />
-                    </VStack>
-                </ModalBody>
-                <ModalFooter>
-                    <Button
-                        onClick={handleAddLiquidity}
-                        isFullWidth
-                        size="md"
-                        leftIcon={<AddIcon />}
-                        colorScheme="pink"
-                        variant="solid"
-                    >
-                        Add Liquidity
-                    </Button>
-                </ModalFooter>
-            </ModalContent>
-        </Modal>
+        <Modal
+            headerText="Add Liquidity"
+            isOpen={lpModalIsOpen}
+            onClose={toggleLpModal}
+            size="md"
+            body={
+                <VStack spacing={5}>
+                    <Text align="center" fontSize="medium" fontWeight="bold" lineHeight="1.4">
+                        Mark Price: {numberWithCommas(currentMarketState.markPriceDisplay)}
+                        {currentMarketState.baseSymbolDisplay}/{currentMarketState.quoteSymbolDisplay}
+                    </Text>
+                    <Collateral
+                        currentMarketState={currentMarketState}
+                        collateralValues={collateralValues}
+                        setCollateralValues={setCollateralValues}
+                    />
+                    <Divider />
+                    <Slippage />
+                    <Divider />
+                </VStack>
+            }
+            fotter={
+                <Button
+                    text="Add Liquidity"
+                    customType="base-blue"
+                    onClick={handleAddLiquidity}
+                    leftIcon={<AddIcon />}
+                />
+            }
+        />
     )
 }
 

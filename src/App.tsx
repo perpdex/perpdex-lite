@@ -36,9 +36,9 @@ export const App = () => {
             <WalletListModal />
             <ClosePositionModal />
             <UserAgreementModal />
+            <AccountPerpdexModal />
             {/* NOTE: BlockedRegionModal should be in the last one */}
             <BlockedRegionModal />
-            <AccountPerpdexModal />
         </Container>
     )
 }

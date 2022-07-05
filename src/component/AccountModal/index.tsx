@@ -1,13 +1,6 @@
 import React, { useCallback, useState, useMemo } from "react"
 import {
-    Modal,
-    ModalBody,
-    ModalCloseButton,
-    ModalContent,
-    ModalHeader,
-    ModalOverlay,
     Stack,
-    ButtonGroup,
     NumberInput,
     InputGroup,
     NumberInputField,
@@ -17,13 +10,14 @@ import {
     Box,
 } from "@chakra-ui/react"
 import { AccountPerpdex } from "container/perpetual/account"
-import ButtonPerpdex from "component/base/Button"
+import Button from "component/base/Button"
 import SmallFormLabel from "../base/SmallFormLabel"
 import { formatInput, numberWithCommas } from "../../util/format"
 import { INPUT_PRECISION } from "../../constant"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
 import Big from "big.js"
+import Modal from "component/base/Modal"
 
 function AccountModal() {
     const {
@@ -54,7 +48,7 @@ function AccountModal() {
             return false
         }
         return true
-    }, [amount, isDeposit])
+    }, [amount, collateralBalance, isDeposit, settlementTokenBalance])
 
     const handleOnInput = useCallback(
         e => {
@@ -72,51 +66,49 @@ function AccountModal() {
     }, [amount, isDeposit, deposit, withdraw])
 
     return (
-        <Modal isCentered={true} size="xs" isOpen={isAccountModalOpen} onClose={closeAccountModal}>
-            <ModalOverlay />
-            <ModalContent bg="gray.800" color="gray.200">
-                <ModalHeader fontWeight="400" fontSize="sm">
-                    {isDeposit ? "Deposit" : "Withdraw"}
-                </ModalHeader>
-                <ModalCloseButton />
-                <ModalBody pb="1.5rem">
-                    <Stack spacing={2}>
-                        <FormControl id="margin">
-                            <SmallFormLabel>Amount</SmallFormLabel>
-                            <NumberInput value={amount} onInput={handleOnInput}>
-                                <InputGroup>
-                                    <NumberInputField />
-                                    <InputRightElement w="54px">
-                                        <Text
-                                            w="100%"
-                                            textAlign="center"
-                                            fontWeight="bold"
-                                            fontSize="xs"
-                                            color="blue.500"
-                                            textTransform="uppercase"
-                                        >
-                                            {currentMarketState?.quoteSymbol}
-                                        </Text>
-                                    </InputRightElement>
-                                </InputGroup>
-                            </NumberInput>
-                        </FormControl>
-                        {isDeposit ? (
-                            <Box>{numberWithCommas(currentMyAccountInfo?.settlementTokenBalance)} available</Box>
-                        ) : (
-                            <Box>{numberWithCommas(currentMyAccountInfo?.collateralBalance)} available to withdraw</Box>
-                        )}
-                        <ButtonGroup>
-                            <ButtonPerpdex
-                                text={isDeposit ? "Deposit" : "Withdraw"}
-                                onClick={handleSubmit}
-                                isDisabled={!isEnabled}
-                            />
-                        </ButtonGroup>
-                    </Stack>
-                </ModalBody>
-            </ModalContent>
-        </Modal>
+        <Modal
+            headerText={isDeposit ? "Deposit" : "Withdraw"}
+            isOpen={isAccountModalOpen}
+            onClose={closeAccountModal}
+            size="md"
+            body={
+                <Stack spacing={2}>
+                    <FormControl id="margin">
+                        <SmallFormLabel>Amount</SmallFormLabel>
+                        <NumberInput value={amount} onInput={handleOnInput}>
+                            <InputGroup>
+                                <NumberInputField />
+                                <InputRightElement w="54px">
+                                    <Text
+                                        w="100%"
+                                        textAlign="center"
+                                        fontWeight="bold"
+                                        fontSize="xs"
+                                        color="blue.500"
+                                        textTransform="uppercase"
+                                    >
+                                        {currentMarketState?.quoteSymbol}
+                                    </Text>
+                                </InputRightElement>
+                            </InputGroup>
+                        </NumberInput>
+                    </FormControl>
+                    {isDeposit ? (
+                        <Box>{numberWithCommas(currentMyAccountInfo?.settlementTokenBalance)} available</Box>
+                    ) : (
+                        <Box>{numberWithCommas(currentMyAccountInfo?.collateralBalance)} available to withdraw</Box>
+                    )}
+                </Stack>
+            }
+            fotter={
+                <Button
+                    text={isDeposit ? "Deposit" : "Withdraw"}
+                    customType="base-blue"
+                    onClick={handleSubmit}
+                    isDisabled={!isEnabled}
+                />
+            }
+        />
     )
 }
 
