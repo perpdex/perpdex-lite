@@ -1,7 +1,7 @@
 import React, { useCallback } from "react"
 import { Button, Flex, Image, Spacer } from "@chakra-ui/react"
 import { AbstractConnector } from "@web3-react/abstract-connector"
-import CheckSvg from "../../asset/check.svg"
+import CheckSvg from "../../../asset/check.svg"
 import { User } from "container/connection/user"
 import { Modal } from "container/modal"
 import { useWeb3React } from "@web3-react/core"

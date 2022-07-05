@@ -5,7 +5,7 @@ import { Modal as ModalContainer } from "container/modal"
 import DiscreteInputModifier from "component/base/DiscreteInputModifier"
 import Big from "big.js"
 import { BIG_ZERO } from "constant"
-import { PerpdexMarketContainer } from "../../container/connection/perpdexMarketContainer"
+import { PerpdexMarketContainer } from "../../../container/connection/perpdexMarketContainer"
 import Modal from "component/base/Modal"
 import Button from "component/base/Button"
 
