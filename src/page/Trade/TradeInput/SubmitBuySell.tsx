@@ -1,4 +1,4 @@
-import { FormControl, Wrap, WrapItem, Button, Text } from "@chakra-ui/react"
+import { FormControl, Wrap, WrapItem, Button } from "@chakra-ui/react"
 import { useCallback, useMemo } from "react"
 
 import Big from "big.js"
@@ -47,20 +47,18 @@ function SubmitBuySell({
     return useMemo(
         () => (
             <FormControl id="margin">
-                <Text align="center" fontSize="medium" fontWeight="bold" lineHeight="1.4" mb="8">
-                    Order value: {quoteOrderValue.toString()} {quoteSymbol}
-                </Text>
                 <Wrap justify="space-between">
                     <WrapItem w="45%">
                         <Button
                             isDisabled={isDisabled}
                             isLoading={isLoading}
                             size="md"
-                            colorScheme="green"
+                            bg="#66BB74"
+                            color="white"
                             onClick={handleBuyTrade}
                             width="100%"
                         >
-                            Buy
+                            Buy/Long
                         </Button>
                     </WrapItem>
                     <WrapItem w="45%">
@@ -68,17 +66,21 @@ function SubmitBuySell({
                             isDisabled={isDisabled}
                             isLoading={isLoading}
                             size="md"
-                            colorScheme="red"
+                            color="#F90077"
+                            border="1px"
+                            borderColor={"#F90077"}
+                            borderRadius="10px"
+                            variant="solid"
                             onClick={hanledSellTrade}
                             width="100%"
                         >
-                            Sell
+                            Sell/Short
                         </Button>
                     </WrapItem>
                 </Wrap>
             </FormControl>
         ),
-        [handleBuyTrade, hanledSellTrade, isDisabled, isLoading, quoteOrderValue, quoteSymbol],
+        [handleBuyTrade, hanledSellTrade, isDisabled, isLoading],
     )
 }
 
