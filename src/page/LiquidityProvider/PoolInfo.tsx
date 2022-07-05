@@ -32,8 +32,8 @@ function PoolInfo({ marketState, tvl, volume24h }: Props) {
             <CardHeading text="Pool Info" />
             <SimpleGrid width="100%" columns={2}>
                 <DataRow text="TVL" value={tvl} />
-                <DataRow text="Volume (24h)" value={volume24h} />
-                <DataRow text="24h Fees" value={`- ${marketState.quoteSymbol}`} />
+                {/* <DataRow text="Volume (24h)" value={volume24h} />
+                <DataRow text="24h Fees" value={`- ${marketState.quoteSymbol}`} /> */}
                 <DataRow
                     text="Mark Price"
                     value={`${numberWithCommas(marketState.markPriceDisplay)} ${marketState.baseSymbolDisplay}/${

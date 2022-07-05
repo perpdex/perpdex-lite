@@ -14,3 +14,19 @@ export function createPoolSummary(marketState: MarketState): PoolSummary {
         volume24h: `10000000 ${marketState.quoteSymbol}`,
     }
 }
+
+export function createMarketSummary(marketState: MarketState) {
+    const quoteSymbolDisplay = marketState.inverse ? marketState.baseSymbol : marketState.quoteSymbol
+    const baseSymbolDisplay = marketState.inverse ? marketState.quoteSymbol : marketState.baseSymbol
+
+    const marketName = `${baseSymbolDisplay}${quoteSymbolDisplay}`
+
+    return {
+        address: marketState.address,
+        quoteSymbolDisplay,
+        baseSymbolDisplay,
+        marketName,
+        markPrice: numberWithCommas(marketState.markPrice),
+        // volume24h: `10000 ${marketState.quoteSymbol}`,
+    }
+}

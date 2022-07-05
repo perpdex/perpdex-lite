@@ -16,19 +16,19 @@ import {
     Button,
 } from "@chakra-ui/react"
 
-import MarketSelector from "component/Perpetual/MarketSelector"
+import ChartHead from "./ChartHead"
 import Summary from "./Summary"
 import FrameContainer from "component/FrameContainer"
 import TradeInput from "./TradeInput"
 import PositionTab from "./PositionTab"
-import ChartHeader from "component/Perpetual/ChartHeader"
 import Slippage from "./Slippage"
+import LightWeightChart from "./LightWeightChart"
 
 function Trade() {
     const [slippage, setSlippage] = useState<number>(0.5)
 
     return (
-        <FrameContainer>
+        <FrameContainer removeMarginTop>
             <Flex>
                 <Box flex="1" mr="2">
                     <HStack alignItems="flex-start">
@@ -36,17 +36,16 @@ function Trade() {
                             <HStack justifyContent="start">
                                 <Box h="100%">
                                     <HStack>
-                                        <MarketSelector />
                                         <Center h="100px" mx={10}>
                                             <Divider orientation="vertical" border="1px" borderColor="#D9D9D9" />
                                         </Center>
                                     </HStack>
                                 </Box>
                                 <Box w="100%" alignSelf="center">
-                                    <ChartHeader />
+                                    <ChartHead />
                                 </Box>
                             </HStack>
-                            <Box w="100px">Chart</Box>
+                            <LightWeightChart />
                         </VStack>
                         <Box
                             borderColor="#728BEC"
