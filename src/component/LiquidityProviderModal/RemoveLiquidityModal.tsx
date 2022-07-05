@@ -50,7 +50,7 @@ function RemoveLiquidityModal() {
         }
         if (liq.gt(currentMyMakerInfo.liquidity)) return false
         return true
-    }, [currentMyMakerInfo?.liquidity, liquidity])
+    }, [currentMyMakerInfo, liquidity])
 
     const handleRemoveLiquidity = useCallback(() => {
         const liq = Big(liquidity)

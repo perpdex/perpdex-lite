@@ -1,4 +1,5 @@
-import { Box, Button, Table, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react"
+import { Box, Table, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react"
+import Button from "component/base/Button"
 
 function OpenPositionsTable() {
     return (
@@ -22,9 +23,7 @@ function OpenPositionsTable() {
                         </Td>
                         <Td border="0px">+2.34</Td>
                         <Td border="0px">
-                            <Button mb={[4, 0]} bgColor="#353E80" borderRadius="10px" color="white">
-                                Trade
-                            </Button>
+                            <Button customType="base-blue" text="Trade" />
                         </Td>
                         <Td border="0px">$2,333.57</Td>
                     </Tr>
