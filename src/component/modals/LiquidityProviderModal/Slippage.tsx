@@ -17,6 +17,7 @@ import SmallFormLabel from "component/base/SmallFormLabel"
 import { Trade } from "container/perpetual/trade"
 import { QuestionOutlineIcon } from "@chakra-ui/icons"
 
+// TODO: separate component and state
 function Slippage() {
     const { slippage, setSlippage } = Trade.useContainer()
 

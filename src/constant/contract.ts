@@ -97,6 +97,7 @@ _.each(contractConfigs, (value: ContractConfig, key: string) => {
 export const abis = {
     PerpdexExchange: perpdexDeployment["4"][0].contracts.PerpdexExchange.abi,
     PerpdexMarket: perpdexDeployment["4"][0].contracts.PerpdexMarketUSD.abi,
+    PerpdexLongToken: perpdexStablecoin["4"][0].contracts.PerpdexLongTokenUSD.abi,
     IPerpdexPriceFeed: [
         {
             inputs: [],

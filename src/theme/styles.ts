@@ -1,7 +1,7 @@
 const styles = {
     global: (props: any) => ({
         body: {
-            bg: "black.alpha900",
+            bg: "#050217",
             color: "white.base",
         },
     }),

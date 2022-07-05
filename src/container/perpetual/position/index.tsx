@@ -1,8 +1,6 @@
-import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
-import { useCallback, useMemo } from "react"
+import { useCallback } from "react"
 import { createContainer } from "unstated-next"
 import { useImmerReducer } from "use-immer"
-import { numberWithCommasUsdc } from "util/format"
 
 enum ACTIONS {
     OPEN_CLOSE_POSITION_MODAL = "OPEN_CLOSE_POSITION_MODAL",

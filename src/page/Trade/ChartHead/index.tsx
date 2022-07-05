@@ -4,34 +4,28 @@ import { HStack, Box, Text, Center } from "@chakra-ui/react"
 import { Popover, PopoverTrigger, PopoverContent, PopoverBody } from "@chakra-ui/react"
 
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
-import { createMarketSummary, getCurrencyIcon } from "util/market"
+import { createMarketSummary } from "util/market"
 import { TriangleDownIcon } from "@chakra-ui/icons"
 import MarketTable from "./MarketTable"
-import { MarketStateWithAddress } from "constant/types"
+import { MarketState } from "constant/types"
 
 function ChartHead() {
-    const { currentMarketState, currentMarket, setCurrentMarket, marketStates } = PerpdexMarketContainer.useContainer()
+    const { currentMarketState, setCurrentMarket, marketStates } = PerpdexMarketContainer.useContainer()
 
-    const currentMarketSummary = useMemo(() => createMarketSummary({ address: currentMarket, ...currentMarketState }), [
-        currentMarket,
-        currentMarketState,
-    ])
+    const currentMarketSummary = useMemo(() => createMarketSummary(currentMarketState), [currentMarketState])
 
-    const BaseSymbolIcon = getCurrencyIcon(currentMarketSummary.baseSymbolDisplay)
+    // const BaseSymbolIcon = getCurrencyIcon(currentMarketSummary.baseSymbolDisplay)
 
     const marketSummary = useMemo(() => {
-        const poolsArray: MarketStateWithAddress[] = Object.keys(marketStates).map((key: string) => ({
-            ...marketStates[key],
-            address: key,
-        }))
+        const poolsArray: MarketState[] = Object.keys(marketStates).map((key: string) => marketStates[key])
 
-        return poolsArray.map((pool: MarketStateWithAddress) => createMarketSummary(pool))
+        return poolsArray.map((pool: MarketState) => createMarketSummary(pool))
     }, [marketStates])
 
     return (
         <>
             <HStack spacing="24px" borderBottom="solid #627EEA 1px">
-                <Popover trigger="click" arrowSize={0}>
+                <Popover trigger="hover" arrowSize={0}>
                     {({ onClose }) => (
                         <>
                             <PopoverTrigger>
@@ -43,7 +37,7 @@ function ChartHead() {
                                     <HStack spacing={2}>
                                         {currentMarketState && (
                                             <>
-                                                {BaseSymbolIcon && <BaseSymbolIcon width={8} height={8} />}
+                                                {/* {BaseSymbolIcon && <BaseSymbolIcon width={8} height={8} />} */}
                                                 <Text>{currentMarketSummary.marketName}</Text>
                                                 <Box px="2">
                                                     <TriangleDownIcon w={3} h={3} />

@@ -1,14 +1,4 @@
-import {
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalBody,
-    Checkbox,
-    ModalFooter,
-    Button,
-    Text,
-} from "@chakra-ui/react"
+import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Text } from "@chakra-ui/react"
 import { ExternalLink } from "component/ExternalLink"
 import { useLocalStorage } from "hook/useLocalStorage"
 import { useCallback, useState } from "react"

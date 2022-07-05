@@ -1,5 +1,5 @@
 import { BIG_NUMBER_ZERO } from "../../../constant"
-import { big2BigNum, bigNum2Big, bigNum2FixedStr, parseEther, x96ToBig } from "util/format"
+import { big2BigNum, bigNum2Big, bigNum2FixedStr, x96ToBig } from "util/format"
 import { useCallback, useEffect, useMemo, useState } from "react"
 
 import { Big } from "big.js"
@@ -11,14 +11,7 @@ import { PerpdexMarketContainer } from "../perpdexMarketContainer"
 import { BigNumber, constants } from "ethers"
 import _ from "lodash"
 import { contractConfigs } from "../../../constant/contract"
-import {
-    ExchangeState,
-    MakerInfo,
-    TakerInfo,
-    AccountInfo,
-    PositionState,
-    settlementTokenMetadataState,
-} from "../../../constant/types"
+import { ExchangeState, MakerInfo, TakerInfo, AccountInfo, PositionState, MarketState } from "../../../constant/types"
 import { useInterval } from "../../../hook/useInterval"
 import { usePageVisibility } from "react-page-visibility"
 import {
@@ -27,31 +20,36 @@ import {
     createExchangeContractMulticall,
 } from "../contractFactory"
 
+interface settlementTokenMetadataUnit {
+    decimals: number
+    address: string
+}
+
+type settlementTokenMetadataState = settlementTokenMetadataUnit[]
+
 export const PerpdexExchangeContainer = createContainer(usePerpdexExchangeContainer)
 
 const createExchangeExecutor = (address: string, signer: any) => {
     return new ContractExecutor(createExchangeContract(address, signer), signer)
 }
 
-function calcTrade(isBaseToQuote: boolean, isInverse: boolean, baseAmount: Big, quoteAmount: Big, slippage: number) {
-    const isExactInput = isBaseToQuote
+function calcTrade(isLong: boolean, amount: Big, marketState: MarketState, slippage: number) {
     const _slippage = slippage / 100
+    const { markPrice, baseBalancePerShare } = marketState
+    const share = amount.div(baseBalancePerShare)
 
-    let position
     let oppositeAmountBound
-    if (isInverse) {
-        position = quoteAmount
-        oppositeAmountBound = isExactInput ? baseAmount.mul(1 - _slippage) : baseAmount.mul(1 + _slippage)
+    if (isLong) {
+        oppositeAmountBound = share.mul(markPrice).mul(1 + _slippage)
     } else {
-        position = baseAmount
-        oppositeAmountBound = isExactInput ? quoteAmount.mul(1 - _slippage) : quoteAmount.mul(1 + _slippage)
+        oppositeAmountBound = share.mul(markPrice).mul(1 - _slippage)
     }
 
-    console.log("@@@@", isExactInput, position.toString(), oppositeAmountBound.toString())
+    console.log("@@@@", isLong, amount.toString(), oppositeAmountBound.toString())
 
     return {
-        isExactInput,
-        position: big2BigNum(position),
+        isBaseToQuote: !isLong,
+        isExactInput: !isLong,
         oppositeAmountBound: big2BigNum(oppositeAmountBound),
     }
 }
@@ -89,16 +87,12 @@ function usePerpdexExchangeContainer() {
         return exchangeStates[currentExchange]?.myAccountInfo.takerInfos[currentMarket]
     }, [exchangeStates, currentExchange, currentMarket])
 
-    // FIX: inverse-related bugs
     const currentMyTakerPositions: PositionState | undefined = useMemo(() => {
         if (currentMarketState && currentMyTakerInfo) {
-            const { inverse, markPrice, quoteSymbol, baseSymbol } = currentMarketState
-
-            const baseAssetSymbolDisplay = inverse ? quoteSymbol : baseSymbol
-            const quoteAssetSymbolDisplay = inverse ? baseSymbol : quoteSymbol
+            const { markPrice } = currentMarketState
 
             const takerOpenNotional = currentMyTakerInfo.quoteBalance
-            const size = currentMyTakerInfo.baseBalanceShare
+            const size = currentMyTakerInfo.baseBalanceShare.mul(currentMarketState.baseBalancePerShare)
             if (size.eq(0)) return
 
             const positionValue = size.mul(markPrice)
@@ -106,14 +100,11 @@ function usePerpdexExchangeContainer() {
             const unrealizedPnl = markPrice.div(entryPrice).sub(1).mul(takerOpenNotional.mul(-1))
 
             return {
-                baseAssetSymbolDisplay,
-                quoteAssetSymbolDisplay,
                 isLong: size.gt(0),
                 positionQuantity: size,
                 positionValue,
-                entryPrice,
-                markPrice,
-                liqPrice: Big(0),
+                entryPriceDisplay: currentMarketState.inverse ? Big(1).div(entryPrice) : entryPrice,
+                liqPriceDisplay: Big(0),
                 unrealizedPnl,
             }
         }
@@ -136,7 +127,7 @@ function usePerpdexExchangeContainer() {
             const settlementTokens = await multicallNetworkProvider.all(multicallRequest2)
 
             const multicallRequest3 = _.flattenDeep(
-                _.map(settlementTokens, (settlementToken, idx) => {
+                _.map(settlementTokens, settlementToken => {
                     return [
                         settlementToken === constants.AddressZero
                             ? multicallNetworkProvider.getEthBalance(constants.AddressZero) // dummy
@@ -166,6 +157,7 @@ function usePerpdexExchangeContainer() {
                         : createERC20ContractMulticall(settlementTokenMetadataLocal[idx].address).balanceOf(account),
                     contract.accountInfos(account),
                     contract.getTotalAccountValue(account),
+                    contract.getTotalPositionNotional(account),
                     _.map(exchange.markets, market => {
                         return [
                             contract.getTakerInfo(account, market.address),
@@ -181,11 +173,15 @@ function usePerpdexExchangeContainer() {
 
         let resultIdx = 0
         _.each(exchanges, (exchange, idx) => {
-            const [imRatio, mmRatio, settlementTokenBalance, accountInfo, totalAccountValue] = multicallResult.slice(
-                resultIdx,
-                resultIdx + 5,
-            )
-            resultIdx += 5
+            const [
+                imRatio,
+                mmRatio,
+                settlementTokenBalance,
+                accountInfo,
+                totalAccountValue,
+                totalPositionNotionalBigNum,
+            ] = multicallResult.slice(resultIdx, resultIdx + 6)
+            resultIdx += 6
 
             const takerInfos: { [key: string]: any } = {}
             const makerInfos: { [key: string]: any } = {}
@@ -205,6 +201,8 @@ function usePerpdexExchangeContainer() {
                 }
             })
 
+            const totalPositionNotional = bigNum2Big(totalPositionNotionalBigNum)
+
             newExchangeStates[exchange.address] = {
                 imRatio: bigNum2Big(imRatio, 6),
                 mmRatio: bigNum2Big(mmRatio, 6),
@@ -217,6 +215,9 @@ function usePerpdexExchangeContainer() {
                     ),
                     collateralBalance: bigNum2Big(accountInfo.collateralBalance),
                     totalAccountValue: bigNum2Big(totalAccountValue),
+                    mmRatio: totalPositionNotional.eq(0)
+                        ? Big(0)
+                        : bigNum2Big(totalAccountValue).div(totalPositionNotional),
                 },
             }
         })
@@ -234,31 +235,32 @@ function usePerpdexExchangeContainer() {
     }, [chainId, multicallNetworkProvider, account, fetchAll])
 
     const deposit = useCallback(
-        (amount: string) => {
+        (amount: Big) => {
             if (contractExecuter) {
-                execute(contractExecuter.deposit(parseEther(amount), BIG_NUMBER_ZERO))
+                // TODO: handle non native token
+                execute(contractExecuter.deposit(big2BigNum(amount), BIG_NUMBER_ZERO))
             }
         },
         [contractExecuter, execute],
     )
 
     const withdraw = useCallback(
-        (amount: string) => {
+        (amount: Big) => {
             if (contractExecuter) {
-                execute(contractExecuter.withdraw(parseEther(amount)))
+                // TODO: handle non native token
+                execute(contractExecuter.withdraw(big2BigNum(amount)))
             }
         },
         [contractExecuter, execute],
     )
 
     const trade = useCallback(
-        (isBaseToQuote: boolean, baseAmount: Big, quoteAmount: Big, slippage: number) => {
+        (isLong: boolean, amount: Big, slippage: number) => {
             if (!currentMarketState || !currentMarketState.markPrice) return
-            const { isExactInput, position, oppositeAmountBound } = calcTrade(
-                isBaseToQuote,
-                currentMarketState.inverse,
-                baseAmount,
-                quoteAmount,
+            const { isBaseToQuote, isExactInput, oppositeAmountBound } = calcTrade(
+                isLong,
+                amount,
+                currentMarketState,
                 slippage,
             )
 
@@ -269,7 +271,7 @@ function usePerpdexExchangeContainer() {
                         currentMarket,
                         isBaseToQuote,
                         isExactInput,
-                        position,
+                        big2BigNum(amount),
                         oppositeAmountBound,
                     ),
                 )
@@ -279,17 +281,16 @@ function usePerpdexExchangeContainer() {
     )
 
     const previewTrade = useCallback(
-        async (isBaseToQuote: boolean, baseAmount: Big, quoteAmount: Big, slippage: number) => {
+        async (isLong: boolean, amount: Big, slippage: number) => {
             if (perpdexExchange && account && currentMarketState && currentMarketState.markPrice) {
-                const { isExactInput, position, oppositeAmountBound } = calcTrade(
-                    isBaseToQuote,
-                    currentMarketState.inverse,
-                    baseAmount,
-                    quoteAmount,
+                const { isBaseToQuote, isExactInput, oppositeAmountBound } = calcTrade(
+                    isLong,
+                    amount,
+                    currentMarketState,
                     slippage,
                 )
 
-                console.log(bigNum2FixedStr(position, 18), bigNum2FixedStr(oppositeAmountBound, 18))
+                console.log(amount, bigNum2FixedStr(oppositeAmountBound, 18))
 
                 try {
                     const results = await perpdexExchange.callStatic.trade({
@@ -297,7 +298,7 @@ function usePerpdexExchangeContainer() {
                         market: currentMarket,
                         isBaseToQuote,
                         isExactInput,
-                        amount: position,
+                        amount: big2BigNum(amount),
                         oppositeAmountBound,
                         deadline: BigNumber.from(2).pow(96),
                     })
@@ -341,11 +342,11 @@ function usePerpdexExchangeContainer() {
 
     const addLiquidity = useCallback(
         (base: Big, quote: Big, minBase: Big, minQuote: Big) => {
-            if (contractExecuter && account && currentMarket) {
+            if (contractExecuter && account && currentMarketState) {
                 execute(
                     contractExecuter.addLiquidity(
                         currentMarket,
-                        big2BigNum(base),
+                        big2BigNum(base.div(currentMarketState.baseBalancePerShare)),
                         big2BigNum(quote),
                         big2BigNum(minBase),
                         big2BigNum(minQuote),
@@ -353,7 +354,7 @@ function usePerpdexExchangeContainer() {
                 )
             }
         },
-        [account, contractExecuter, execute, currentMarket],
+        [account, contractExecuter, execute, currentMarketState],
     )
 
     const removeLiquidity = useCallback(

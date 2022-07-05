@@ -9,7 +9,7 @@ async function main() {
         new TypeChain({
             cwd,
             rawConfig: {
-                files: `${__dirname}/../deps/perpdex-contract/artifacts/contracts/**/+([a-zA-Z0-9_]).json`,
+                files: `${__dirname}/../deps/perpdex-*/artifacts/contracts/**/+([a-zA-Z0-9_]).json`,
                 outDir: "src/types/newContracts",
                 target: "ethers-v5",
             },

@@ -7,36 +7,38 @@ export interface PoolInfo {
 }
 
 export interface PoolSummary {
-    address: string
-    quoteSymbolDisplay: string
-    baseSymbolDisplay: string
     poolName: string
     tvl: string
+    tvlUsd: string
     volume24h: string
 }
 
-export interface MarketState {
-    exchangeAddress: string
-    baseSymbol: string
-    quoteSymbol: string
-    poolInfo: PoolInfo
-    markPrice: Big
-    priceFeedQuote: string
-    indexPriceQuote: Big
-    inverse: boolean
-}
-
-export interface MarketSummary extends Omit<Partial<MarketState>, "markPrice"> {
+export interface MarketSummary {
     address: string
     quoteSymbolDisplay: string
     baseSymbolDisplay: string
     marketName: string
     markPrice: string
-    volume24h: string
 }
 
-export interface MarketStateWithAddress extends MarketState {
+export interface MarketState {
     address: string
+    exchangeAddress: string
+    baseSymbol: string
+    quoteSymbol: string
+    baseSymbolDisplay: string
+    quoteSymbolDisplay: string
+    poolInfo: PoolInfo
+    markPrice: Big
+    markPriceDisplay: Big
+    baseBalancePerShare: Big
+    cumBasePerLiquidity: Big
+    cumQuotePerLiquidity: Big
+    priceFeedQuote: string
+    priceFeedBase: string
+    indexPriceQuote: Big
+    indexPriceBase: Big
+    inverse: boolean
 }
 
 export interface MakerInfo {
@@ -64,7 +66,7 @@ export interface AccountInfo {
     settlementTokenBalance: Big
     collateralBalance: Big
     totalAccountValue: Big
-    // totalPositionNotional: Big
+    mmRatio: Big
 }
 
 export interface ExchangeState {
@@ -79,20 +81,28 @@ export interface LpCollateralState {
 }
 
 export interface PositionState {
-    baseAssetSymbolDisplay: string
-    quoteAssetSymbolDisplay: string
     isLong: boolean
     positionQuantity: Big
     positionValue: Big
-    entryPrice: Big
-    markPrice: Big
-    liqPrice: Big
+    entryPriceDisplay: Big
+    liqPriceDisplay: Big
     unrealizedPnl: Big
 }
 
-interface settlementTokenMetadataUnit {
-    decimals: number
+export interface LongTokenState {
     address: string
+    symbol: string
+    name: string
+    assetAddress: string
+    assetSymbol: string
+    assetDecimals: number
+    assetIsWeth: boolean
+    totalSupply: Big
+    totalAssets: Big
+    myShares: Big
+    myAssets: Big
+    maxDeposit: Big
+    maxMint: Big
+    maxWithdraw: Big
+    maxRedeem: Big
 }
-
-export type settlementTokenMetadataState = settlementTokenMetadataUnit[]

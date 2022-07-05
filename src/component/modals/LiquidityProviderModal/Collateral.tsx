@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 
 import Big from "big.js"
 import SmallFormLabel from "component/base/SmallFormLabel"
-import { BIG_ZERO, USDC_PRECISION } from "constant"
+import { BIG_ZERO, INPUT_PRECISION, USDC_PRECISION } from "constant"
 import { formatInput } from "util/format"
 import { LpCollateralState, MarketState } from "constant/types"
 
@@ -26,15 +26,26 @@ function Collateral({ currentMarketState, collateralValues, setCollateralValues 
 
                     let base
                     let quote
-                    if (isBase) {
-                        base = Big(value)
-                        quote = base.mul(currentMarketState.markPrice)
-                    } else {
-                        quote = Big(value)
-                        base = quote.div(currentMarketState.markPrice)
-                    }
 
-                    isBase ? setQuoteValue(quote.toString()) : setBaseValue(base.toString())
+                    if (currentMarketState.markPrice.eq(0)) {
+                        if (isBase) {
+                            base = Big(value)
+                            quote = Big(quoteValue)
+                        } else {
+                            quote = Big(value)
+                            base = Big(baseValue)
+                        }
+                    } else {
+                        if (isBase) {
+                            base = Big(value)
+                            quote = base.mul(currentMarketState.markPrice).round(INPUT_PRECISION)
+                        } else {
+                            quote = Big(value)
+                            base = quote.div(currentMarketState.markPrice).round(INPUT_PRECISION)
+                        }
+
+                        isBase ? setQuoteValue(quote.toString()) : setBaseValue(base.toString())
+                    }
 
                     setCollateralValues({
                         base,
@@ -45,7 +56,7 @@ function Collateral({ currentMarketState, collateralValues, setCollateralValues 
                 }
             }
         },
-        [setCollateralValues, currentMarketState.markPrice],
+        [setCollateralValues, currentMarketState.markPrice, baseValue, quoteValue],
     )
 
     useEffect(() => {
@@ -74,9 +85,7 @@ function Collateral({ currentMarketState, collateralValues, setCollateralValues 
                                 color="blue.500"
                                 textTransform="uppercase"
                             >
-                                {currentMarketState.inverse
-                                    ? currentMarketState.quoteSymbol
-                                    : currentMarketState.baseSymbol}
+                                {currentMarketState.baseSymbol}
                             </Text>
                         </InputRightElement>
                     </InputGroup>
@@ -93,9 +102,7 @@ function Collateral({ currentMarketState, collateralValues, setCollateralValues 
                                 color="blue.500"
                                 textTransform="uppercase"
                             >
-                                {currentMarketState.inverse
-                                    ? currentMarketState.baseSymbol
-                                    : currentMarketState.quoteSymbol}
+                                {currentMarketState.quoteSymbol}
                             </Text>
                         </InputRightElement>
                     </InputGroup>
@@ -105,7 +112,6 @@ function Collateral({ currentMarketState, collateralValues, setCollateralValues 
         [
             baseValue,
             currentMarketState.baseSymbol,
-            currentMarketState.inverse,
             currentMarketState.quoteSymbol,
             handleOnBaseInput,
             handleOnQuoteInput,

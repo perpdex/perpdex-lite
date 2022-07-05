@@ -1179,13 +1179,6 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
-"@babel/runtime@^7.7.6":
-  version "7.18.6"
-  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.18.6.tgz#6a1ef59f838debd670421f8c7f2cbb8da9751580"
-  integrity sha512-t9wi7/AW6XtKahAe20Yw0/mMljKq0B1r2fPdvaAdV/KPDZewFXdaaa6K7lxmZBZ8FBNpCiAT6iHPmd6QO9bKfQ==
-  dependencies:
-    regenerator-runtime "^0.13.4"
-
 "@babel/template@^7.10.4", "@babel/template@^7.12.13", "@babel/template@^7.3.3":
   version "7.12.13"
   resolved "https://registry.yarnpkg.com/@babel/template/-/template-7.12.13.tgz#530265be8a2589dbb37523844c5bcb55947fb327"
@@ -3309,11 +3302,6 @@
   resolved "https://registry.yarnpkg.com/@types/history/-/history-4.7.8.tgz#49348387983075705fe8f4e02fb67f7daaec4934"
   integrity sha512-S78QIYirQcUoo6UJZx9CSP0O2ix9IaeAXwQi26Rhr/+mg7qqPy8TzaxHSUut7eGjL8WmLccT7/MXf304WjqHcA==
 
-"@types/history@^4.7.11":
-  version "4.7.11"
-  resolved "https://registry.yarnpkg.com/@types/history/-/history-4.7.11.tgz#56588b17ae8f50c53983a524fc3cc47437969d64"
-  integrity sha512-qjDJRrmvBMiTx+jyLxvLfJU7UznFuokDv4f3WRuriHKERccVpFU+8XMQUAbDzoiJCsmexxRExQeMwwCdamSKDA==
-
 "@types/html-minifier-terser@^5.0.0":
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/@types/html-minifier-terser/-/html-minifier-terser-5.1.1.tgz#3c9ee980f1a10d6021ae6632ca3e79ca2ec4fb50"
@@ -3482,14 +3470,6 @@
   integrity sha512-0bhXQwHYfMeJlCh7mGhc0VJTRm0Gk+Z8T00aiP4702mDUuLs9SMhnd2DitpjWFjdOecx2UXtICK14H9iMnziGA==
   dependencies:
     "@types/history" "*"
-    "@types/react" "*"
-
-"@types/react-router@^5.1.18":
-  version "5.1.18"
-  resolved "https://registry.yarnpkg.com/@types/react-router/-/react-router-5.1.18.tgz#c8851884b60bc23733500d86c1266e1cfbbd9ef3"
-  integrity sha512-YYknwy0D0iOwKQgz9v8nOzt2J6l4gouBmDnWqUUznltOTaon+r8US8ky8HvN0tXvc38U9m6z/t2RsVsnd1zM0g==
-  dependencies:
-    "@types/history" "^4.7.11"
     "@types/react" "*"
 
 "@types/react@*", "@types/react@^17.0.0":
@@ -5193,9 +5173,9 @@ caniuse-api@^3.0.0:
     lodash.uniq "^4.5.0"
 
 caniuse-lite@^1.0.0, caniuse-lite@^1.0.30000981, caniuse-lite@^1.0.30001109, caniuse-lite@^1.0.30001125, caniuse-lite@^1.0.30001181:
-  version "1.0.30001191"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001191.tgz#bacb432b6701f690c8c5f7c680166b9a9f0843d9"
-  integrity sha512-xJJqzyd+7GCJXkcoBiQ1GuxEiOBCLQ0aVW9HMekifZsAVGdj5eJ4mFB9fEhSHipq9IOk/QXFJUiIr9lZT+EsGw==
+  version "1.0.30001361"
+  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001361.tgz"
+  integrity sha512-ybhCrjNtkFji1/Wto6SSJKkWk6kZgVQsDq5QI83SafsF6FXv2JB4df9eEdH6g8sdGgqTXrFLjAxqBGgYoU3azQ==
 
 capital-case@^1.0.4:
   version "1.0.4"
@@ -5863,11 +5843,6 @@ crypto-random-string@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/crypto-random-string/-/crypto-random-string-1.0.0.tgz#a230f64f568310e1498009940790ec99545bca7e"
   integrity sha1-ojD2T1aDEOFJgAmUB5DsmVRbyn4=
-
-cryptocurrency-icons@^0.18.0:
-  version "0.18.0"
-  resolved "https://registry.yarnpkg.com/cryptocurrency-icons/-/cryptocurrency-icons-0.18.0.tgz#823552afcd299f4899d26a869252d1d27b004bc0"
-  integrity sha512-Q8Uq/Vhzcn/B6ouoJk+5Q/Kfp0zz0DjfldPv836OKT5mxgYDZm8vWgMQ5wBuRvT8Z/ZHLeXaBUgJtufPXmG0NQ==
 
 css-blank-pseudo@^0.1.4:
   version "0.1.4"
@@ -6857,6 +6832,18 @@ eslint-plugin-testing-library@^3.9.2:
   integrity sha512-nQIFe2muIFv2oR2zIuXE4vTbcFNx8hZKRzgHZqJg8rfopIWwoTwtlbCCNELT/jXzVe1uZF68ALGYoDXjLczKiQ==
   dependencies:
     "@typescript-eslint/experimental-utils" "^3.10.1"
+
+eslint-plugin-unused-imports@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-unused-imports/-/eslint-plugin-unused-imports-2.0.0.tgz#d8db8c4d0cfa0637a8b51ce3fd7d1b6bc3f08520"
+  integrity sha512-3APeS/tQlTrFa167ThtP0Zm0vctjr4M44HMpeg1P4bK6wItarumq0Ma82xorMKdFsWpphQBlRPzw/pxiVELX1A==
+  dependencies:
+    eslint-rule-composer "^0.3.0"
+
+eslint-rule-composer@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/eslint-rule-composer/-/eslint-rule-composer-0.3.0.tgz#79320c927b0c5c0d3d3d2b76c8b4a488f25bbaf9"
+  integrity sha512-bt+Sh8CtDmn2OajxvNO+BX7Wn4CIWMpTRm3MaiKPCQcnnlm0CS2mhui6QaoeQugs+3Kj2ESKEEGJUdVafwhiCg==
 
 eslint-scope@^4.0.3:
   version "4.0.3"
@@ -8190,13 +8177,6 @@ history@^4.9.0:
     tiny-invariant "^1.0.2"
     tiny-warning "^1.0.0"
     value-equal "^1.0.1"
-
-history@^5.3.0:
-  version "5.3.0"
-  resolved "https://registry.yarnpkg.com/history/-/history-5.3.0.tgz#1548abaa245ba47992f063a0783db91ef201c73b"
-  integrity sha512-ZqaKwjjrAYUYfLG+htGaIIZ4nioX2L70ZUMIFysS3xvBsSG4x/n1V6TXV3N8ZYNuFGlDirFg32T7B6WOUPDYcQ==
-  dependencies:
-    "@babel/runtime" "^7.7.6"
 
 hmac-drbg@^1.0.1:
   version "1.0.1"
@@ -12312,22 +12292,6 @@ react-router@5.2.0:
   integrity sha512-smz1DUuFHRKdcJC0jobGo8cVbhO3x50tCL4icacOlcwDOEQPq4TMqwx3sY1TP+DvtTgz4nm3thuo7A+BK2U0Dw==
   dependencies:
     "@babel/runtime" "^7.1.2"
-    history "^4.9.0"
-    hoist-non-react-statics "^3.1.0"
-    loose-envify "^1.3.1"
-    mini-create-react-context "^0.4.0"
-    path-to-regexp "^1.7.0"
-    prop-types "^15.6.2"
-    react-is "^16.6.0"
-    tiny-invariant "^1.0.2"
-    tiny-warning "^1.0.0"
-
-react-router@^5.1.2:
-  version "5.3.3"
-  resolved "https://registry.yarnpkg.com/react-router/-/react-router-5.3.3.tgz#8e3841f4089e728cf82a429d92cdcaa5e4a3a288"
-  integrity sha512-mzQGUvS3bM84TnbtMYR8ZjKnuPJ71IjSzR+DE6UkUqvN4czWIqEs17yLL8xkAycv4ev0AiN+IGrWu88vJs/p2w==
-  dependencies:
-    "@babel/runtime" "^7.12.13"
     history "^4.9.0"
     hoist-non-react-statics "^3.1.0"
     loose-envify "^1.3.1"

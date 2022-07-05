@@ -12,13 +12,8 @@ interface SubmitBuySellState {
     slippage: number
     isLoading: boolean
     isDisabled: boolean
-    trade: (isBaseToQuote: boolean, baseAmount: Big, quoteAmount: Big, slippage: number) => void
-    previewTrade: (
-        isBaseToQuote: boolean,
-        baseAmount: Big,
-        quoteAmount: Big,
-        slippage: number,
-    ) => Promise<BigNumber | undefined>
+    trade: (isLong: boolean, amount: Big, slippage: number) => void
+    previewTrade: (isLong: boolean, amount: Big, slippage: number) => Promise<BigNumber | undefined>
 }
 
 function SubmitBuySell({
@@ -34,21 +29,16 @@ function SubmitBuySell({
     const handleOnTrade = useCallback(
         async (isBuy: boolean) => {
             if (baseOrderValue) {
-                const isBaseToQuote = !isBuy
-
-                const results = await previewTrade(isBaseToQuote, baseOrderValue, quoteOrderValue, slippage)
+                const results = await previewTrade(isBuy, baseOrderValue, slippage)
 
                 if (results) {
                     console.log("oppositeAmount", bigNum2Big(results).toString())
                 }
 
-                // inverse の buy sell が逆
-                console.error("ERRRRRRRRRR")
-
-                trade(isBaseToQuote, baseOrderValue, quoteOrderValue, slippage)
+                await trade(isBuy, baseOrderValue, slippage)
             }
         },
-        [baseOrderValue, previewTrade, quoteOrderValue, slippage, trade],
+        [baseOrderValue, previewTrade, slippage, trade],
     )
 
     const handleBuyTrade = useCallback(() => handleOnTrade(true), [handleOnTrade])

@@ -1,17 +1,22 @@
 import React from "react"
 import { Link } from "react-router-dom"
-import { Flex, Heading, Spacer, Box, Button, HStack, Center } from "@chakra-ui/react"
-
+import { Flex, Spacer, Button, HStack, Center, Heading } from "@chakra-ui/react"
+import { Logo } from "../Icon"
 import ConnectBtn from "./ConnectBtn"
 
 function Header() {
     return (
-        <Flex minWidth="max-content" h="64px" alignItems="center">
-            <Box p="2">
+        <Flex minWidth="max-content" h="90px" alignItems="center">
+            <Center marginLeft="24px">
+                <Link to="/">
+                    <Logo></Logo>
+                </Link>
+            </Center>
+            <Center marginLeft="18px">
                 <Link to="/">
                     <Heading size="md">PerpDEX</Heading>
                 </Link>
-            </Box>
+            </Center>
             <Spacer />
             <Center>
                 <HStack spacing={["24px", "30px", "42px", "80px"]}>
@@ -27,9 +32,10 @@ function Header() {
                     <Link to="/tokens">
                         <Button variant="link">Position Tokens</Button>
                     </Link>
-                    <Link to="/history">
-                        <Button variant="link">History</Button>
-                    </Link>
+                    {/*TODO: implement history*/}
+                    {/*<Link to="/history">*/}
+                    {/*    <Button variant="link">History</Button>*/}
+                    {/*</Link>*/}
                 </HStack>
             </Center>
             <Spacer />

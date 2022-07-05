@@ -19,17 +19,26 @@ import { useInterval } from "../../../hook/useInterval"
 import produce from "immer"
 
 const nullMarketState: MarketState = {
+    address: constants.AddressZero,
     exchangeAddress: constants.AddressZero,
     baseSymbol: "",
     quoteSymbol: "",
+    baseSymbolDisplay: "",
+    quoteSymbolDisplay: "",
     poolInfo: {
         base: Big(0),
         quote: Big(0),
         totalLiquidity: Big(0),
     },
     markPrice: Big(0),
+    markPriceDisplay: Big(0),
+    baseBalancePerShare: Big(0),
+    cumBasePerLiquidity: Big(0),
+    cumQuotePerLiquidity: Big(0),
     priceFeedQuote: "",
+    priceFeedBase: "",
     indexPriceQuote: Big(0),
+    indexPriceBase: Big(0),
     inverse: false,
 }
 
@@ -69,14 +78,18 @@ function usePerpdexMarketContainer() {
                         contract.poolInfo(),
                         contract.symbol(),
                         contract.getMarkPriceX96(),
+                        contract.baseBalancePerShareX96(),
+                        contract.getCumDeleveragedPerLiquidityX96(),
+                        contract.priceFeedBase(),
                         contract.priceFeedQuote(),
                     ]
                 }),
             )
+
             const multicallResult = await multicallNetworkProvider.all(multicallRequest)
 
             const multicallRequest2 = _.map(_.range(marketAddresses.length), idx => {
-                const exchangeAddress = multicallResult[5 * idx]
+                const exchangeAddress = multicallResult[8 * idx]
                 const exchangeContract = createExchangeContractMulticall(exchangeAddress)
                 return exchangeContract.settlementToken()
             })
@@ -94,14 +107,21 @@ function usePerpdexMarketContainer() {
             const newMarketStates: { [key: string]: MarketState } = {}
 
             for (let i = 0; i < marketAddresses.length; i++) {
-                const [exchangeAddress, poolInfo, baseSymbol, markPriceX96, priceFeedQuote] = multicallResult.slice(
-                    5 * i,
-                    5 * (i + 1),
-                )
+                const [
+                    exchangeAddress,
+                    poolInfo,
+                    baseSymbol,
+                    markPriceX96,
+                    baseBalancePerShareX96,
+                    cumDeleveragedPerLiquidityX96,
+                    priceFeedBase,
+                    priceFeedQuote,
+                ] = multicallResult.slice(8 * i, 8 * (i + 1))
 
                 const address = marketAddresses[i]
                 const inverse = baseSymbol === "USD"
-                let markPrice = x96ToBig(markPriceX96, inverse)
+                const markPrice = x96ToBig(markPriceX96)
+                const markPriceDisplay = x96ToBig(markPriceX96, inverse)
 
                 const quoteSymbol =
                     settlementTokens[i] === constants.AddressZero
@@ -109,17 +129,26 @@ function usePerpdexMarketContainer() {
                         : quoteSymbols[i]
 
                 newMarketStates[address] = {
+                    address,
                     exchangeAddress,
                     baseSymbol,
                     quoteSymbol,
+                    baseSymbolDisplay: inverse ? quoteSymbol : baseSymbol,
+                    quoteSymbolDisplay: inverse ? baseSymbol : quoteSymbol,
                     poolInfo: {
                         base: bigNum2Big(poolInfo.base),
                         quote: bigNum2Big(poolInfo.quote),
                         totalLiquidity: bigNum2Big(poolInfo.totalLiquidity),
                     },
                     markPrice: markPrice,
+                    markPriceDisplay: markPriceDisplay,
+                    baseBalancePerShare: x96ToBig(baseBalancePerShareX96),
+                    cumBasePerLiquidity: x96ToBig(cumDeleveragedPerLiquidityX96[0]),
+                    cumQuotePerLiquidity: x96ToBig(cumDeleveragedPerLiquidityX96[1]),
                     priceFeedQuote: priceFeedQuote,
+                    priceFeedBase: priceFeedBase,
                     indexPriceQuote: Big(0),
+                    indexPriceBase: Big(0),
                     inverse: inverse,
                 }
             }
@@ -143,14 +172,26 @@ function usePerpdexMarketContainer() {
                     marketStates[address].priceFeedQuote === constants.AddressZero
                         ? void 0
                         : createPriceFeedContractMulticall(marketStates[address].priceFeedQuote)
+                const priceFeedBase =
+                    marketStates[address].priceFeedBase === constants.AddressZero
+                        ? void 0
+                        : createPriceFeedContractMulticall(marketStates[address].priceFeedBase)
                 return [
                     contract.poolInfo(),
                     contract.getMarkPriceX96(),
+                    contract.baseBalancePerShareX96(),
+                    contract.getCumDeleveragedPerLiquidityX96(),
                     priceFeedQuote
                         ? priceFeedQuote.decimals()
                         : multicallNetworkProvider.getEthBalance(constants.AddressZero), // dummy
                     priceFeedQuote
                         ? priceFeedQuote.getPrice()
+                        : multicallNetworkProvider.getEthBalance(constants.AddressZero), // dummy
+                    priceFeedBase
+                        ? priceFeedBase.decimals()
+                        : multicallNetworkProvider.getEthBalance(constants.AddressZero), // dummy
+                    priceFeedBase
+                        ? priceFeedBase.getPrice()
                         : multicallNetworkProvider.getEthBalance(constants.AddressZero), // dummy
                 ]
             }),
@@ -161,23 +202,50 @@ function usePerpdexMarketContainer() {
             produce(draft => {
                 for (let i = 0; i < marketAddresses.length; i++) {
                     const marketAddress = marketAddresses[i]
-                    const [poolInfo, markPriceX96, priceFeedQuoteDecimals, priceFeedQuotePrice] = multicallResult.slice(
-                        4 * i,
-                        4 * (i + 1),
-                    )
+                    const [
+                        poolInfo,
+                        markPriceX96,
+                        baseBalancePerShareX96,
+                        cumDeleveragedPerLiquidityX96,
+                        priceFeedQuoteDecimals,
+                        priceFeedQuotePrice,
+                        priceFeedBaseDecimals,
+                        priceFeedBasePrice,
+                    ] = multicallResult.slice(8 * i, 8 * (i + 1))
 
                     if (_.has(draft, marketAddress)) {
                         const inverse = draft[marketAddress].inverse
+
+                        const indexPriceQuote =
+                            draft[marketAddress].priceFeedQuote === constants.AddressZero
+                                ? Big(1)
+                                : bigNum2Big(priceFeedQuotePrice, priceFeedQuoteDecimals)
+                        const indexPriceBase =
+                            draft[marketAddress].priceFeedBase === constants.AddressZero
+                                ? Big(1)
+                                : bigNum2Big(priceFeedBasePrice, priceFeedBaseDecimals)
+
+                        const markPriceBig = x96ToBig(markPriceX96, inverse)
+
+                        const indexPriceDisplay = inverse
+                            ? indexPriceQuote
+                            : indexPriceQuote.eq(0)
+                            ? Big(1)
+                            : indexPriceBase.div(indexPriceQuote)
+                        const markPriceDisplay = markPriceBig.eq(0) ? indexPriceDisplay : markPriceBig // use index price with no pool
+
                         draft[marketAddress].poolInfo = {
                             base: bigNum2Big(poolInfo.base),
                             quote: bigNum2Big(poolInfo.quote),
                             totalLiquidity: bigNum2Big(poolInfo.totalLiquidity),
                         }
-                        draft[marketAddress].markPrice = x96ToBig(markPriceX96, inverse)
-                        draft[marketAddress].indexPriceQuote =
-                            draft[marketAddress].priceFeedQuote === constants.AddressZero
-                                ? Big(1)
-                                : bigNum2Big(priceFeedQuotePrice, priceFeedQuoteDecimals)
+                        draft[marketAddress].markPrice = x96ToBig(markPriceX96)
+                        draft[marketAddress].markPriceDisplay = markPriceDisplay
+                        draft[marketAddress].baseBalancePerShare = x96ToBig(baseBalancePerShareX96)
+                        draft[marketAddress].cumBasePerLiquidity = x96ToBig(cumDeleveragedPerLiquidityX96[0])
+                        draft[marketAddress].cumQuotePerLiquidity = x96ToBig(cumDeleveragedPerLiquidityX96[1])
+                        draft[marketAddress].indexPriceQuote = indexPriceQuote
+                        draft[marketAddress].indexPriceBase = indexPriceBase
                     }
                 }
             }),

@@ -1,23 +1,21 @@
-import { MarketStateWithAddress } from "constant/types"
-import { BTCIcon, ETHIcon, MATICIcon, USDIcon, LINKIcon } from "component/Icon"
-import { ASTRIcon } from "component/Icon/astr"
+import { MarketState, PoolSummary } from "constant/types"
+import { numberWithCommas } from "./format"
 
-export function createPoolSummary(marketState: MarketStateWithAddress) {
-    const quoteSymbolDisplay = marketState.inverse ? marketState.baseSymbol : marketState.quoteSymbol
-    const baseSymbolDisplay = marketState.inverse ? marketState.quoteSymbol : marketState.baseSymbol
+export function createPoolSummary(marketState: MarketState): PoolSummary {
+    const poolName = marketState.inverse
+        ? `${marketState.quoteSymbol}-${marketState.baseSymbol} (inverse)`
+        : `${marketState.baseSymbol}-${marketState.quoteSymbol}`
+    const tvl = marketState.poolInfo.quote.mul(2)
 
-    const poolName = `${baseSymbolDisplay}${quoteSymbolDisplay}`
     return {
-        address: marketState.address,
-        quoteSymbolDisplay,
-        baseSymbolDisplay,
         poolName,
-        tvl: `${marketState.poolInfo.quote.mul(2).toFixed(3)} ${marketState.quoteSymbol}`,
-        volume24h: `10000 ${marketState.quoteSymbol}`,
+        tvl: `${numberWithCommas(tvl)} ${marketState.quoteSymbol}`,
+        tvlUsd: `$${numberWithCommas(tvl.mul(marketState.indexPriceQuote))}`,
+        volume24h: `10000000 ${marketState.quoteSymbol}`,
     }
 }
 
-export function createMarketSummary(marketState: MarketStateWithAddress) {
+export function createMarketSummary(marketState: MarketState) {
     const quoteSymbolDisplay = marketState.inverse ? marketState.baseSymbol : marketState.quoteSymbol
     const baseSymbolDisplay = marketState.inverse ? marketState.quoteSymbol : marketState.baseSymbol
 
@@ -28,26 +26,7 @@ export function createMarketSummary(marketState: MarketStateWithAddress) {
         quoteSymbolDisplay,
         baseSymbolDisplay,
         marketName,
-        markPrice: marketState.markPrice.toFixed(4),
-        volume24h: `10000 ${marketState.quoteSymbol}`,
-    }
-}
-
-export function getCurrencyIcon(symbol: string) {
-    switch (symbol) {
-        case "ETH":
-            return ETHIcon
-        case "BTC":
-            return BTCIcon
-        case "USD":
-            return USDIcon
-        case "MATIC":
-            return MATICIcon
-        case "LINK":
-            return LINKIcon
-        case "ASTR":
-            return ASTRIcon
-        default:
-            return undefined
+        markPrice: numberWithCommas(marketState.markPrice),
+        // volume24h: `10000 ${marketState.quoteSymbol}`,
     }
 }

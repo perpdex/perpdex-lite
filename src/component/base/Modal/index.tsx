@@ -1,0 +1,37 @@
+import {
+    Modal as ChakuraModal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalCloseButton,
+    ModalBody,
+    ModalFooter,
+} from "@chakra-ui/react"
+import { ReactNode } from "react"
+
+export interface ModalState {
+    headerText: string
+    isOpen: boolean
+    onClose: () => void
+    size?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "full" | "3xl" | "4xl" | "5xl" | "6xl"
+    body: ReactNode
+    fotter?: ReactNode
+}
+
+function Modal({ headerText, isOpen, onClose, size, body, fotter }: ModalState) {
+    return (
+        <ChakuraModal isCentered={true} size={size || "xs"} isOpen={isOpen} onClose={onClose}>
+            <ModalOverlay />
+            <ModalContent bg="#191B1F" color="whiteAlpha.900">
+                <ModalHeader fontWeight="bold" fontSize="md">
+                    {headerText}
+                </ModalHeader>
+                <ModalCloseButton />
+                <ModalBody pb="1.5rem">{body}</ModalBody>
+                {fotter && <ModalFooter justifyContent="center">{fotter}</ModalFooter>}
+            </ModalContent>
+        </ChakuraModal>
+    )
+}
+
+export default Modal

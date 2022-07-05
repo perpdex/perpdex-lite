@@ -1,4 +1,4 @@
-import { ERC20_DECIMAL_DIGITS, USDC_PRECISION, DISPLAY_DIGITS } from "../constant/number"
+import { ERC20_DECIMAL_DIGITS, DISPLAY_DIGITS } from "../constant/number"
 
 import Big from "big.js"
 import { BigNumber, ethers } from "ethers"
@@ -17,9 +17,11 @@ export function ethFormatUnits(val: BigNumber) {
 }
 
 export function x96ToBig(val: BigNumber, isInverse: boolean = false) {
+    const outputDecimals = 32 // 32 is sufficient larger than log10(2^96)
+    const X10_D = BigNumber.from(10).pow(outputDecimals)
     const X96 = BigNumber.from(2).pow(96)
-    const valBN = isInverse && !val.eq(0) ? X96.div(val) : val.div(X96)
-    return bigNum2Big(valBN, 0)
+    const valBN = isInverse && !val.eq(0) ? X96.mul(X10_D).div(val) : val.mul(X10_D).div(X96)
+    return bigNum2Big(valBN, outputDecimals)
 }
 
 // Big Number to...
@@ -60,12 +62,13 @@ export function decimal2Big(decimal: Decimal): Big {
 const regexUSLocaleNumber = new RegExp(/\d(?=(\d{3})+\.)/g)
 
 // format number like 1000 => 1,000
-export function numberWithCommas(number: string = "") {
+function doNumberWithCommas(number: string) {
     return number.replace(regexUSLocaleNumber, "$&,")
 }
 
-export function numberWithCommasUsdc(number: Big = new Big(0)) {
-    return numberWithCommas(number.toFixed(USDC_PRECISION))
+export function numberWithCommas(number?: Big, precision: number = 4) {
+    if (!number) return "-"
+    return doNumberWithCommas(number.toFixed(precision))
 }
 
 // TODO: check is valid number
