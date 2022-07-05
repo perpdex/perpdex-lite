@@ -1,13 +1,3 @@
-import {
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalCloseButton,
-    ModalBody,
-    ModalFooter,
-    Button,
-} from "@chakra-ui/react"
 import { useCallback, useMemo, useState } from "react"
 import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
 import { Transaction } from "container/connection/transaction"
@@ -15,7 +5,9 @@ import { Modal as ModalContainer } from "container/modal"
 import DiscreteInputModifier from "component/base/DiscreteInputModifier"
 import Big from "big.js"
 import { BIG_ZERO } from "constant"
-import { PerpdexMarketContainer } from "../../container/connection/perpdexMarketContainer"
+import { PerpdexMarketContainer } from "../../../container/connection/perpdexMarketContainer"
+import Modal from "component/base/Modal"
+import Button from "component/base/Button"
 
 function ClosePositionModal() {
     const [closeValue, setCloseValue] = useState<Big>(BIG_ZERO)
@@ -65,40 +57,30 @@ function ClosePositionModal() {
     return useMemo(
         () => (
             <Modal
-                isCentered
-                motionPreset="slideInBottom"
+                headerText="Close Position"
                 isOpen={positionCloseModalIsOpen}
                 onClose={togglePositionCloseModal}
                 size="md"
-            >
-                <ModalOverlay />
-                <ModalContent borderRadius="2xl" pb={3}>
-                    <ModalHeader>Close Position</ModalHeader>
-                    <ModalCloseButton />
-                    <ModalBody>
-                        {currentMyTakerPositions && (
-                            <DiscreteInputModifier
-                                inputLabel={`Closed qty ${currentMarketState.baseSymbol}`}
-                                assetSymbol={currentMarketState.baseSymbol}
-                                maxValue={currentMyTakerPositions.positionQuantity}
-                                handleUpdate={handleUpdate}
-                            />
-                        )}
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button
-                            isFullWidth
-                            colorScheme="blue"
-                            size="md"
-                            onClick={handleCloseMarket}
-                            isDisabled={isDisabled}
-                            isLoading={isTxLoading}
-                        >
-                            Confirm
-                        </Button>
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
+                body={
+                    currentMyTakerPositions && (
+                        <DiscreteInputModifier
+                            inputLabel={`Closed qty ${currentMarketState.baseSymbol}`}
+                            assetSymbol={currentMarketState.baseSymbol}
+                            maxValue={currentMyTakerPositions.positionQuantity}
+                            handleUpdate={handleUpdate}
+                        />
+                    )
+                }
+                fotter={
+                    <Button
+                        text="Confirm"
+                        customType="base-blue"
+                        onClick={handleCloseMarket}
+                        isDisabled={isDisabled}
+                        isLoading={isTxLoading}
+                    />
+                }
+            />
         ),
         [
             positionCloseModalIsOpen,

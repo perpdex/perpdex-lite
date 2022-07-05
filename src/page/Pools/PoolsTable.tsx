@@ -1,7 +1,8 @@
-import { Table, Thead, Tbody, Tr, Th, Td, Button, chakra, Text, HStack, VStack } from "@chakra-ui/react"
+import { Table, Thead, Tbody, Tr, Th, Td, chakra, Text, HStack, VStack } from "@chakra-ui/react"
 import { MarketState } from "../../constant/types"
 import { CurrencyIcon } from "../../component/Icon"
 import { createPoolSummary } from "../../util/market"
+import Button from "component/base/Button"
 
 export type PoolsTableUnit = MarketState
 
@@ -58,13 +59,10 @@ function PoolsTable({ data, handleOnClick }: PoolsTableState) {
                             </Td>
                             <Td borderBottom={0}>
                                 <Button
-                                    bgColor="#353E80"
-                                    borderRadius="10px"
-                                    color="white"
+                                    customType="base-blue"
+                                    text="Add Liquidity"
                                     onClick={() => handleOnClick(row.address)}
-                                >
-                                    Add Liquidity
-                                </Button>
+                                />
                             </Td>
                         </Tr>
                     )

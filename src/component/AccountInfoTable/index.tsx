@@ -1,7 +1,8 @@
-import { Button, ButtonGroup, HStack, Table, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react"
+import { ButtonGroup, HStack, Table, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react"
 import { CurrencyIcon } from "../Icon"
 import { AccountInfo, MarketState } from "../../constant/types"
 import { numberWithCommas } from "../../util/format"
+import Button from "../../component/base/Button"
 import Big from "big.js"
 
 interface Props {
@@ -54,31 +55,21 @@ function AccountInfoTable(props: Props) {
                     <Td border="0px">
                         <ButtonGroup spacing="6">
                             <Button
-                                mb={[4, 0]}
-                                color="white"
-                                bgColor="#353E80"
-                                borderRadius="10px"
+                                customType="base-blue"
+                                text="Deposit"
                                 isDisabled={!accountAvailable}
                                 onClick={() => {
                                     openAccountModal(true)
                                 }}
-                            >
-                                Deposit
-                            </Button>
+                            />
                             <Button
-                                mb={[4, 0]}
-                                color="white"
-                                border="1px"
-                                borderColor={"#353E80"}
-                                borderRadius="10px"
-                                variant="solid"
+                                customType="base-dark"
+                                text="Withdraw"
                                 isDisabled={!accountAvailable}
                                 onClick={() => {
                                     openAccountModal(false)
                                 }}
-                            >
-                                Withdraw
-                            </Button>
+                            />
                         </ButtonGroup>
                     </Td>
                 </Tr>

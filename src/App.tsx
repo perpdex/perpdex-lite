@@ -1,20 +1,20 @@
-import WalletListModal from "component/WalletModal"
 import { Route, Switch } from "react-router-dom"
-import Header from "./component/Header"
+import "focus-visible/dist/focus-visible"
 import Home from "./page/Home"
 import Trade from "./page/Trade"
 import PositionToken from "./page/PositionToken"
 import PositionTokenDetail from "./page/PositionToken/PositionTokenDetail"
-import "focus-visible/dist/focus-visible"
-import { Container, Divider, Box } from "@chakra-ui/react"
-import ClosePositionModal from "component/ClosePositionModal"
-import BlockedRegionModal from "component/BlockedRegionModal"
-import UserAgreementModal from "component/UserAgreementModal"
-import AccountPerpdexModal from "component/AccountModal"
-import LiquidityProviderModal from "component/LiquidityProviderModal"
-import RemoveLiquidityModal from "component/LiquidityProviderModal/RemoveLiquidityModal"
 import LiquidityProvider from "page/LiquidityProvider"
 import Pools from "page/Pools"
+import { Container, Divider, Box } from "@chakra-ui/react"
+import Header from "./component/Header"
+import WalletListModal from "component/modals/WalletModal"
+import ClosePositionModal from "component/modals/ClosePositionModal"
+import BlockedRegionModal from "component/modals/BlockedRegionModal"
+import UserAgreementModal from "component/modals/UserAgreementModal"
+import AccountPerpdexModal from "component/modals/AccountModal"
+import LiquidityProviderModal from "component/modals/LiquidityProviderModal"
+import RemoveLiquidityModal from "component/modals/LiquidityProviderModal/RemoveLiquidityModal"
 
 export const App = () => {
     return (
@@ -36,9 +36,9 @@ export const App = () => {
             <WalletListModal />
             <ClosePositionModal />
             <UserAgreementModal />
+            <AccountPerpdexModal />
             {/* NOTE: BlockedRegionModal should be in the last one */}
             <BlockedRegionModal />
-            <AccountPerpdexModal />
         </Container>
     )
 }
