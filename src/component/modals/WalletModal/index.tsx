@@ -2,7 +2,7 @@ import React from "react"
 import { Stack } from "@chakra-ui/react"
 import WalletButton from "./WalletButton"
 import DisconnectButton from "./DisconnectButton"
-import { WalletInfo, SUPPORTED_WALLETS } from "../../constant/wallet"
+import { WalletInfo, SUPPORTED_WALLETS } from "constant/wallet"
 import { User } from "container/connection/user"
 import { Modal as ModalContainer } from "container/modal"
 import Modal from "component/base/Modal"
@@ -31,7 +31,7 @@ function WalletListModal() {
                                 id={value.id}
                                 name={value.name}
                                 connector={value.connector}
-                                src={require(`../../asset/wallet/${value.iconName}`).default}
+                                src={require(`../../../asset/wallet/${value.iconName}`).default}
                             />
                         )
                     })}
