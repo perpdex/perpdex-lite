@@ -1,8 +1,25 @@
-import { Tabs, TabList, Tab, TabPanels, TabPanel, chakra, Table, Thead, Tr, Th, Tbody, Td } from "@chakra-ui/react"
+import {
+    Tabs,
+    TabList,
+    Tab,
+    TabPanels,
+    TabPanel,
+    chakra,
+    Table,
+    Thead,
+    Tr,
+    Th,
+    Tbody,
+    Td,
+    Divider,
+    Button,
+    HStack,
+    Text,
+} from "@chakra-ui/react"
 import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
 import { Modal } from "container/modal"
 import { useMemo } from "react"
-import PositionTable, { PositionTableState } from "./PositionTable"
+import { PositionTableState } from "./PositionTable"
 import { PerpdexMarketContainer } from "../../../container/connection/perpdexMarketContainer"
 
 function PositionTab() {
@@ -31,7 +48,7 @@ function PositionTab() {
     const StyledTab = chakra(Tab, {
         baseStyle: {
             color: "gray.200",
-            _selected: { color: "white", borderBottom: "1px solid #627EEA", paddingBottom: "2px" },
+            _selected: { color: "white", borderBottom: "1px solid #627EEA" },
         },
     })
 
@@ -50,15 +67,53 @@ function PositionTab() {
     })
 
     return (
-        <Tabs variant="unstyled">
-            <TabList>
+        <Tabs variant="unstyled" mb="30px">
+            <TabList my={2}>
                 <StyledTab>Positions</StyledTab>
                 <StyledTab>Order History</StyledTab>
             </TabList>
+            <Divider borderColor="#627EEA" />
 
             <TabPanels>
                 <TabPanel padding={0}>
-                    {positionTableData && (
+                    <HStack p={6}>
+                        <Table variant="simple">
+                            <Tbody>
+                                <Tr>
+                                    <StyledTd>
+                                        <Text fontSize="xl" fontStyle="bold">
+                                            Bitcoin - BTC
+                                        </Text>
+                                    </StyledTd>
+                                    <StyledTd>Short</StyledTd>
+                                    <StyledTd>Account Margin Ratio</StyledTd>
+                                    <StyledTd>45.3%</StyledTd>
+                                </Tr>
+                                <Tr>
+                                    <StyledTd>Amount (BTC)</StyledTd>
+                                    <StyledTd>0.23147</StyledTd>
+                                    <StyledTd>Liquidation Price</StyledTd>
+                                    <StyledTd>$29787.78</StyledTd>
+                                </Tr>
+                                <Tr>
+                                    <StyledTd>Amount (USD)</StyledTd>
+                                    <StyledTd>$4000</StyledTd>
+                                    <StyledTd>Leverage</StyledTd>
+                                    <StyledTd>4.2x</StyledTd>
+                                </Tr>
+                                <Tr>
+                                    <StyledTd>Avg. Open Price</StyledTd>
+                                    <StyledTd>$32680.78</StyledTd>
+                                    <StyledTd>Profit/Loss</StyledTd>
+                                    <StyledTd>$350.27</StyledTd>
+                                </Tr>
+                            </Tbody>
+                        </Table>
+                        <Button color="white" bgColor="#353E80" borderRadius="10px">
+                            Close Position
+                        </Button>
+                    </HStack>
+                    {/* {positionTableData && (
                         <PositionTable
                             marketState={positionTableData.marketState}
                             isLong={positionTableData.isLong}
@@ -70,7 +125,7 @@ function PositionTab() {
                             unrealizedPnl={positionTableData.unrealizedPnl}
                             handleOnClick={togglePositionCloseModal}
                         />
-                    )}
+                    )} */}
                 </TabPanel>
                 <TabPanel>
                     <Table variant="simple">
@@ -95,38 +150,6 @@ function PositionTab() {
                             </Tr>
                         </Tbody>
                     </Table>
-                    {/* <Table variant="simple">
-                        <Thead>
-                            <Tr>
-                                <Th>Market</Th>
-                                <Th>Qty</Th>
-                                <Th>Value </Th>
-                                <Th>Entry Price</Th>
-                                <Th>Mark Price</Th>
-                                <Th>Liq. price</Th>
-                                <Th>Unrealzied PNL</Th>
-                                <Th>Close Position</Th>
-                            </Tr>
-                        </Thead>
-                        <Tbody>
-                            <Tr>
-                                <Td>aaaaaa</Td>
-                                <Td>
-                                    <Text color={"green.300"}>aaaaaa</Text>
-                                </Td>
-                                <Td>aaaaa</Td>
-                                <Td>aaaaa</Td>
-                                <Td>aaaaa</Td>
-                                <Td>aaaa</Td>
-                                <Td>aaaaa</Td>
-                                <Td>
-                                    <Button mb={[4, 0]} colorScheme="blue">
-                                        Close Market
-                                    </Button>
-                                </Td>
-                            </Tr>
-                        </Tbody>
-                    </Table> */}
                 </TabPanel>
             </TabPanels>
         </Tabs>
