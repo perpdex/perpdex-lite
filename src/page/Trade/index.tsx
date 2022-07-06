@@ -1,20 +1,5 @@
 import React, { useState } from "react"
-import {
-    VStack,
-    Flex,
-    Box,
-    HStack,
-    Center,
-    Divider,
-    Text,
-    Thead,
-    Table,
-    Tr,
-    Th,
-    Tbody,
-    Td,
-    Button,
-} from "@chakra-ui/react"
+import { VStack, Flex, Box, HStack, Text, Thead, Table, Tr, Th, Tbody, Td, Button, Divider } from "@chakra-ui/react"
 
 import ChartHead from "./ChartHead"
 import Summary from "./Summary"
@@ -29,30 +14,24 @@ function Trade() {
 
     return (
         <FrameContainer removeMarginTop>
-            <Flex>
-                <Box flex="1" mr="2">
-                    <HStack alignItems="flex-start">
-                        <VStack>
-                            <HStack justifyContent="start">
-                                <Box h="100%">
-                                    <HStack>
-                                        <Center h="100px" mx={10}>
-                                            <Divider orientation="vertical" border="1px" borderColor="#D9D9D9" />
-                                        </Center>
-                                    </HStack>
-                                </Box>
-                                <Box w="100%" alignSelf="center">
-                                    <ChartHead />
-                                </Box>
-                            </HStack>
+            <Flex direction={{ base: "column", lg: "row" }}>
+                <Box flex="1">
+                    <Flex direction={{ base: "column", lg: "row" }} alignItems={{ base: "center", lg: "flex-start" }}>
+                        <VStack alignItems="stretch">
+                            <ChartHead />
                             <LightWeightChart />
                         </VStack>
                         <Box
-                            borderColor="#728BEC"
-                            borderWidth="1px"
-                            borderRadius="10px"
+                            borderLeft="1px solid rgba(98, 126, 234, 0.6)"
                             p={6}
-                            mx={{ base: "auto", md: "0" }}
+                            mx="0"
+                            marginInlineStart={[0, "0 !important"]}
+                            sx={{
+                                "@media screen and (max-width: 61em)": {
+                                    borderLeft: "0px none",
+                                    marginTop: "20px",
+                                },
+                            }}
                         >
                             <Text align="center" color={"gray.200"}>
                                 Order History
@@ -92,25 +71,66 @@ function Trade() {
                                         <Td border="0px">$230.32</Td>
                                         <Td border="0px">10:15:12</Td>
                                     </Tr>
+                                    <Tr bg="rgba(98, 126, 234, 0.2)">
+                                        <Td border="0px">0.32</Td>
+                                        <Td border="0px">$230.32</Td>
+                                        <Td border="0px">10:15:12</Td>
+                                    </Tr>
+                                    <Tr>
+                                        <Td border="0px">0.32</Td>
+                                        <Td border="0px">$230.32</Td>
+                                        <Td border="0px">10:15:12</Td>
+                                    </Tr>
+                                    <Tr bg="rgba(98, 126, 234, 0.2)">
+                                        <Td border="0px">0.32</Td>
+                                        <Td border="0px">$230.32</Td>
+                                        <Td border="0px">10:15:12</Td>
+                                    </Tr>
+                                    <Tr>
+                                        <Td border="0px">0.32</Td>
+                                        <Td border="0px">$230.32</Td>
+                                        <Td border="0px">10:15:12</Td>
+                                    </Tr>
                                 </Tbody>
                             </Table>
                         </Box>
-                    </HStack>
+                    </Flex>
+                    <Divider
+                        borderColor="#627EEA"
+                        sx={{
+                            "@media screen and (max-width: 61em)": {
+                                display: "none",
+                            },
+                        }}
+                    />
                     <PositionTab />
                 </Box>
-                <Box w="360px">
-                    <VStack spacing={10} p={0}>
-                        <TradeInput />
-                        <Box background="#181B41" borderRadius="10px" p={6} w="100%">
-                            <Summary />
-                        </Box>
-                        <Box background="#181B41" borderRadius="10px" p={6} w="100%">
-                            <Slippage slippage={slippage} setSlippage={setSlippage} />
-                        </Box>
-                        <Button color="white" bgColor="#353E80" borderRadius="10px">
-                            Confirm Transaction
-                        </Button>
-                    </VStack>
+                <Box w="100%">
+                    <HStack spacing={8} justifyContent="center">
+                        <Divider
+                            orientation="vertical"
+                            border="1px"
+                            borderColor="rgba(98, 126, 234, 0.6)"
+                            h="1000px"
+                            sx={{
+                                "@media screen and (max-width: 61em)": {
+                                    display: "none",
+                                },
+                            }}
+                        />
+                        <VStack spacing={10} p={0}>
+                            <TradeInput />
+                            <Box background="#181B41" borderRadius="10px" p={6} w="100%">
+                                <Summary />
+                            </Box>
+                            <Box background="#181B41" borderRadius="10px" p={6} w="100%">
+                                <Slippage slippage={slippage} setSlippage={setSlippage} />
+                            </Box>
+                            <Button color="white" bgColor="#353E80" borderRadius="10px">
+                                Confirm Transaction
+                            </Button>
+                        </VStack>
+                    </HStack>
                 </Box>
             </Flex>
         </FrameContainer>
