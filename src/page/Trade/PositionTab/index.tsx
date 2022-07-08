@@ -18,9 +18,11 @@ import {
 } from "@chakra-ui/react"
 import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
 import { Modal } from "container/modal"
-import { useMemo } from "react"
+import { useEffect, useMemo } from "react"
 import { PositionTableState } from "./PositionTable"
 import { PerpdexMarketContainer } from "../../../container/connection/perpdexMarketContainer"
+import { callSubquery } from "util/subquery"
+import { candles } from "queries/trades"
 
 function PositionTab() {
     const { currentMyTakerPositions } = PerpdexExchangeContainer.useContainer()
@@ -28,6 +30,13 @@ function PositionTab() {
     const {
         actions: { togglePositionCloseModal },
     } = Modal.useContainer()
+
+    useEffect(() => {
+        ;(async () => {
+            const candlesData = await callSubquery(candles)
+            console.log("candlesData", candlesData)
+        })()
+    }, [])
 
     const positionTableData: Omit<PositionTableState, "handleOnClick"> | undefined = useMemo(() => {
         if (currentMyTakerPositions) {
