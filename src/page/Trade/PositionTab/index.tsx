@@ -1,4 +1,4 @@
-import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@chakra-ui/react"
+import { Tabs, TabList, Tab, TabPanels, TabPanel, chakra, Divider } from "@chakra-ui/react"
 import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
 import { Modal } from "container/modal"
 import { useEffect, useMemo } from "react"
@@ -6,6 +6,7 @@ import PositionTable, { PositionTableState } from "./PositionTable"
 import { PerpdexMarketContainer } from "../../../container/connection/perpdexMarketContainer"
 import { callSubquery } from "util/subquery"
 import { candles } from "queries/trades"
+import OrderHistoryTable from "./OrderHistoryTable"
 
 function PositionTab() {
     const { currentMyTakerPositions } = PerpdexExchangeContainer.useContainer()
@@ -37,15 +38,23 @@ function PositionTab() {
         return undefined
     }, [currentMyTakerPositions, currentMarketState])
 
+    const StyledTab = chakra(Tab, {
+        baseStyle: {
+            color: "gray.200",
+            _selected: { color: "white", borderBottom: "1px solid #627EEA" },
+        },
+    })
+
     return (
-        <Tabs>
-            <TabList>
-                <Tab>Positions</Tab>
-                <Tab>Closed PL</Tab>
+        <Tabs variant="unstyled" mb="30px">
+            <TabList my={2}>
+                <StyledTab>Positions</StyledTab>
+                <StyledTab>Order History</StyledTab>
             </TabList>
+            <Divider borderColor="#627EEA" />
 
             <TabPanels>
-                <TabPanel padding={0}>
+                <TabPanel>
                     {positionTableData && (
                         <PositionTable
                             marketState={positionTableData.marketState}
@@ -61,7 +70,7 @@ function PositionTab() {
                     )}
                 </TabPanel>
                 <TabPanel>
-                    <p>Closed P&L!</p>
+                    <OrderHistoryTable />
                 </TabPanel>
             </TabPanels>
         </Tabs>

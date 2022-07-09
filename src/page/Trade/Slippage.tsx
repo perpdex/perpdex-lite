@@ -1,6 +1,5 @@
 import {
     FormControl,
-    FormHelperText,
     NumberDecrementStepper,
     NumberIncrementStepper,
     NumberInput,
@@ -8,10 +7,11 @@ import {
     NumberInputStepper,
     InputRightElement,
     Text,
+    ButtonGroup,
+    Heading,
 } from "@chakra-ui/react"
+import Button from "../../component/base/Button"
 import React, { useCallback, useMemo } from "react"
-
-import SmallFormLabel from "component/base/SmallFormLabel"
 
 interface SlippageState {
     slippage: number
@@ -30,7 +30,9 @@ function Slippage({ slippage, setSlippage }: SlippageState) {
     return useMemo(
         () => (
             <FormControl id="slippage">
-                <SmallFormLabel>Slippage (%)</SmallFormLabel>
+                <Heading w="full" size="md" mb={8}>
+                    Slippage
+                </Heading>
                 <NumberInput
                     allowMouseWheel
                     min={0}
@@ -59,13 +61,49 @@ function Slippage({ slippage, setSlippage }: SlippageState) {
                         </Text>
                     </InputRightElement>
                 </NumberInput>
-                <FormHelperText>
-                    To use custom slippage, please input manually. It also applies to closing position and margin
-                    adjustment.
-                </FormHelperText>
+                <ButtonGroup w="100%" justifyContent={"space-between"} mt={8}>
+                    <Button
+                        size="xs"
+                        customType="base-blue"
+                        text="5.0%"
+                        borderRadius="5px"
+                        onClick={() => {
+                            setSlippage(5)
+                        }}
+                    />
+                    <ButtonGroup>
+                        <Button
+                            size="xs"
+                            customType="base-dark"
+                            text="0.5%"
+                            borderRadius="5px"
+                            onClick={() => {
+                                setSlippage(0.5)
+                            }}
+                        />
+                        <Button
+                            size="xs"
+                            customType="base-dark"
+                            text="1.0%"
+                            borderRadius="5px"
+                            onClick={() => {
+                                setSlippage(1)
+                            }}
+                        />
+                        <Button
+                            size="xs"
+                            customType="base-dark"
+                            text="2.0%"
+                            borderRadius="5px"
+                            onClick={() => {
+                                setSlippage(2)
+                            }}
+                        />
+                    </ButtonGroup>
+                </ButtonGroup>
             </FormControl>
         ),
-        [handleOnChange, slippage],
+        [handleOnChange, setSlippage, slippage],
     )
 }
 

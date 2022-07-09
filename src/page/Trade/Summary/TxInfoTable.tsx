@@ -102,20 +102,44 @@ function TxInfoTable(transactionInfo: TransactionInfo) {
         <Table size="sm" borderRadius="12px" overflow="hidden" w="100%" variant="simple">
             <Tbody>
                 <Tr>
-                    <Td>Mark Price</Td>
-                    <Td isNumeric>{transactionInfo.markPrice?.toFixed(6)}</Td>
+                    <Td pl={0} color="gray.200" borderBottom={0}>
+                        Position Size (USD)
+                    </Td>
+                    <Td isNumeric borderBottom={0}>
+                        {transactionInfo.markPrice?.toFixed(6)}
+                    </Td>
                 </Tr>
                 <Tr>
-                    <Td>Price Impact</Td>
-                    <Td isNumeric>{transactionInfo.priceImpact}</Td>
+                    <Td pl={0} color="gray.200" borderBottom={0}>
+                        Entry Price
+                    </Td>
+                    <Td isNumeric borderBottom={0}>
+                        {transactionInfo.priceImpact}
+                    </Td>
                 </Tr>
                 <Tr>
-                    <Td>Estimate Gas Fee</Td>
-                    <Td isNumeric>{transactionInfo.estimateGasFee?.toFixed(6)}</Td>
+                    <Td pl={0} color="gray.200" borderBottom={0}>
+                        Price Impact
+                    </Td>
+                    <Td isNumeric borderBottom={0}>
+                        {transactionInfo.estimateGasFee?.toFixed(6)}
+                    </Td>
                 </Tr>
-                <Tr fontWeight="bold">
-                    <Td>Funding Ratio</Td>
-                    <Td isNumeric>{transactionInfo?.fundingRatio}</Td>
+                <Tr>
+                    <Td pl={0} color="gray.200" borderBottom={0}>
+                        Transaction Fee
+                    </Td>
+                    <Td isNumeric borderBottom={0}>
+                        {transactionInfo?.fundingRatio}
+                    </Td>
+                </Tr>
+                <Tr>
+                    <Td pl={0} color="gray.200" borderBottom={0}>
+                        Total Cost
+                    </Td>
+                    <Td isNumeric borderBottom={0}>
+                        {transactionInfo?.fundingRatio}
+                    </Td>
                 </Tr>
             </Tbody>
         </Table>

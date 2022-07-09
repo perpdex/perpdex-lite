@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react"
 import { createChart } from "lightweight-charts"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
+import { Box } from "@chakra-ui/react"
 
 const chartOptions = {
-    width: 1200,
-    height: 600,
+    width: 600,
+    height: 400,
     layout: {
         background: { color: "#17181e" },
     },
@@ -23,6 +24,15 @@ function LightWeightChart() {
             if (chart) chart.remove()
 
             const _chart = createChart(chartElement, { ...chartOptions })
+
+            // Make Chart Responsive with screen resize
+            // new ResizeObserver(entries => {
+            //     if (entries.length === 0 || entries[0].target !== chartElement) {
+            //         return
+            //     }
+            //     const newRect = entries[0].contentRect
+            //     _chart.applyOptions({ height: newRect.height, width: newRect.width })
+            // }).observe(chartElement)
 
             const lineSeries = _chart.addLineSeries()
             lineSeries.setData([
@@ -44,7 +54,7 @@ function LightWeightChart() {
         }
     }, [chart, chartElement, chartMarket, currentMarket])
 
-    return <div id="chart"></div>
+    return <Box id="chart" mt={[0, "0 !important"]}></Box>
 }
 
 export default LightWeightChart

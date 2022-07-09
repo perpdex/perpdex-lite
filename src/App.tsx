@@ -21,7 +21,7 @@ export const App = () => {
         <Container maxW="container.2xl" pb={20} px={0}>
             <Header />
             <Divider borderColor="#627EEA" />
-            <Box px={6}>
+            <Box>
                 <Switch>
                     <Route exact path="/" component={Home} />
                     <Route exact path="/trade" component={Trade} />

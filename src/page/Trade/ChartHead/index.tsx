@@ -1,5 +1,5 @@
 import React, { useMemo } from "react"
-import { HStack, Box, Text, Center } from "@chakra-ui/react"
+import { HStack, Box, Text, Center, VStack, Divider } from "@chakra-ui/react"
 
 import { Popover, PopoverTrigger, PopoverContent, PopoverBody } from "@chakra-ui/react"
 
@@ -24,7 +24,7 @@ function ChartHead() {
 
     return (
         <>
-            <HStack spacing="24px" borderBottom="solid #627EEA 1px">
+            <HStack spacing="24px" borderBottom="solid rgba(98, 126, 234, 0.6) 1px" px="20px">
                 <Popover trigger="hover" arrowSize={0}>
                     {({ onClose }) => (
                         <>
@@ -61,8 +61,24 @@ function ChartHead() {
                         </>
                     )}
                 </Popover>
-                <Box>
-                    <Text fontSize="xl">{currentMarketSummary.markPrice}</Text>
+                <Center h="100px" mx={10}>
+                    <Divider orientation="vertical" borderColor="rgba(98, 126, 234, 0.6)" />
+                </Center>
+                <Box w="100%" alignSelf="center">
+                    <HStack justifyContent="space-between" alignItems="center">
+                        <VStack align="start">
+                            <Text color={"gray.200"}>Mark Price</Text>
+                            <Text>{currentMarketSummary.markPrice}</Text>
+                        </VStack>
+                        <VStack align="start">
+                            <Text color={"gray.200"}>Funding Rate</Text>
+                            <Text color={"#66BB74"}>0.0234</Text>
+                        </VStack>
+                        <VStack align="start">
+                            <Text color={"gray.200"}>24h Volume</Text>
+                            <Text>$193,465.239</Text>
+                        </VStack>
+                    </HStack>
                 </Box>
             </HStack>
         </>

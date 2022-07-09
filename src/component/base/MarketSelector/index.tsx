@@ -1,10 +1,10 @@
-import { FormControl, Select } from "@chakra-ui/react"
-import SmallFormLabel from "component/base/SmallFormLabel"
+import { FormControl, HStack, Select, Text, VStack } from "@chakra-ui/react"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import _ from "lodash"
 import { PoolSummary } from "../../../constant/types"
 import { useMemo } from "react"
 import { createPoolSummary } from "../../../util/market"
+import { CurrencyIcon } from "component/Icon"
 
 function MarketSelector() {
     const { marketStates, setCurrentMarket, currentMarket } = PerpdexMarketContainer.useContainer()
@@ -18,14 +18,23 @@ function MarketSelector() {
 
     return (
         <FormControl id="market">
-            <SmallFormLabel>Market</SmallFormLabel>
-            <Select onChange={handleOnChange}>
-                {_.map(marketStates, (marketState, marketAddress) => (
-                    <option key={marketAddress} value={marketAddress} selected={marketAddress === currentMarket}>
-                        {poolSummary[marketAddress].poolName}
-                    </option>
-                ))}
-            </Select>
+            <VStack>
+                <HStack>
+                    <CurrencyIcon symbol={"ETH"} boxSize={6} mr={1} />
+                    <Select onChange={handleOnChange} border="0px">
+                        {_.map(marketStates, (marketState, marketAddress) => (
+                            <option
+                                key={marketAddress}
+                                value={marketAddress}
+                                selected={marketAddress === currentMarket}
+                            >
+                                {poolSummary[marketAddress].poolName}
+                            </option>
+                        ))}
+                    </Select>
+                </HStack>
+                {currentMarket && <Text>{poolSummary[currentMarket].poolName}</Text>}
+            </VStack>
         </FormControl>
     )
 }
