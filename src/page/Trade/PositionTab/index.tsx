@@ -12,10 +12,10 @@ import {
     Tbody,
     Td,
     Divider,
-    Button,
     HStack,
     Text,
 } from "@chakra-ui/react"
+import Button from "../../../component/base/Button"
 import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
 import { Modal } from "container/modal"
 import { useEffect, useMemo } from "react"
@@ -118,9 +118,7 @@ function PositionTab() {
                                 </Tr>
                             </Tbody>
                         </Table>
-                        <Button color="white" bgColor="#353E80" borderRadius="10px">
-                            Close Position
-                        </Button>
+                        <Button customType="base-blue" text="Close Position"></Button>
                     </HStack>
                     {/* {positionTableData && (
                         <PositionTable

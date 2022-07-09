@@ -1,5 +1,6 @@
-import { FormControl, Wrap, WrapItem, Button } from "@chakra-ui/react"
+import { FormControl, Wrap, WrapItem } from "@chakra-ui/react"
 import { useCallback, useMemo } from "react"
+import Button from "../../../component/base/Button"
 
 import Big from "big.js"
 import { bigNum2Big } from "util/format"
@@ -50,32 +51,23 @@ function SubmitBuySell({
                 <Wrap justify="space-between">
                     <WrapItem w="45%">
                         <Button
+                            customType="base-green"
                             isDisabled={isDisabled}
                             isLoading={isLoading}
-                            size="md"
-                            bg="#66BB74"
-                            color="white"
                             onClick={handleBuyTrade}
                             width="100%"
-                        >
-                            Buy/Long
-                        </Button>
+                            text="Buy/Long"
+                        />
                     </WrapItem>
                     <WrapItem w="45%">
                         <Button
+                            customType="outline-pink"
                             isDisabled={isDisabled}
                             isLoading={isLoading}
-                            size="md"
-                            color="#F90077"
-                            border="1px"
-                            borderColor={"#F90077"}
-                            borderRadius="10px"
-                            variant="solid"
                             onClick={hanledSellTrade}
                             width="100%"
-                        >
-                            Sell/Short
-                        </Button>
+                            text="Sell/Short"
+                        />
                     </WrapItem>
                 </Wrap>
             </FormControl>

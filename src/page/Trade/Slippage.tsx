@@ -7,10 +7,10 @@ import {
     NumberInputStepper,
     InputRightElement,
     Text,
-    Button,
     ButtonGroup,
     Heading,
 } from "@chakra-ui/react"
+import Button from "../../component/base/Button"
 import React, { useCallback, useMemo } from "react"
 
 interface SlippageState {
@@ -64,60 +64,46 @@ function Slippage({ slippage, setSlippage }: SlippageState) {
                 <ButtonGroup w="100%" justifyContent={"space-between"} mt={8}>
                     <Button
                         size="xs"
-                        color="white"
-                        bgColor="#353E80"
-                        borderRadius="10px"
+                        customType="base-blue"
+                        text="5.0%"
+                        borderRadius="5px"
                         onClick={() => {
                             setSlippage(5)
                         }}
-                    >
-                        5.0%
-                    </Button>
+                    />
                     <ButtonGroup>
                         <Button
                             size="xs"
-                            color="white"
-                            border="1px"
-                            borderColor={"#353E80"}
-                            borderRadius="10px"
-                            variant="solid"
+                            customType="base-dark"
+                            text="0.5%"
+                            borderRadius="5px"
                             onClick={() => {
                                 setSlippage(0.5)
                             }}
-                        >
-                            0.5%
-                        </Button>
+                        />
                         <Button
                             size="xs"
-                            color="white"
-                            border="1px"
-                            borderColor={"#353E80"}
-                            borderRadius="10px"
-                            variant="solid"
+                            customType="base-dark"
+                            text="1.0%"
+                            borderRadius="5px"
                             onClick={() => {
                                 setSlippage(1)
                             }}
-                        >
-                            1.0%
-                        </Button>
+                        />
                         <Button
                             size="xs"
-                            color="white"
-                            border="1px"
-                            borderColor={"#353E80"}
-                            borderRadius="10px"
-                            variant="solid"
+                            customType="base-dark"
+                            text="2.0%"
+                            borderRadius="5px"
                             onClick={() => {
                                 setSlippage(2)
                             }}
-                        >
-                            2.0%
-                        </Button>
+                        />
                     </ButtonGroup>
                 </ButtonGroup>
             </FormControl>
         ),
-        [handleOnChange, slippage],
+        [handleOnChange, setSlippage, slippage],
     )
 }
 

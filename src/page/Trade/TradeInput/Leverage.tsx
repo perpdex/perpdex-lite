@@ -9,8 +9,8 @@ import {
     SliderTrack,
     Text,
     ButtonGroup,
-    Button,
 } from "@chakra-ui/react"
+import Button from "../../../component/base/Button"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { Trade } from "container/perpetual/trade"
 import { useDebounce } from "hook/useDebounce"
@@ -80,55 +80,41 @@ function Leverage() {
                 <ButtonGroup w="100%" justifyContent={"space-between"}>
                     <Button
                         size="xs"
-                        color="white"
-                        bgColor="#353E80"
-                        borderRadius="10px"
+                        customType="base-blue"
+                        text="5.0x"
+                        borderRadius="5px"
                         onClick={() => {
                             _setLeverage(5)
                         }}
-                    >
-                        5.0x
-                    </Button>
+                    />
                     <ButtonGroup>
                         <Button
                             size="xs"
-                            color="white"
-                            border="1px"
-                            borderColor={"#353E80"}
-                            borderRadius="10px"
-                            variant="solid"
+                            customType="base-dark"
+                            text="2.0x"
+                            borderRadius="5px"
                             onClick={() => {
                                 _setLeverage(2)
                             }}
-                        >
-                            2.0x
-                        </Button>
+                        />
                         <Button
                             size="xs"
-                            color="white"
-                            border="1px"
-                            borderColor={"#353E80"}
-                            borderRadius="10px"
-                            variant="solid"
+                            customType="base-dark"
+                            text="3.0x"
+                            borderRadius="5px"
                             onClick={() => {
                                 _setLeverage(3)
                             }}
-                        >
-                            3.0x
-                        </Button>
+                        />
                         <Button
                             size="xs"
-                            color="white"
-                            border="1px"
-                            borderColor={"#353E80"}
-                            borderRadius="10px"
-                            variant="solid"
+                            customType="base-dark"
+                            text="Max"
+                            borderRadius="5px"
                             onClick={() => {
                                 _setLeverage(10)
                             }}
-                        >
-                            Max
-                        </Button>
+                        />
                     </ButtonGroup>
                 </ButtonGroup>
             </FormControl>
