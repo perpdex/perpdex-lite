@@ -22,6 +22,7 @@ function Trade() {
                             <LightWeightChart />
                         </VStack>
                         <Box
+                            w="100%"
                             borderLeft="1px solid rgba(98, 126, 234, 0.6)"
                             p={6}
                             mx="0"
@@ -71,11 +72,6 @@ function Trade() {
                                         <Td border="0px">$230.32</Td>
                                         <Td border="0px">10:15:12</Td>
                                     </Tr>
-                                    <Tr bg="rgba(98, 126, 234, 0.2)">
-                                        <Td border="0px">0.32</Td>
-                                        <Td border="0px">$230.32</Td>
-                                        <Td border="0px">10:15:12</Td>
-                                    </Tr>
                                     <Tr>
                                         <Td border="0px">0.32</Td>
                                         <Td border="0px">$230.32</Td>
@@ -87,6 +83,11 @@ function Trade() {
                                         <Td border="0px">10:15:12</Td>
                                     </Tr>
                                     <Tr>
+                                        <Td border="0px">0.32</Td>
+                                        <Td border="0px">$230.32</Td>
+                                        <Td border="0px">10:15:12</Td>
+                                    </Tr>
+                                    <Tr bg="rgba(98, 126, 234, 0.2)">
                                         <Td border="0px">0.32</Td>
                                         <Td border="0px">$230.32</Td>
                                         <Td border="0px">10:15:12</Td>
