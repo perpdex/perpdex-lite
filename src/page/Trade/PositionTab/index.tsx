@@ -1,18 +1,4 @@
-import {
-    Tabs,
-    TabList,
-    Tab,
-    TabPanels,
-    TabPanel,
-    chakra,
-    Table,
-    Thead,
-    Tr,
-    Th,
-    Tbody,
-    Td,
-    Divider,
-} from "@chakra-ui/react"
+import { Tabs, TabList, Tab, TabPanels, TabPanel, chakra, Divider } from "@chakra-ui/react"
 import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
 import { Modal } from "container/modal"
 import { useEffect, useMemo } from "react"
@@ -20,6 +6,7 @@ import PositionTable, { PositionTableState } from "./PositionTable"
 import { PerpdexMarketContainer } from "../../../container/connection/perpdexMarketContainer"
 import { callSubquery } from "util/subquery"
 import { candles } from "queries/trades"
+import OrderHistoryTable from "./OrderHistoryTable"
 
 function PositionTab() {
     const { currentMyTakerPositions } = PerpdexExchangeContainer.useContainer()
@@ -58,21 +45,6 @@ function PositionTab() {
         },
     })
 
-    const StyledTh = chakra(Th, {
-        baseStyle: {
-            color: "white",
-            borderBottom: "0px none",
-            fontWeight: "bold",
-            textTransform: "none",
-        },
-    })
-
-    const StyledTd = chakra(Td, {
-        baseStyle: {
-            borderBottom: "0px none",
-        },
-    })
-
     return (
         <Tabs variant="unstyled" mb="30px">
             <TabList my={2}>
@@ -98,28 +70,7 @@ function PositionTab() {
                     )}
                 </TabPanel>
                 <TabPanel>
-                    <Table variant="simple">
-                        <Thead>
-                            <Tr>
-                                <StyledTh>Time</StyledTh>
-                                <StyledTh>Asset</StyledTh>
-                                <StyledTh>Position Size</StyledTh>
-                                <StyledTh>Market Side</StyledTh>
-                                <StyledTh>Realized PnL</StyledTh>
-                                <StyledTh>Trading Fee</StyledTh>
-                            </Tr>
-                        </Thead>
-                        <Tbody>
-                            <Tr>
-                                <StyledTd>aaaaaa</StyledTd>
-                                <StyledTd>aaaaa</StyledTd>
-                                <StyledTd>aaaaa</StyledTd>
-                                <StyledTd>aaaaa</StyledTd>
-                                <StyledTd>aaaa</StyledTd>
-                                <StyledTd>aaaaa</StyledTd>
-                            </Tr>
-                        </Tbody>
-                    </Table>
+                    <OrderHistoryTable />
                 </TabPanel>
             </TabPanels>
         </Tabs>
