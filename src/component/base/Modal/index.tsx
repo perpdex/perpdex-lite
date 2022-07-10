@@ -22,7 +22,7 @@ function Modal({ headerText, isOpen, onClose, size, body, footer }: ModalState) 
     return (
         <ChakuraModal isCentered={true} size={size || "xs"} isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
-            <ModalContent bg="#191B1F" color="whiteAlpha.900">
+            <ModalContent bg="#050217" color="whiteAlpha.900">
                 <ModalHeader fontWeight="bold" fontSize="md">
                     {headerText}
                 </ModalHeader>
