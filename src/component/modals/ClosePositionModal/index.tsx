@@ -71,7 +71,7 @@ function ClosePositionModal() {
                         />
                     )
                 }
-                fotter={
+                footer={
                     <Button
                         text="Confirm"
                         customType="base-blue"

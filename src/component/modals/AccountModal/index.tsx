@@ -100,7 +100,7 @@ function AccountModal() {
                     )}
                 </Stack>
             }
-            fotter={
+            footer={
                 <Button
                     text={isDeposit ? "Deposit" : "Withdraw"}
                     customType="base-blue"
