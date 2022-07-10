@@ -24,6 +24,7 @@ function DisconnectButton() {
             justifyContent="left"
             bg="gray.900"
             color="red.500"
+            borderRadius="20px"
             onClick={handleOnClick}
             _hover={{ bg: "rgba(255, 255, 255, 0.16)" }}
         >
