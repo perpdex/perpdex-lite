@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { VStack, Flex, Box, HStack, Button, Divider } from "@chakra-ui/react"
+import { VStack, Flex, Box, HStack, Divider } from "@chakra-ui/react"
 
 import ChartHead from "./ChartHead"
 import Summary from "./Summary"
@@ -9,6 +9,7 @@ import PositionTab from "./PositionTab"
 import Slippage from "./Slippage"
 import LightWeightChart from "./LightWeightChart"
 import OrderHistory from "./OrderHistory"
+import Button from "component/base/Button"
 
 function Trade() {
     const [slippage, setSlippage] = useState<number>(0.5)
@@ -55,9 +56,7 @@ function Trade() {
                             <Box background="#181B41" borderRadius="10px" p={6} w="100%">
                                 <Slippage slippage={slippage} setSlippage={setSlippage} />
                             </Box>
-                            <Button color="white" bgColor="#353E80" borderRadius="10px">
-                                Confirm Transaction
-                            </Button>
+                            <Button customType="base-blue" text="Confirm Transaction" onClick={() => {}} />
                         </VStack>
                     </HStack>
                 </Box>
