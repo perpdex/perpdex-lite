@@ -1,5 +1,5 @@
 import { BIG_ZERO } from "constant"
-import { MarketState, PositionState, TakerInfo } from "constant/types"
+import { MarketState, PositionState, TakerInfo, LongTokenState } from "constant/types"
 
 export function getAllPositionsFromTakerInfos(
     takerInfos: { [key: string]: TakerInfo },
@@ -29,4 +29,34 @@ export function getAllPositionsFromTakerInfos(
         }
     }
     return positions
+}
+
+export function getLongTokenInfos(
+    longTokenStates: { [key: string]: LongTokenState },
+    marketStates: { [key: string]: MarketState },
+) {
+    const addresses = Object.keys(longTokenStates)
+
+    let positionTokens: Partial<LongTokenState>[] = []
+    for (let i = 0; i < addresses.length; i++) {
+        const tokenInfo = longTokenStates[addresses[i]]
+        const marketInfo = marketStates[addresses[i]]
+
+        const positionToken = {
+            address: marketInfo.address,
+            marketSymbol: marketInfo.baseSymbol,
+            name: tokenInfo.name,
+            markPrice: marketInfo.markPrice,
+            // assetAddress: string
+            // assetSymbol: string
+            // assetDecimals: number
+            // assetIsWeth: boolean
+            // totalSupply: Big
+            totalAssets: tokenInfo.totalAssets,
+            // myShares: Big
+            myAssets: tokenInfo.myAssets,
+        }
+        positionTokens.push(positionToken)
+    }
+    return positionTokens
 }

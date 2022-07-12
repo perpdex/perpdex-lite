@@ -6,6 +6,9 @@ import Button from "component/base/Button"
 import { PerpdexLongTokenContainer } from "container/connection/perpdexLongTokenContainer"
 import _ from "lodash"
 import { Link as ReactLink } from "react-router-dom"
+import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
+import { getLongTokenInfos } from "util/position"
+import { formattedNumberWithCommas } from "util/format"
 
 function TokenTable() {
     const StyledTh = chakra(Th, {
@@ -24,6 +27,11 @@ function TokenTable() {
     })
 
     const { longTokenStates } = PerpdexLongTokenContainer.useContainer()
+    const { marketStates } = PerpdexMarketContainer.useContainer()
+
+    const longTokenInfos = getLongTokenInfos(longTokenStates, marketStates)
+
+    console.log("@@@@@@ longTokenStates", longTokenInfos)
 
     return (
         <Table variant="simple">
@@ -53,26 +61,28 @@ function TokenTable() {
                 </Tr>
             </Thead>
             <Tbody>
-                {_.map(longTokenStates, (_value, marketAddress) => (
-                    <Tr>
-                        <StyledTd>
-                            <HStack>
-                                <CurrencyIcon symbol={"USD"} boxSize={8} />
-                                <Text>{longTokenStates[marketAddress].symbol}</Text>
-                            </HStack>
-                        </StyledTd>
-                        <StyledTd>1x Long BTC/ETH</StyledTd>
-                        <StyledTd>$12,132.32</StyledTd>
-                        <StyledTd>928.89</StyledTd>
-                        <StyledTd>0</StyledTd>
-                        <StyledTd>1.9%</StyledTd>
-                        <StyledTd>
-                            <Link as={ReactLink} to={`/tokens/${marketAddress}`}>
-                                <Button customType="base-blue" text="Details" />
-                            </Link>
-                        </StyledTd>
-                    </Tr>
-                ))}
+                {_.map(longTokenInfos, value => {
+                    return (
+                        <Tr>
+                            <StyledTd>
+                                <HStack>
+                                    <CurrencyIcon symbol={value?.marketSymbol} boxSize={8} />
+                                    <Text>{value.symbol}</Text>
+                                </HStack>
+                            </StyledTd>
+                            <StyledTd>{value.name}</StyledTd>
+                            <StyledTd>-</StyledTd>
+                            <StyledTd>{value?.markPrice && formattedNumberWithCommas(value.markPrice)}</StyledTd>
+                            <StyledTd>{value?.myAssets && formattedNumberWithCommas(value.myAssets)}</StyledTd>
+                            <StyledTd>-</StyledTd>
+                            <StyledTd>
+                                <Link as={ReactLink} to={`/tokens/${value.address}`}>
+                                    <Button customType="base-blue" text="Details" />
+                                </Link>
+                            </StyledTd>
+                        </Tr>
+                    )
+                })}
             </Tbody>
         </Table>
     )

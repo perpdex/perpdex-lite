@@ -108,6 +108,8 @@ export interface LongTokenState {
     maxMint: Big
     maxWithdraw: Big
     maxRedeem: Big
+    marketSymbol?: string
+    markPrice?: Big
 }
 
 export type LineChartUnit = { time: UTCTimestamp; value: number }
