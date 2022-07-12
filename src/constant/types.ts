@@ -110,8 +110,6 @@ export interface LongTokenState {
     maxRedeem: Big
 }
 
-export type LineChartUnit = { time: UTCTimestamp; value: number }
-
 export interface OrderHistoryUnit {
     size: Big
     isLong: boolean

@@ -23,6 +23,8 @@ import { AccountPerpdex } from "./container/perpetual/account"
 import reportWebVitals from "./reportWebVitals"
 import { setupSegment } from "./lib/segment"
 import theme from "./theme"
+import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client"
+import { networkConfigs } from "./constant/network"
 
 declare global {
     interface Window {
@@ -34,6 +36,15 @@ declare global {
 setupSegment()
 setupBugsnag()
 const ErrorBoundary = createErrorBoundary()
+
+const MyApolloProvider = (props: any) => {
+    const { chainId } = Connection.useContainer()
+    const apolloClient = new ApolloClient({
+        uri: networkConfigs[chainId || 81].thegraphEndpoint,
+        cache: new InMemoryCache(),
+    })
+    return <ApolloProvider client={apolloClient}>{props.children}</ApolloProvider>
+}
 
 const Providers = ((...providers: any[]) => ({ children }: { children: React.ReactNode }) => {
     return providers.reduceRight((providers, provider) => {
@@ -49,6 +60,7 @@ const Providers = ((...providers: any[]) => ({ children }: { children: React.Rea
     Reload.Provider,
     User.Provider,
     Transaction.Provider,
+    MyApolloProvider,
     PerpdexMarketContainer.Provider,
     PerpdexExchangeContainer.Provider,
     PerpdexLongTokenContainer.Provider,
