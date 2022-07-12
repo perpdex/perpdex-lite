@@ -19,8 +19,6 @@ export function CleanUpChartInputData(candlesData: any) {
         if (i > 0) {
             const diff = sortedInputData[i].time - sortedInputData[i - 1].time
             if (diff === 0) {
-                console.log("diff is 0", diff)
-                // sortedCandlesInputData.splice(i, 1)
                 removeIndexs.push(i)
             }
         }
