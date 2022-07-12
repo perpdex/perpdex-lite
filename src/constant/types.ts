@@ -11,6 +11,7 @@ export interface PoolSummary {
     tvl: string
     tvlUsd: string
     volume24h: string
+    fee24h: string
 }
 
 export interface MarketSummary {
@@ -39,6 +40,9 @@ export interface MarketState {
     indexPriceQuote: Big
     indexPriceBase: Big
     inverse: boolean
+    // thegraph
+    volume24h: Big
+    fee24h: Big
 }
 
 export interface MakerInfo {

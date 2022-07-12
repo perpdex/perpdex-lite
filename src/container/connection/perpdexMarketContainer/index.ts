@@ -40,6 +40,9 @@ const nullMarketState: MarketState = {
     indexPriceQuote: Big(0),
     indexPriceBase: Big(0),
     inverse: false,
+    // thegraph
+    volume24h: Big(0),
+    fee24h: Big(0),
 }
 
 export const PerpdexMarketContainer = createContainer(usePerpdexMarketContainer)
