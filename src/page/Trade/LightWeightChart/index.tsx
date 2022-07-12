@@ -1,6 +1,10 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { createChart } from "lightweight-charts"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
+import { callSubquery } from "util/subquery"
+import { getMarketCandlesQuery } from "queries/trades"
+import { LineChartUnit } from "constant/types"
+import { CleanUpChartInputData } from "util/chart"
 import { Box } from "@chakra-ui/react"
 
 const chartOptions = {
@@ -8,51 +12,68 @@ const chartOptions = {
     height: 400,
     layout: {
         background: { color: "#17181e" },
+        textColor: "rgba(33, 56, 77, 1)",
     },
-    grid: { vertLines: { visible: false }, horzLines: { visible: false } },
+    grid: {
+        vertLines: { visible: false, color: "rgba(197, 203, 206, 0.7)" },
+        horzLines: { visible: false, color: "rgba(197, 203, 206, 0.7)" },
+    },
+    timeScale: {
+        timeVisible: true,
+        secondsVisible: false,
+    },
+}
+
+interface ChartState {
+    market: string
+    data: LineChartUnit[]
+    chart: any
+}
+
+const initChartState = {
+    market: "",
+    data: [],
+    chart: undefined,
 }
 
 function LightWeightChart() {
     const { currentMarket } = PerpdexMarketContainer.useContainer()
-
-    const [chartMarket, setChartMarket] = useState<string>("")
-    const [chart, setChart] = useState<any>(undefined)
+    const [chartState, setChartState] = useState<ChartState>(initChartState)
     const chartElement = document.getElementById("chart")
+    const isLoadingChart = useRef<boolean>(false)
 
     useEffect(() => {
-        if (chartElement && currentMarket && chartMarket !== currentMarket) {
-            if (chart) chart.remove()
+        ;(async () => {
+            if (!currentMarket || chartState.market === currentMarket) return
 
-            const _chart = createChart(chartElement, { ...chartOptions })
+            const candleQuery = getMarketCandlesQuery(currentMarket)
+            const candlesData = await callSubquery(candleQuery)
+            const chartInputData = CleanUpChartInputData(candlesData)
 
-            // Make Chart Responsive with screen resize
-            // new ResizeObserver(entries => {
-            //     if (entries.length === 0 || entries[0].target !== chartElement) {
-            //         return
-            //     }
-            //     const newRect = entries[0].contentRect
-            //     _chart.applyOptions({ height: newRect.height, width: newRect.width })
-            // }).observe(chartElement)
+            if (chartState.chart) chartState.chart.remove()
 
-            const lineSeries = _chart.addLineSeries()
-            lineSeries.setData([
-                { time: "2019-06-19", value: 993 },
-                { time: "2019-06-20", value: 1127 },
-                { time: "2019-06-21", value: 1124 },
-                { time: "2019-06-22", value: 1056 },
-                { time: "2019-06-23", value: 1143 },
-                { time: "2019-06-24", value: 1226 },
-                { time: "2019-06-25", value: 1243 },
-                { time: "2019-06-26", value: 1199 },
-                { time: "2019-06-27", value: 1193 },
-                { time: "2022-06-28", value: 1205 },
-            ])
-            _chart.timeScale().fitContent()
+            if (chartElement && chartInputData && chartInputData !== chartState.data && !isLoadingChart.current) {
+                if (chartInputData.length > 0) {
+                    isLoadingChart.current = true
+                    const _chart = createChart(chartElement, { ...chartOptions })
+                    console.log("created new chart", _chart)
 
-            setChartMarket(currentMarket)
-            setChart(_chart)
-        }
-    }, [chart, chartElement, chartMarket, currentMarket])
+                    const lineSeries = _chart.addLineSeries()
+                    lineSeries.setData(chartInputData)
+                    _chart.timeScale().fitContent()
+
+                    setChartState({
+                        market: currentMarket,
+                        data: chartInputData,
+                        chart: _chart,
+                    })
+                    isLoadingChart.current = false
+                } else {
+                    setChartState(initChartState)
+                }
+            }
+        })()
+    }, [chartElement, chartState.chart, chartState.data, chartState.market, currentMarket])
 
     return <Box id="chart" mt={[0, "0 !important"]}></Box>
 }
