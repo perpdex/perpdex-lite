@@ -109,3 +109,10 @@ export interface LongTokenState {
 }
 
 export type LineChartUnit = { time: UTCTimestamp; value: number }
+
+export interface OrderHistoryUnit {
+    size: Big
+    isLong: boolean
+    price: Big
+    time: UTCTimestamp
+}

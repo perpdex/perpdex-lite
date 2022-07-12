@@ -1,7 +1,14 @@
 import React from "react"
 import { Thead, Table, Tr, Th, Tbody, Td, chakra } from "@chakra-ui/react"
+import { OrderHistoryUnit } from "constant/types"
+import { formattedNumberWithCommas } from "util/format"
+import { dateToTime } from "util/time"
 
-function OrderHistoryTable() {
+interface OrderHistoryTableState {
+    data: OrderHistoryUnit[] | undefined
+}
+
+function OrderHistoryTable({ data }: OrderHistoryTableState) {
     const StyledTh = chakra(Th, {
         baseStyle: {
             color: "white",
@@ -26,46 +33,17 @@ function OrderHistoryTable() {
                 </Tr>
             </Thead>
             <Tbody>
-                <Tr>
-                    <StyledTd>0.32</StyledTd>
-                    <StyledTd>$230.32</StyledTd>
-                    <StyledTd>10:15:12</StyledTd>
-                </Tr>
-                <Tr bg="rgba(98, 126, 234, 0.2)">
-                    <StyledTd>0.32</StyledTd>
-                    <StyledTd>$230.32</StyledTd>
-                    <StyledTd>10:15:12</StyledTd>
-                </Tr>
-                <Tr>
-                    <StyledTd>0.32</StyledTd>
-                    <StyledTd>$230.32</StyledTd>
-                    <StyledTd>10:15:12</StyledTd>
-                </Tr>
-                <Tr bg="rgba(98, 126, 234, 0.2)">
-                    <StyledTd>0.32</StyledTd>
-                    <StyledTd>$230.32</StyledTd>
-                    <StyledTd>10:15:12</StyledTd>
-                </Tr>
-                <Tr>
-                    <StyledTd>0.32</StyledTd>
-                    <StyledTd>$230.32</StyledTd>
-                    <StyledTd>10:15:12</StyledTd>
-                </Tr>
-                <Tr bg="rgba(98, 126, 234, 0.2)">
-                    <StyledTd>0.32</StyledTd>
-                    <StyledTd>$230.32</StyledTd>
-                    <StyledTd>10:15:12</StyledTd>
-                </Tr>
-                <Tr>
-                    <StyledTd>0.32</StyledTd>
-                    <StyledTd>$230.32</StyledTd>
-                    <StyledTd>10:15:12</StyledTd>
-                </Tr>
-                <Tr bg="rgba(98, 126, 234, 0.2)">
-                    <StyledTd>0.32</StyledTd>
-                    <StyledTd>$230.32</StyledTd>
-                    <StyledTd>10:15:12</StyledTd>
-                </Tr>
+                {data &&
+                    data.length > 0 &&
+                    data.map((value: OrderHistoryUnit, index: number) => (
+                        <Tr bg={index % 2 === 0 ? "rgba(98, 126, 234, 0.2)" : ""}>
+                            <StyledTd color={value.isLong ? "green.300" : "red.300"}>
+                                {formattedNumberWithCommas(value.size)}
+                            </StyledTd>
+                            <StyledTd>${formattedNumberWithCommas(value.price)}</StyledTd>
+                            <StyledTd>{dateToTime(new Date(value.time))}</StyledTd>
+                        </Tr>
+                    ))}
             </Tbody>
         </Table>
     )

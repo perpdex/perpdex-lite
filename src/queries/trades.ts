@@ -56,6 +56,32 @@ export const daySummaries = `
   }
 `
 
+export const getPositionChangedsQuery = (marketStr: string) => `
+query {
+  positionChangeds(first: 100, filter: {
+    market: { equalTo: "${marketStr}" }
+  }) {
+    nodes {
+      id
+      exchange
+      trader
+      market
+      base
+      quote
+      realizedPnl
+      protocolFee
+      baseBalancePerShareX96
+      sharePriceAfterX96
+      liquidator
+      liquidationPenalty
+      liquidationReward
+      insuranceFundReward
+      blockNumberLogIndex
+      timestamp
+    }
+  }
+}`
+
 export const positionChangeds = `
   query {
     positionChangeds(first: 100) {

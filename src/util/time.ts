@@ -6,6 +6,13 @@ export function getDate(ts: number) {
     return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`
 }
 
+export function dateToTime(date: Date) {
+    const hours = ("0" + date.getHours()).slice(-2)
+    const minutes = ("0" + date.getMinutes()).slice(-2)
+    const seconds = ("0" + date.getSeconds()).slice(-2)
+    return `${hours}:${minutes}:${seconds}`
+}
+
 /*
  * [4, 0, 0, 0] => return "4D 0H 0M 0S"
  */
