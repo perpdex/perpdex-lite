@@ -2990,6 +2990,14 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.4.4.tgz#11d5db19bd178936ec89cd84519c4de439574398"
   integrity sha512-1oO6+dN5kdIA3sKPZhRGJTfGVP4SWV6KqlMOwry4J3HfyD68sl/3KmG7DeYUzvN+RbhXDnv/D8vNNB8168tAMg==
 
+"@qognicafinance/react-lightweight-charts@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@qognicafinance/react-lightweight-charts/-/react-lightweight-charts-1.0.3.tgz#4e76482cab862738a222608e33515d206b83a462"
+  integrity sha512-ZzfWXVoSUPZ/wTPwvNBuEFBLA+fBPB4OC/Hh5dTrx62KBUc8Ghff7daFCh2GGlRcDnI63kcKUZgla9gsrR1LOA==
+  dependencies:
+    fast-deep-equal "^3.1.1"
+    lightweight-charts "^3.8.0"
+
 "@reach/alert@0.13.0":
   version "0.13.0"
   resolved "https://registry.yarnpkg.com/@reach/alert/-/alert-0.13.0.tgz#1f67b389f49af61286ef03a84f5a57bd3503dadf"
