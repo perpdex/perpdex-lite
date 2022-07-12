@@ -16,12 +16,14 @@ function OpenPositionsTable({ data, handleOnClick }: OpenPositionsTableState) {
             <Table variant="simple" overflowY="scroll">
                 <Thead>
                     <Tr>
-                        <Th border="0px" pl={0}>
+                        <Th border="0px" pl={0} w="30%">
                             Assets
                         </Th>
                         <Th border="0px">Profit/Loss</Th>
                         <Th border="0px">Position</Th>
-                        <Th border="0px">Avg. Open Price</Th>
+                        <Th border="0px" w="30%">
+                            Avg. Open Price
+                        </Th>
                     </Tr>
                 </Thead>
                 <Tbody>
@@ -29,7 +31,7 @@ function OpenPositionsTable({ data, handleOnClick }: OpenPositionsTableState) {
                         data.length > 0 &&
                         data.map((value: PositionState) => (
                             <Tr>
-                                <Td border="0px" pl={0} color={value.isLong ? "green.300" : "red.300"}>
+                                <Td border="0px" px={0} color={value.isLong ? "green.300" : "red.300"}>
                                     {formattedNumberWithCommas(value.positionQuantity)} {value?.positionSymbol}
                                 </Td>
                                 <Td border="0px">{formattedNumberWithCommas(value.unrealizedPnl)}</Td>
