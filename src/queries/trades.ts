@@ -1,25 +1,24 @@
-// import { gql } from "graphql-tag"
+import { gql } from "@apollo/client"
 
-export const getMarketCandlesQuery = (marketStr: string) => `
-query {
-  candles(first: 100, filter: {
-    market: { equalTo: "${marketStr}" }
-  }) {
-    nodes {
-      id
-      market
-      timeFormat
-      time
-      openX96
-      highX96
-      lowX96
-      closeX96
-      baseAmount
-      quoteAmount
-      timestamp
+export const getMarketCandlesQuery = gql`
+    query($market: String!) {
+        candles(first: 100, filter: { market: { equalTo: $market } }) {
+            nodes {
+                id
+                market
+                timeFormat
+                time
+                openX96
+                highX96
+                lowX96
+                closeX96
+                baseAmount
+                quoteAmount
+                timestamp
+            }
+        }
     }
-  }
-}`
+`
 
 export const candles = `
   query {

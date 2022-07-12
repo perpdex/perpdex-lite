@@ -1,11 +1,9 @@
-import React, { useEffect, useRef, useState } from "react"
-import { createChart } from "lightweight-charts"
+import React, { useMemo } from "react"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
-import { callSubquery } from "util/subquery"
 import { getMarketCandlesQuery } from "queries/trades"
-import { LineChartUnit } from "constant/types"
 import { cleanUpChartInputData } from "util/chart"
-import { Box } from "@chakra-ui/react"
+import { useQuery } from "@apollo/client"
+import Chart from "@qognicafinance/react-lightweight-charts"
 
 const chartOptions = {
     width: 600,
@@ -24,59 +22,26 @@ const chartOptions = {
     },
 }
 
-interface ChartState {
-    market: string
-    data: LineChartUnit[]
-    chart: any
-}
-
-const initChartState = {
-    market: "",
-    data: [],
-    chart: undefined,
-}
-
 function LightWeightChart() {
     const { currentMarket } = PerpdexMarketContainer.useContainer()
-    const [chartState, setChartState] = useState<ChartState>(initChartState)
-    const chartElement = document.getElementById("chart")
-    const isLoadingChart = useRef<boolean>(false)
 
-    useEffect(() => {
-        ;(async () => {
-            if (!currentMarket || chartState.market === currentMarket) return
+    const candleResult = useQuery(getMarketCandlesQuery, {
+        variables: { market: currentMarket },
+    })
 
-            const candleQuery = getMarketCandlesQuery(currentMarket)
-            const candlesData = await callSubquery(candleQuery)
-            const chartInputData = cleanUpChartInputData(candlesData)
+    const candlestickSeries = useMemo(() => {
+        if (candleResult.loading || candleResult.error) return [{ data: [] }]
+        const candlesData = candleResult.data
+        const chartInputData = cleanUpChartInputData(candlesData)
 
-            if (chartState.chart) chartState.chart.remove()
+        return [
+            {
+                data: chartInputData || [],
+            },
+        ]
+    }, [candleResult.data, candleResult.loading, candleResult.error])
 
-            if (chartElement && chartInputData && chartInputData !== chartState.data && !isLoadingChart.current) {
-                if (chartInputData.length > 0) {
-                    isLoadingChart.current = true
-                    console.log("creating chart with ", chartInputData)
-                    const _chart = createChart(chartElement, { ...chartOptions })
-                    console.log("created new chart", _chart)
-
-                    const lineSeries = _chart.addLineSeries()
-                    lineSeries.setData(chartInputData)
-                    _chart.timeScale().fitContent()
-
-                    setChartState({
-                        market: currentMarket,
-                        data: chartInputData,
-                        chart: _chart,
-                    })
-                    isLoadingChart.current = false
-                } else {
-                    setChartState(initChartState)
-                }
-            }
-        })()
-    }, [chartElement, chartState.chart, chartState.data, chartState.market, currentMarket])
-
-    return <Box id="chart" mt={[0, "0 !important"]}></Box>
+    return <Chart options={chartOptions} candlestickSeries={candlestickSeries} />
 }
 
 export default LightWeightChart
