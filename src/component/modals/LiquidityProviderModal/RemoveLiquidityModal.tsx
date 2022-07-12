@@ -91,7 +91,7 @@ function RemoveLiquidityModal() {
                     <Divider />
                 </VStack>
             }
-            fotter={
+            footer={
                 <Button
                     text="Remove Liquidity"
                     customType="base-blue"

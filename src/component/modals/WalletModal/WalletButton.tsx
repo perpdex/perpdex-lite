@@ -40,12 +40,14 @@ function WalletButton({
             fontWeight="400"
             fontSize="md"
             justifyContent="left"
-            bg="gray.900"
+            bg="#334080"
+            color="white"
+            borderRadius="20px"
             onClick={handleOnClick}
             _hover={{ bg: "rgba(255, 255, 255, 0.16)" }}
         >
             <Flex width="100%" alignItems="center">
-                <Image mr="10px" src={src} boxSize={6} />
+                <Image mr="10px" src={src} boxSize={8} />
                 {name}
                 <Spacer />
                 {isActiveConnector && <Image src={CheckSvg} />}
