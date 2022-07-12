@@ -1,9 +1,11 @@
-name: Testing
+name: Deploy
 
-on: [push]
+on:
+  pull_request:
+    types: synchronize
 
 jobs:
-  build:
+  testnet-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -40,3 +42,10 @@ jobs:
       - run: yarn build
         env:
           CI: false
+          REACT_APP_STAGE: development
+          REACT_APP_INFURA_PROJECT_ID: 89d4d235fbb64fb693ffa3362b92d1b1 # public
+      - run: npx ipfs-deploy@v8.0.1 --quiet build > /tmp/ipfs.txt
+      - run: gh pr comment -b "https://ipfs.infura.io/ipfs/$(cat /tmp/ipfs.txt)" "${URL}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          URL: ${{ github.event.pull_request.html_url }}
