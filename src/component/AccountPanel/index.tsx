@@ -2,7 +2,7 @@ import { Box, HStack, Text, VStack } from "@chakra-ui/react"
 import { CurrencyIcon, LogoWhite } from "../Icon"
 import Big from "big.js"
 import { AccountInfo, MarketState } from "../../constant/types"
-import { numberWithCommas } from "../../util/format"
+import { formattedNumberWithCommas } from "../../util/format"
 
 interface Props {
     marketState: MarketState
@@ -39,11 +39,11 @@ function AccountPanel(props: Props) {
                                 <Text fontSize="xs">Total Account Value</Text>
                                 <HStack w="100%" justifyContent="start">
                                     <Text as="span" fontSize="xl" fontWeight="bold">
-                                        {numberWithCommas(totalAccountValue)}
+                                        {formattedNumberWithCommas(totalAccountValue)}
                                         {quoteSymbol}
                                     </Text>
                                     <Text as="span" fontSize="xl" marginLeft={2}>
-                                        (${numberWithCommas(totalAccountValueUsd)})
+                                        (${formattedNumberWithCommas(totalAccountValueUsd)})
                                     </Text>
                                 </HStack>
                             </VStack>
@@ -54,11 +54,11 @@ function AccountPanel(props: Props) {
                                     <Text fontSize="xs">Collateral</Text>
                                     <HStack w="100%" justifyContent="start">
                                         <Text as="span" fontSize="xl" fontWeight="bold">
-                                            {numberWithCommas(collateralBalance)}
+                                            {formattedNumberWithCommas(collateralBalance)}
                                             {quoteSymbol}
                                         </Text>
                                         <Text as="span" fontSize="xl" marginLeft={2}>
-                                            (${numberWithCommas(collateralBalanceUsd)})
+                                            (${formattedNumberWithCommas(collateralBalanceUsd)})
                                         </Text>
                                     </HStack>
                                 </VStack>

@@ -9,6 +9,8 @@ import { PerpdexMarketContainer } from "../../container/connection/perpdexMarket
 import { PerpdexExchangeContainer } from "../../container/connection/perpdexExchangeContainer"
 import { User } from "../../container/connection/user"
 import { AccountPerpdex } from "../../container/perpetual/account"
+import { getAllPositionsFromTakerInfos } from "util/position"
+import { useMemo } from "react"
 
 function Home() {
     const {
@@ -18,7 +20,14 @@ function Home() {
         actions: { openAccountModal },
     } = AccountPerpdex.useContainer()
     const { currentMyAccountInfo } = PerpdexExchangeContainer.useContainer()
-    const { currentMarketState } = PerpdexMarketContainer.useContainer()
+    const { currentMarketState, marketStates, setCurrentMarket } = PerpdexMarketContainer.useContainer()
+
+    const positions = useMemo(
+        () =>
+            currentMyAccountInfo?.takerInfos &&
+            getAllPositionsFromTakerInfos(currentMyAccountInfo.takerInfos, marketStates),
+        [currentMyAccountInfo?.takerInfos, marketStates],
+    )
 
     return (
         <FrameContainer>
@@ -37,7 +46,10 @@ function Home() {
                 </Center>
                 <VStack spacing={10} w="100%">
                     <TradeInfoPanel myAccountInfo={currentMyAccountInfo} />
-                    <OpenPositionsTable />
+                    <OpenPositionsTable
+                        data={positions}
+                        handleOnClick={(address: string) => setCurrentMarket(address)}
+                    />
                 </VStack>
             </Flex>
         </FrameContainer>

@@ -1,8 +1,26 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { Box, Text } from "@chakra-ui/react"
 import OrderHistoryTable from "./OrderHistoryTable"
+import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
+import { getPositionChangedsQuery } from "queries/trades"
+import { callSubquery } from "util/subquery"
+import { cleanUpOrderHistories } from "util/chart"
+import { OrderHistoryUnit } from "constant/types"
 
 function OrderHistory() {
+    const { currentMarket, currentMarketState } = PerpdexMarketContainer.useContainer()
+    const [orderHistories, setOrderHistories] = useState<OrderHistoryUnit[] | undefined>(undefined)
+
+    useEffect(() => {
+        ;(async () => {
+            const positionChangedsQuery = getPositionChangedsQuery(currentMarket)
+            const queryResponse = await callSubquery(positionChangedsQuery)
+            const _orderHistories = cleanUpOrderHistories(queryResponse, currentMarketState.inverse)
+            setOrderHistories(_orderHistories)
+            console.log("order histories", _orderHistories)
+        })()
+    }, [currentMarket, currentMarketState.inverse])
+
     return (
         <Box
             w="100%"
@@ -20,7 +38,7 @@ function OrderHistory() {
             <Text align="center" color={"gray.200"}>
                 Order History
             </Text>
-            <OrderHistoryTable />
+            <OrderHistoryTable data={orderHistories} />
         </Box>
     )
 }
