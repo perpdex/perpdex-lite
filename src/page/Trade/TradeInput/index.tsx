@@ -1,13 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react"
 import Big from "big.js"
 
-import Slippage from "./Slippage"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import PositionInput from "./PositionInput"
 import { BIG_ZERO } from "constant"
 import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
 import SubmitBuySell from "./SubmitBuySell"
 import { Transaction } from "container/connection/transaction"
+import { Box, VStack } from "@chakra-ui/react"
+import Leverage from "./Leverage"
 
 function TradeInput() {
     const { currentMarketState } = PerpdexMarketContainer.useContainer()
@@ -40,20 +41,26 @@ function TradeInput() {
     }, [currentMarketState.baseSymbol])
 
     return (
-        <>
-            <PositionInput baseSymbol={baseSymbol} baseOrderValue={baseOrderValue} handleInput={handlePositionInput} />
-            <Slippage slippage={slippage} setSlippage={setSlippage} />
-            <SubmitBuySell
-                baseOrderValue={baseOrderValue}
-                quoteOrderValue={quoteOrderValue}
-                quoteSymbol={quoteSymbol}
-                slippage={slippage}
-                isLoading={isLoading}
-                isDisabled={isSubmitDisabled}
-                trade={trade}
-                previewTrade={preview.trade}
-            />
-        </>
+        <Box background="#181B41" borderRadius="10px" p={6}>
+            <VStack spacing={6}>
+                <SubmitBuySell
+                    baseOrderValue={baseOrderValue}
+                    quoteOrderValue={quoteOrderValue}
+                    quoteSymbol={quoteSymbol}
+                    slippage={slippage}
+                    isLoading={isLoading}
+                    isDisabled={isSubmitDisabled}
+                    trade={trade}
+                    previewTrade={preview.trade}
+                />
+                <PositionInput
+                    baseSymbol={baseSymbol}
+                    baseOrderValue={baseOrderValue}
+                    handleInput={handlePositionInput}
+                />
+                <Leverage />
+            </VStack>
+        </Box>
     )
 }
 

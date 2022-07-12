@@ -5,10 +5,11 @@ import { callSubquery } from "util/subquery"
 import { getMarketCandlesQuery } from "queries/trades"
 import { LineChartUnit } from "constant/types"
 import { CleanUpChartInputData } from "util/chart"
+import { Box } from "@chakra-ui/react"
 
 const chartOptions = {
-    width: 1200,
-    height: 600,
+    width: 600,
+    height: 400,
     layout: {
         background: { color: "#17181e" },
         textColor: "rgba(33, 56, 77, 1)",
@@ -74,7 +75,7 @@ function LightWeightChart() {
         })()
     }, [chartElement, chartState.chart, chartState.data, chartState.market, currentMarket])
 
-    return <div id="chart"></div>
+    return <Box id="chart" mt={[0, "0 !important"]}></Box>
 }
 
 export default LightWeightChart

@@ -1,8 +1,16 @@
-import { FormControl, InputGroup, InputRightElement, NumberInput, NumberInputField, Text } from "@chakra-ui/react"
+import {
+    FormControl,
+    FormLabel,
+    HStack,
+    InputGroup,
+    InputRightElement,
+    NumberInput,
+    NumberInputField,
+    Text,
+} from "@chakra-ui/react"
 import { useCallback, useEffect, useMemo, useState } from "react"
 
 import Big from "big.js"
-import SmallFormLabel from "component/base/SmallFormLabel"
 import { BIG_ZERO, USDC_PRECISION } from "constant"
 import { formatInput } from "util/format"
 
@@ -40,23 +48,47 @@ function PositionInput({ baseSymbol, baseOrderValue, handleInput }: PositionInpu
     return useMemo(
         () => (
             <FormControl id="margin">
-                <SmallFormLabel>Order by Qty</SmallFormLabel>
+                <FormLabel>
+                    <Text fontSize="md" color="white">
+                        Collateral
+                    </Text>
+                </FormLabel>
                 <NumberInput value={position} onInput={handleOnInput}>
-                    <InputGroup>
-                        <NumberInputField />
-                        <InputRightElement w="54px">
-                            <Text
-                                w="100%"
-                                textAlign="center"
-                                fontWeight="bold"
-                                fontSize="xs"
-                                color="blue.500"
-                                textTransform="uppercase"
-                            >
-                                {baseSymbol}
-                            </Text>
-                        </InputRightElement>
-                    </InputGroup>
+                    <HStack>
+                        <InputGroup>
+                            <NumberInputField />
+                            <InputRightElement w="54px">
+                                <Text
+                                    w="100%"
+                                    textAlign="center"
+                                    fontWeight="bold"
+                                    fontSize="xs"
+                                    color="blue.500"
+                                    textTransform="uppercase"
+                                >
+                                    {baseSymbol}
+                                </Text>
+                            </InputRightElement>
+                        </InputGroup>
+                        <Text fontSize="3xl" ml={2}>
+                            /
+                        </Text>
+                        <InputGroup ml={-1}>
+                            <NumberInputField />
+                            <InputRightElement w="54px">
+                                <Text
+                                    w="100%"
+                                    textAlign="center"
+                                    fontWeight="bold"
+                                    fontSize="xs"
+                                    color="blue.500"
+                                    textTransform="uppercase"
+                                >
+                                    {baseSymbol}
+                                </Text>
+                            </InputRightElement>
+                        </InputGroup>
+                    </HStack>
                 </NumberInput>
             </FormControl>
         ),
