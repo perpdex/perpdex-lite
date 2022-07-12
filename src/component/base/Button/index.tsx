@@ -2,7 +2,15 @@ import React from "react"
 import { Button as ChakuraButton, ButtonProps } from "@chakra-ui/react"
 import { AddIcon, MinusIcon } from "@chakra-ui/icons"
 
-type ButtonType = "big-green-plus" | "big-pink-minus" | "base-blue" | "base-dark" | "base-green" | "outline-pink"
+type ButtonType =
+    | "big-green-plus"
+    | "big-pink-minus"
+    | "base-blue"
+    | "base-dark"
+    | "base-green"
+    | "outline-green"
+    | "base-pink"
+    | "outline-pink"
 
 interface ButtonState extends Partial<ButtonProps> {
     text: string
@@ -47,6 +55,19 @@ function Button({ text, customType, onClick, ...props }: ButtonState) {
                     {text}
                 </ChakuraButton>
             )
+        case "outline-green":
+            return (
+                <ChakuraButton
+                    size="md"
+                    variant="outline"
+                    onClick={onClick!}
+                    color={"green.600"}
+                    borderColor={"green.600"}
+                    {...props}
+                >
+                    {text}
+                </ChakuraButton>
+            )
         case "big-green-plus":
             return (
                 <ChakuraButton
@@ -57,6 +78,13 @@ function Button({ text, customType, onClick, ...props }: ButtonState) {
                     leftIcon={<AddIcon />}
                     {...props}
                 >
+                    {text}
+                </ChakuraButton>
+            )
+
+        case "base-pink":
+            return (
+                <ChakuraButton size="md" onClick={onClick!} color={"white"} bg={"pink.400"} {...props}>
                     {text}
                 </ChakuraButton>
             )

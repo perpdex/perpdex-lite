@@ -88,6 +88,8 @@ export interface PositionState {
     entryPriceDisplay: Big
     liqPriceDisplay: Big
     unrealizedPnl: Big
+    address?: string
+    positionSymbol?: string
 }
 
 export interface LongTokenState {
@@ -109,3 +111,10 @@ export interface LongTokenState {
 }
 
 export type LineChartUnit = { time: UTCTimestamp; value: number }
+
+export interface OrderHistoryUnit {
+    size: Big
+    isLong: boolean
+    price: Big
+    time: UTCTimestamp
+}

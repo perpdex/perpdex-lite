@@ -71,6 +71,12 @@ export function numberWithCommas(number?: Big, precision: number = 4) {
     return doNumberWithCommas(number.toFixed(precision))
 }
 
+export function formattedNumberWithCommas(number?: Big, precision: number = 4) {
+    if (!number) return "-"
+    if (number.gte(1000)) return numberWithCommas(number, 2)
+    return numberWithCommas(number, precision)
+}
+
 // TODO: check is valid number
 // TODO: check is positive
 // TODO: use in slippage if possible

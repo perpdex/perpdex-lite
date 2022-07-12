@@ -4,7 +4,7 @@ import { PerpdexMarketContainer } from "container/connection/perpdexMarketContai
 import { callSubquery } from "util/subquery"
 import { getMarketCandlesQuery } from "queries/trades"
 import { LineChartUnit } from "constant/types"
-import { CleanUpChartInputData } from "util/chart"
+import { cleanUpChartInputData } from "util/chart"
 import { Box } from "@chakra-ui/react"
 
 const chartOptions = {
@@ -48,13 +48,14 @@ function LightWeightChart() {
 
             const candleQuery = getMarketCandlesQuery(currentMarket)
             const candlesData = await callSubquery(candleQuery)
-            const chartInputData = CleanUpChartInputData(candlesData)
+            const chartInputData = cleanUpChartInputData(candlesData)
 
             if (chartState.chart) chartState.chart.remove()
 
             if (chartElement && chartInputData && chartInputData !== chartState.data && !isLoadingChart.current) {
                 if (chartInputData.length > 0) {
                     isLoadingChart.current = true
+                    console.log("creating chart with ", chartInputData)
                     const _chart = createChart(chartElement, { ...chartOptions })
                     console.log("created new chart", _chart)
 
