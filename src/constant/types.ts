@@ -1,4 +1,5 @@
 import Big from "big.js"
+import { UTCTimestamp } from "lightweight-charts"
 
 export interface PoolInfo {
     base: Big
@@ -106,3 +107,5 @@ export interface LongTokenState {
     maxWithdraw: Big
     maxRedeem: Big
 }
+
+export type LineChartUnit = { time: UTCTimestamp; value: number }
