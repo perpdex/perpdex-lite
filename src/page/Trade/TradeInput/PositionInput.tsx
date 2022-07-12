@@ -13,6 +13,8 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import Big from "big.js"
 import { BIG_ZERO, USDC_PRECISION } from "constant"
 import { formatInput } from "util/format"
+import Slider from "component/base/Slider"
+import DiscreteLeverageInputModifier from "component/base/DiscreteLeverageInputModifier"
 
 interface PositionInputState {
     baseSymbol: string
@@ -44,6 +46,17 @@ function PositionInput({ baseSymbol, baseOrderValue, handleInput }: PositionInpu
             setPosition("")
         }
     }, [baseOrderValue])
+
+    const [leverage, setLeverage] = useState<number>(1)
+
+    const handleLeverageUpdate = useCallback(
+        (value: number) => {
+            if (value !== leverage) {
+                setLeverage(value)
+            }
+        },
+        [leverage],
+    )
 
     return useMemo(
         () => (
@@ -90,9 +103,14 @@ function PositionInput({ baseSymbol, baseOrderValue, handleInput }: PositionInpu
                         </InputGroup>
                     </HStack>
                 </NumberInput>
+                <Text fontSize="md" color="white">
+                    Leverage
+                </Text>
+                <Slider currentValue={leverage} handleUpdate={handleLeverageUpdate} />
+                <DiscreteLeverageInputModifier handleUpdate={handleLeverageUpdate} />
             </FormControl>
         ),
-        [position, handleOnInput, baseSymbol],
+        [position, handleOnInput, baseSymbol, leverage, handleLeverageUpdate],
     )
 }
 

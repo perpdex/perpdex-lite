@@ -8,7 +8,6 @@ import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeCo
 import SubmitBuySell from "./SubmitBuySell"
 import { Transaction } from "container/connection/transaction"
 import { Box, VStack } from "@chakra-ui/react"
-import Leverage from "./Leverage"
 
 function TradeInput() {
     const { currentMarketState } = PerpdexMarketContainer.useContainer()
@@ -58,7 +57,6 @@ function TradeInput() {
                     baseOrderValue={baseOrderValue}
                     handleInput={handlePositionInput}
                 />
-                <Leverage />
             </VStack>
         </Box>
     )
