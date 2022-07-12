@@ -10,6 +10,7 @@ import { PerpdexExchangeContainer } from "../../container/connection/perpdexExch
 import { User } from "../../container/connection/user"
 import { AccountPerpdex } from "../../container/perpetual/account"
 import { getAllPositionsFromTakerInfos } from "util/position"
+import { useMemo } from "react"
 
 function Home() {
     const {
@@ -21,7 +22,12 @@ function Home() {
     const { currentMyAccountInfo } = PerpdexExchangeContainer.useContainer()
     const { currentMarketState, marketStates, setCurrentMarket } = PerpdexMarketContainer.useContainer()
 
-    const positions = getAllPositionsFromTakerInfos(currentMyAccountInfo.takerInfos, marketStates)
+    const positions = useMemo(
+        () =>
+            currentMyAccountInfo?.takerInfos &&
+            getAllPositionsFromTakerInfos(currentMyAccountInfo.takerInfos, marketStates),
+        [currentMyAccountInfo?.takerInfos, marketStates],
+    )
 
     return (
         <FrameContainer>
