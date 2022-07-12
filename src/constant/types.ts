@@ -88,6 +88,7 @@ export interface PositionState {
     entryPriceDisplay: Big
     liqPriceDisplay: Big
     unrealizedPnl: Big
+    positionSymbol?: string
 }
 
 export interface LongTokenState {
