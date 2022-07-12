@@ -22,6 +22,7 @@ export function getAllPositionsFromTakerInfos(
                 entryPriceDisplay: BIG_ZERO, // FIX
                 liqPriceDisplay: BIG_ZERO, // FIX
                 unrealizedPnl: BIG_ZERO, // FIX
+                address: marketInfo.address,
                 positionSymbol: marketInfo.baseSymbolDisplay,
             }
             positions.push(position)

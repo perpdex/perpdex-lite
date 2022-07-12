@@ -19,7 +19,7 @@ function Home() {
         actions: { openAccountModal },
     } = AccountPerpdex.useContainer()
     const { currentMyAccountInfo } = PerpdexExchangeContainer.useContainer()
-    const { currentMarketState, marketStates } = PerpdexMarketContainer.useContainer()
+    const { currentMarketState, marketStates, setCurrentMarket } = PerpdexMarketContainer.useContainer()
 
     const positions = getAllPositionsFromTakerInfos(currentMyAccountInfo.takerInfos, marketStates)
 
@@ -40,7 +40,10 @@ function Home() {
                 </Center>
                 <VStack spacing={10} w="100%">
                     <TradeInfoPanel myAccountInfo={currentMyAccountInfo} />
-                    <OpenPositionsTable data={positions} />
+                    <OpenPositionsTable
+                        data={positions}
+                        handleOnClick={(address: string) => setCurrentMarket(address)}
+                    />
                 </VStack>
             </Flex>
         </FrameContainer>

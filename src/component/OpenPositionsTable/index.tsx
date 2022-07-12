@@ -1,13 +1,15 @@
 import { Box, Table, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react"
 import Button from "component/base/Button"
 import { PositionState } from "constant/types"
+import { Link } from "react-router-dom"
 import { formattedNumberWithCommas } from "util/format"
 
 interface OpenPositionsTableState {
     data: PositionState[] | undefined
+    handleOnClick: (address: string) => void
 }
 
-function OpenPositionsTable({ data }: OpenPositionsTableState) {
+function OpenPositionsTable({ data, handleOnClick }: OpenPositionsTableState) {
     return (
         <Box borderColor="#728BEC" borderWidth="1px" borderRadius="10px" p={6} mx={{ base: "auto", md: "0" }}>
             <Text>Open Positions</Text>
@@ -32,7 +34,13 @@ function OpenPositionsTable({ data }: OpenPositionsTableState) {
                                 </Td>
                                 <Td border="0px">{formattedNumberWithCommas(value.unrealizedPnl)}</Td>
                                 <Td border="0px">
-                                    <Button customType="base-blue" text="Trade" />
+                                    <Link to="/trade">
+                                        <Button
+                                            customType="base-blue"
+                                            text="Trade"
+                                            onClick={() => value.address && handleOnClick(value.address)}
+                                        />
+                                    </Link>
                                 </Td>
                                 <Td border="0px">{formattedNumberWithCommas(value.entryPriceDisplay)}</Td>
                             </Tr>
