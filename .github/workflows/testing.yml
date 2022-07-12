@@ -37,5 +37,9 @@ jobs:
 
       - run: yarn build-contract
       - run: yarn install
-      - run: CI=false yarn build
-      # TODO: deploy
+      - run: yarn build
+        env:
+          CI: false
+          REACT_APP_STAGE: development
+          REACT_APP_INFURA_PROJECT_ID: 89d4d235fbb64fb693ffa3362b92d1b1 # public
+      - run: yarn deploy-ipfs
