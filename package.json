@@ -21,12 +21,14 @@
         "clean": "rm -rf src/types"
     },
     "dependencies": {
+        "@apollo/client": "^3.6.9",
         "@bugsnag/js": "^7.9.0",
         "@bugsnag/plugin-react": "^7.9.0",
         "@chakra-ui/icons": "^1.0.6",
         "@chakra-ui/react": "^1.0.0",
         "@emotion/react": "^11.0.0",
         "@emotion/styled": "^11.0.0",
+        "@qognicafinance/react-lightweight-charts": "^1.0.3",
         "@testing-library/jest-dom": "^5.9.0",
         "@testing-library/react": "^10.2.1",
         "@testing-library/user-event": "^12.0.2",
@@ -40,7 +42,6 @@
         "@web3-react/injected-connector": "^6.0.7",
         "@web3-react/network-connector": "^6.1.9",
         "@web3-react/walletconnect-connector": "^6.1.9",
-        "axios": "^0.27.2",
         "big.js": "^6.0.3",
         "ethers": "^5.0.32",
         "ethers-eip712": "^0.2.0",

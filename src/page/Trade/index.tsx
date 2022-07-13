@@ -1,19 +1,14 @@
-import React, { useState } from "react"
+import React from "react"
 import { VStack, Flex, Box, HStack, Divider } from "@chakra-ui/react"
 
 import ChartHead from "./ChartHead"
-import Summary from "./Summary"
 import FrameContainer from "component/FrameContainer"
 import TradeInput from "./TradeInput"
 import PositionTab from "./PositionTab"
-import Slippage from "./Slippage"
 import LightWeightChart from "./LightWeightChart"
 import OrderHistory from "./OrderHistory"
-import Button from "component/base/Button"
 
 function Trade() {
-    const [slippage, setSlippage] = useState<number>(0.5)
-
     return (
         <FrameContainer removeMarginTop>
             <Flex direction={{ base: "column", lg: "row" }}>
@@ -50,13 +45,6 @@ function Trade() {
                         />
                         <VStack spacing={10} p={0}>
                             <TradeInput />
-                            <Box background="#181B41" borderRadius="10px" p={6} w="100%">
-                                <Summary />
-                            </Box>
-                            <Box background="#181B41" borderRadius="10px" p={6} w="100%">
-                                <Slippage slippage={slippage} setSlippage={setSlippage} />
-                            </Box>
-                            <Button customType="base-blue" text="Confirm Transaction" onClick={() => {}} />
                         </VStack>
                     </HStack>
                 </Box>

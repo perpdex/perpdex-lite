@@ -1,4 +1,24 @@
-// import { gql } from "graphql-tag"
+import { gql } from "@apollo/client"
+
+export const getMarketCandlesQuery = gql`
+    query($market: String!) {
+        candles(first: 100, filter: { market: { equalTo: $market } }) {
+            nodes {
+                id
+                market
+                timeFormat
+                time
+                openX96
+                highX96
+                lowX96
+                closeX96
+                baseAmount
+                quoteAmount
+                timestamp
+            }
+        }
+    }
+`
 
 export const candles = `
   query {
@@ -33,6 +53,31 @@ export const daySummaries = `
       }
     }
   }
+`
+
+export const getPositionChangedsQuery = gql`
+    query($market: String!) {
+        positionChangeds(first: 100, filter: { market: { equalTo: $market } }) {
+            nodes {
+                id
+                exchange
+                trader
+                market
+                base
+                quote
+                realizedPnl
+                protocolFee
+                baseBalancePerShareX96
+                sharePriceAfterX96
+                liquidator
+                liquidationPenalty
+                liquidationReward
+                insuranceFundReward
+                blockNumberLogIndex
+                timestamp
+            }
+        }
+    }
 `
 
 export const positionChangeds = `

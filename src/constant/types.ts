@@ -1,4 +1,5 @@
 import Big from "big.js"
+import { UTCTimestamp } from "lightweight-charts"
 
 export interface PoolInfo {
     base: Big
@@ -87,6 +88,8 @@ export interface PositionState {
     entryPriceDisplay: Big
     liqPriceDisplay: Big
     unrealizedPnl: Big
+    address?: string
+    positionSymbol?: string
 }
 
 export interface LongTokenState {
@@ -105,4 +108,11 @@ export interface LongTokenState {
     maxMint: Big
     maxWithdraw: Big
     maxRedeem: Big
+}
+
+export interface OrderHistoryUnit {
+    size: Big
+    isLong: boolean
+    price: Big
+    time: UTCTimestamp
 }

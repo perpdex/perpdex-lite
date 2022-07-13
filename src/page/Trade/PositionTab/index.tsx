@@ -1,11 +1,9 @@
 import { Tabs, TabList, Tab, TabPanels, TabPanel, chakra, Divider } from "@chakra-ui/react"
 import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
 import { Modal } from "container/modal"
-import { useEffect, useMemo } from "react"
+import { useMemo } from "react"
 import PositionTable, { PositionTableState } from "./PositionTable"
 import { PerpdexMarketContainer } from "../../../container/connection/perpdexMarketContainer"
-import { callSubquery } from "util/subquery"
-import { candles } from "queries/trades"
 import OrderHistoryTable from "./OrderHistoryTable"
 
 function PositionTab() {
@@ -14,13 +12,6 @@ function PositionTab() {
     const {
         actions: { togglePositionCloseModal },
     } = Modal.useContainer()
-
-    useEffect(() => {
-        ;(async () => {
-            const candlesData = await callSubquery(candles)
-            console.log("candlesData", candlesData)
-        })()
-    }, [])
 
     const positionTableData: Omit<PositionTableState, "handleOnClick"> | undefined = useMemo(() => {
         if (currentMyTakerPositions) {

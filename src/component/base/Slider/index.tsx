@@ -1,38 +1,68 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Slider as ChakuraSlider, SliderMark, SliderTrack, SliderFilledTrack, SliderThumb, Box } from "@chakra-ui/react"
 
-function Slider() {
+interface SliderState {
+    currentValue: number
+    maxValue?: number
+    handleUpdate: (value: number) => void
+}
+
+function Slider({ currentValue, maxValue, handleUpdate }: SliderState) {
     const [sliderValue, setSliderValue] = useState<number>(25)
 
+    useEffect(() => {
+        if (currentValue) {
+            console.log("setvalue", currentValue)
+            setSliderValue(currentValue)
+        }
+    }, [currentValue])
+
+    const handleOnChange = (val: number) => {
+        handleUpdate(val)
+        setSliderValue(val)
+    }
+
     const labelStyles = {
-        mt: "2",
+        mt: "1",
         ml: "-2.5",
         fontSize: "sm",
     }
 
-    const markedValues = [10, 25, 50, 75, 100]
+    const markedValues = [0, maxValue ? maxValue : 10]
 
     return (
-        <Box pt={6} pb={2} mx={2}>
+        <Box px={4} pt={4} pb={8} bg="blackAlpha.50" borderRadius="xl">
             <ChakuraSlider
                 defaultValue={sliderValue}
-                step={5}
+                value={sliderValue}
+                min={0}
+                max={10}
+                step={0.01}
                 aria-label="slider-ex-6"
-                onChange={val => setSliderValue(val)}
+                onChange={handleOnChange}
+                // colorScheme={side === 1 ? "green" : "red"}
             >
-                <SliderTrack bg="red.100">
-                    <Box position="relative" right={10} />
-                    <SliderFilledTrack />
+                <SliderTrack>
+                    <SliderFilledTrack bg="#F90077" />
                 </SliderTrack>
-                <SliderThumb boxSize={6} />
                 {markedValues.map(val => (
                     <SliderMark value={val} {...labelStyles}>
-                        {val}%
+                        {val}x
                     </SliderMark>
                 ))}
-                <SliderMark value={sliderValue} textAlign="center" bg="blue.500" color="white" mt="-10" ml="-5" w="12">
-                    {sliderValue}%
+                <SliderMark
+                    value={sliderValue}
+                    textAlign="center"
+                    bg="#181B41"
+                    color="white"
+                    fontSize="sm"
+                    mt="1"
+                    ml="-5"
+                    w="12"
+                >
+                    {sliderValue}x
                 </SliderMark>
+                <SliderThumb />
             </ChakuraSlider>
         </Box>
     )

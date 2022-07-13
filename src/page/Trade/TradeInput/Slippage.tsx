@@ -10,7 +10,7 @@ import {
     ButtonGroup,
     Heading,
 } from "@chakra-ui/react"
-import Button from "../../component/base/Button"
+import Button from "../../../component/base/Button"
 import React, { useCallback, useMemo } from "react"
 
 interface SlippageState {
