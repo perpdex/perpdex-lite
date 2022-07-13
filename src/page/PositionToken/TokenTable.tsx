@@ -3,14 +3,16 @@ import { chakra, HStack, Link, Table, Tbody, Td, Text, Th, Thead, Tr } from "@ch
 
 import { CurrencyIcon } from "component/Icon"
 import Button from "component/base/Button"
-import { PerpdexLongTokenContainer } from "container/connection/perpdexLongTokenContainer"
 import _ from "lodash"
 import { Link as ReactLink } from "react-router-dom"
-import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
-import { getLongTokenInfos } from "util/position"
 import { formattedNumberWithCommas } from "util/format"
+import { LongTokenState } from "constant/types"
 
-function TokenTable() {
+interface TokenTableState {
+    data: Partial<LongTokenState>[]
+}
+
+function TokenTable({ data }: TokenTableState) {
     const StyledTh = chakra(Th, {
         baseStyle: {
             color: "white",
@@ -26,40 +28,21 @@ function TokenTable() {
         },
     })
 
-    const { longTokenStates } = PerpdexLongTokenContainer.useContainer()
-    const { marketStates } = PerpdexMarketContainer.useContainer()
-
-    const longTokenInfos = getLongTokenInfos(longTokenStates, marketStates)
+    const columns = ["Asset", "Name", "24H Vol", "Price", "Balance", "Daily Change", "Actions"]
 
     return (
         <Table variant="simple">
             <Thead>
                 <Tr>
-                    <StyledTh>
-                        <Text fontSize="lg">Asset</Text>
-                    </StyledTh>
-                    <StyledTh>
-                        <Text fontSize="lg">Name</Text>
-                    </StyledTh>
-                    <StyledTh>
-                        <Text fontSize="lg">24H Vol</Text>
-                    </StyledTh>
-                    <StyledTh>
-                        <Text fontSize="lg">Price</Text>
-                    </StyledTh>
-                    <StyledTh>
-                        <Text fontSize="lg">Balance</Text>
-                    </StyledTh>
-                    <StyledTh>
-                        <Text fontSize="lg">Daily Change</Text>
-                    </StyledTh>
-                    <StyledTh>
-                        <Text fontSize="lg">Actions</Text>
-                    </StyledTh>
+                    {columns.map(column => (
+                        <StyledTh>
+                            <Text fontSize="lg">{column}</Text>
+                        </StyledTh>
+                    ))}
                 </Tr>
             </Thead>
             <Tbody>
-                {_.map(longTokenInfos, value => {
+                {_.map(data, value => {
                     return (
                         <Tr>
                             <StyledTd>
