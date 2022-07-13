@@ -1,8 +1,9 @@
-import { Table, Thead, Tbody, Tr, Th, Td, chakra, Text, HStack, VStack } from "@chakra-ui/react"
+import { Table, Thead, Tbody, Tr, Td, Text, HStack, VStack } from "@chakra-ui/react"
 import { MarketState } from "../../constant/types"
 import { CurrencyIcon } from "../../component/Icon"
 import { createPoolSummary } from "../../util/market"
 import Button from "component/base/Button"
+import { StyledAnnotation, StyledTh } from "component/tables"
 
 export type PoolsTableUnit = MarketState
 
@@ -10,20 +11,6 @@ export interface PoolsTableState {
     data: PoolsTableUnit[]
     handleOnClick: (address: string) => void
 }
-
-const StyledTh = chakra(Th, {
-    baseStyle: {
-        color: "#FFFFFF",
-        borderBottom: { base: "0px none", md: "1px solid #627EEA" },
-        fontSize: "lg",
-    },
-})
-
-const StyledText = chakra(Text, {
-    baseStyle: {
-        marginTop: "0px !important",
-    },
-})
 
 function PoolsTable({ data, handleOnClick }: PoolsTableState) {
     return (
@@ -51,9 +38,9 @@ function PoolsTable({ data, handleOnClick }: PoolsTableState) {
                                 <HStack>
                                     <VStack>
                                         <Text>{poolSummary.tvl}</Text>
-                                        <StyledText fontSize="sm" color="gray.400">
+                                        <StyledAnnotation fontSize="sm" color="gray.400">
                                             {poolSummary.tvlUsd}
-                                        </StyledText>
+                                        </StyledAnnotation>
                                     </VStack>
                                 </HStack>
                             </Td>

@@ -27,7 +27,7 @@ function Pools() {
             <Heading size="lg" color="#627EEA">
                 Liquidity Pools
             </Heading>
-            <Text mt={2}>
+            <Text marginTop={3} marginBottom={6}>
                 Earn transaction fee on each perpetual future trade by providing liquidity on these pools.
                 <br />
                 You can use leverage on LP tokens as well to earn more by risking more.

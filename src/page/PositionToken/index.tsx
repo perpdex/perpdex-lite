@@ -1,5 +1,5 @@
 import React from "react"
-import { Heading, Text } from "@chakra-ui/react"
+import { Box, Heading, Text } from "@chakra-ui/react"
 
 import { PerpdexLongTokenContainer } from "container/connection/perpdexLongTokenContainer"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
@@ -23,7 +23,9 @@ function PositionToken() {
                 <br />
                 These tokens have the qualities such as liquidation free, and 100% capital efficient.
             </Text>
-            <TokenTable data={longTokenInfos} />
+            <Box mt={6} border={{ base: "0px none", md: "1px solid #627EEA" }} borderRadius="20px" w="100%">
+                <TokenTable data={longTokenInfos} />
+            </Box>
         </FrameContainer>
     )
 }

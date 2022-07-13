@@ -1,5 +1,5 @@
 import React from "react"
-import { chakra, HStack, Link, Table, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react"
+import { HStack, Link, Table, Tbody, Text, Thead, Tr } from "@chakra-ui/react"
 
 import { CurrencyIcon } from "component/Icon"
 import Button from "component/base/Button"
@@ -7,32 +7,18 @@ import _ from "lodash"
 import { Link as ReactLink } from "react-router-dom"
 import { formattedNumberWithCommas } from "util/format"
 import { LongTokenState } from "constant/types"
+import { StyledTd, StyledTh } from "component/tables"
 
 interface TokenTableState {
     data: Partial<LongTokenState>[]
 }
 
 function TokenTable({ data }: TokenTableState) {
-    const StyledTh = chakra(Th, {
-        baseStyle: {
-            color: "white",
-            borderBottom: "0px none",
-            fontWeight: "bold",
-            textTransform: "none",
-        },
-    })
-
-    const StyledTd = chakra(Td, {
-        baseStyle: {
-            borderBottom: "0px none",
-        },
-    })
-
     const columns = ["Asset", "Name", "24H Vol", "Price", "Balance", "Daily Change", "Actions"]
 
     return (
         <Table variant="simple">
-            <Thead>
+            <Thead height={68}>
                 <Tr>
                     {columns.map(column => (
                         <StyledTh>
