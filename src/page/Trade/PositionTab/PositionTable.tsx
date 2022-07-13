@@ -79,8 +79,8 @@ function PositionTable({
             <Thead>
                 <Tr>
                     <Th>Market</Th>
-                    <Th>Qty ({marketState.baseSymbol})</Th>
-                    <Th>Value ({marketState.quoteSymbol})</Th>
+                    <Th>Qty ({marketState.baseSymbolDisplay})</Th>
+                    <Th>Value ({marketState.quoteSymbolDisplay})</Th>
                     <Th>
                         Entry Price ({marketState.baseSymbolDisplay}/{marketState.quoteSymbolDisplay})
                     </Th>
