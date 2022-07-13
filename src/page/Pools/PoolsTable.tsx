@@ -36,7 +36,7 @@ function PoolsTable({ data, handleOnClick }: PoolsTableState) {
                             </Td>
                             <Td borderBottom={0}>
                                 <HStack>
-                                    <VStack>
+                                    <VStack alignItems="start">
                                         <Text>{poolSummary.tvl}</Text>
                                         <StyledAnnotation fontSize="sm" color="gray.400">
                                             {poolSummary.tvlUsd}
