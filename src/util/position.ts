@@ -36,9 +36,12 @@ export function getLongTokenInfos(
     marketStates: { [key: string]: MarketState },
 ) {
     const addresses = Object.keys(longTokenStates)
+    const marketAddresses = Object.keys(marketStates)
 
     let positionTokens: Partial<LongTokenState>[] = []
     for (let i = 0; i < addresses.length; i++) {
+        if (addresses[i] !== marketAddresses[i]) throw new Error("address inconsistency between long token and market")
+
         const tokenInfo = longTokenStates[addresses[i]]
         const marketInfo = marketStates[addresses[i]]
 
