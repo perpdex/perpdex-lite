@@ -19,6 +19,7 @@ function WalletListModal() {
 
     return (
         <Modal
+            size="xl"
             headerText="Connect Wallet"
             isOpen={walletModalIsOpen}
             onClose={toggleWalletModal}

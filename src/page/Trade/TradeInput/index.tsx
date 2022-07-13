@@ -93,9 +93,7 @@ function TradeInput() {
                 onClick={handleSubmit}
                 isLoading={isLoading}
                 isDisabled={isSubmitDisabled}
-                color="white"
-                bgColor="#353E80"
-                borderRadius="10px"
+                customType="base-blue"
             />
         </>
     )

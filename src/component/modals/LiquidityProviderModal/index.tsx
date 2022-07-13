@@ -67,7 +67,7 @@ function LiquidityProviderModal() {
                     <Divider />
                 </VStack>
             }
-            fotter={
+            footer={
                 <Button
                     text="Add Liquidity"
                     customType="base-blue"

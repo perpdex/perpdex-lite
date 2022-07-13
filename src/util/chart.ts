@@ -1,4 +1,4 @@
-import { LineChartUnit, OrderHistoryUnit } from "constant/types"
+import { OrderHistoryUnit } from "constant/types"
 import { BigNumber } from "ethers"
 import { bigNum2Big, x96ToBig } from "./format"
 
@@ -11,8 +11,11 @@ export function cleanUpChartInputData(candlesData: any) {
 
     const inputData = candlesData.candles.nodes.map((d: any) => ({
         time: Number(d.timestamp),
-        value: x96ToBig(BigNumber.from(d.closeX96)).toNumber(),
-    })) as LineChartUnit[]
+        open: x96ToBig(BigNumber.from(d.openX96)).toNumber(),
+        high: x96ToBig(BigNumber.from(d.highX96)).toNumber(),
+        low: x96ToBig(BigNumber.from(d.lowX96)).toNumber(),
+        close: x96ToBig(BigNumber.from(d.closeX96)).toNumber(),
+    }))
 
     if (!inputData || inputData.length === 0) return
 
