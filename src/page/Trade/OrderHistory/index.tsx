@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
-import { Box, Text } from "@chakra-ui/react"
-import OrderHistoryTable from "./OrderHistoryTable"
+import { Box } from "@chakra-ui/react"
+import OrderHistoryTable from "../../../component/tables/OrderHistoryTable"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import { getPositionChangedsQuery } from "queries/trades"
 import { callSubquery } from "util/subquery"
@@ -35,10 +35,12 @@ function OrderHistory() {
                 },
             }}
         >
-            <Text align="center" color={"gray.200"}>
-                Order History
-            </Text>
-            <OrderHistoryTable data={orderHistories} />
+            <OrderHistoryTable
+                title="Order History"
+                baseSymbol={currentMarketState.baseSymbolDisplay}
+                quoteSymbol={currentMarketState.quoteSymbolDisplay}
+                data={orderHistories}
+            />
         </Box>
     )
 }
