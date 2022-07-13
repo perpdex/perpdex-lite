@@ -159,9 +159,12 @@ function usePerpdexLongTokenContainer() {
             if (!state) return
 
             const contract = createLongTokenContract(state.address, signer)
+            contract.connect(signer)
+
             const amountBigNum = big2BigNum(amount, state.assetDecimals)
 
             if (state.assetIsWeth) {
+                // FIX gas issues
                 await contract.depositETH(account, {
                     value: amountBigNum,
                 })
