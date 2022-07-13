@@ -18,7 +18,7 @@ import Button from "../Button"
 interface DiscreteInputModifierState {
     inputLabel?: string
     assetSymbol: string
-    value: Big
+    value?: Big
     maxValue: Big
     discreteValues?: number[]
     handleUpdate: (value: Big) => void
@@ -37,7 +37,7 @@ function DiscreteInputModifier({
     const [inputValue, setInputValue] = useState<string>("")
 
     useEffect(() => {
-        if (value && value.eq(0)) {
+        if (!value) {
             setInputValue("")
         }
     }, [value])

@@ -24,10 +24,10 @@ function PositionTokenHandler({
     doSwitchToMint,
     handleProceed,
 }: PositionTokenHandlerState) {
-    const [inputVal, setInputVal] = useState<Big>(BIG_ZERO)
+    const [inputVal, setInputVal] = useState<Big | undefined>(undefined)
 
     const handleSwitch = (val: boolean) => {
-        setInputVal(BIG_ZERO)
+        setInputVal(undefined)
         doSwitchToMint(val)
     }
 
@@ -70,8 +70,8 @@ function PositionTokenHandler({
                 size="lg"
                 text="Proceed"
                 w="60%"
-                isDisabled={inputVal.eq(0)}
-                onClick={() => handleProceed(inputVal)}
+                isDisabled={!inputVal || inputVal.eq(0) || (currentMaxValue && inputVal.gt(currentMaxValue))}
+                onClick={() => inputVal && handleProceed(inputVal)}
                 mb="30px"
             />
         </>
