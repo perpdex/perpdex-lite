@@ -40,6 +40,8 @@ function OrderHistory() {
                 baseSymbol={currentMarketState.baseSymbolDisplay}
                 quoteSymbol={currentMarketState.quoteSymbolDisplay}
                 data={orderHistories}
+                applyStripe={true}
+                applyPXZero={true}
             />
         </Box>
     )

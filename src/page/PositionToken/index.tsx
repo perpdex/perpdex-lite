@@ -4,7 +4,7 @@ import { Heading, Text } from "@chakra-ui/react"
 import { PerpdexLongTokenContainer } from "container/connection/perpdexLongTokenContainer"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import { getLongTokenInfos } from "util/position"
-import FrameContainer from "component/FrameContainer"
+import FrameContainer from "component/frames/FrameContainer"
 import TokenTable from "./TokenTable"
 
 function PositionToken() {

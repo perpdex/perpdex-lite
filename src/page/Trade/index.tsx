@@ -2,7 +2,7 @@ import React from "react"
 import { VStack, Flex, Box, HStack, Divider } from "@chakra-ui/react"
 
 import ChartHead from "./ChartHead"
-import FrameContainer from "component/FrameContainer"
+import FrameContainer from "component/frames/FrameContainer"
 import TradeInput from "./TradeInput"
 import PositionTab from "./PositionTab"
 import LightWeightChart from "./LightWeightChart"

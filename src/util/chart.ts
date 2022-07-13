@@ -43,7 +43,7 @@ export function cleanUpOrderHistories(queryResponse: any, inverse: boolean) {
         const size = bigNum2Big(base.abs())
 
         const price = x96ToBig(BigNumber.from(history.sharePriceAfterX96), inverse)
-        const time = Number(history.timestamp)
+        const time = new Date(Number(history.timestamp))
         return {
             size,
             isLong,

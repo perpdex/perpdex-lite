@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from "react"
 import { Heading, Text, Box } from "@chakra-ui/react"
 
-import FrameContainer from "component/FrameContainer"
+import FrameContainer from "component/frames/FrameContainer"
 import PoolsTable, { PoolsTableUnit } from "./PoolsTable"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import { useHistory } from "react-router-dom"

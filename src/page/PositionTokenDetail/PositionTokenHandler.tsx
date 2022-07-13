@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react"
-import { VStack, Box, Text, HStack } from "@chakra-ui/react"
+import { VStack, Text, HStack } from "@chakra-ui/react"
 
 // import { CurrencyIcon } from "component/Icon"
 import DiscreteInputModifier from "component/base/DiscreteInputModifier"
@@ -8,6 +8,7 @@ import SideSwitcher from "component/base/SideSwitcher"
 import Big from "big.js"
 import Button from "component/base/Button"
 import { formattedNumberWithCommas } from "util/format"
+import BorderFramePanel from "component/frames/BorderFramePanel"
 
 interface PositionTokenHandlerState {
     isMint: boolean
@@ -40,14 +41,7 @@ function PositionTokenHandler({
     return (
         <>
             <SideSwitcher isBuy={isMint} longText="Mint" shortText="Redeem" doSwitchToBuy={handleSwitch} />
-            <Box
-                w="100%"
-                borderColor="#728BEC"
-                borderWidth={{ base: "0px", md: "1px" }}
-                borderRadius="10px"
-                p={20}
-                mx={{ base: "auto", md: "0" }}
-            >
+            <BorderFramePanel p={20}>
                 <HStack justifyContent={"center"}>
                     <VStack mr="10px">
                         <HStack>
@@ -70,7 +64,7 @@ function PositionTokenHandler({
                         />
                     </VStack>
                 </HStack>
-            </Box>
+            </BorderFramePanel>
             <Button
                 customType="base-blue"
                 size="lg"

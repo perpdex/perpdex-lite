@@ -5,18 +5,27 @@ import { formattedNumberWithCommas } from "util/format"
 import { dateToTime } from "util/time"
 
 interface OrderHistoryTableState {
-    title: string
+    title?: string
     baseSymbol: string
     quoteSymbol: string
     data: OrderHistoryUnit[] | undefined
+    applyStripe?: boolean
+    applyPXZero?: boolean
 }
 
-function OrderHistoryTable({ title, baseSymbol, quoteSymbol, data }: OrderHistoryTableState) {
+function OrderHistoryTable({
+    title,
+    baseSymbol,
+    quoteSymbol,
+    data,
+    applyStripe = false,
+    applyPXZero = false,
+}: OrderHistoryTableState) {
     const StyledTh = chakra(Th, {
         baseStyle: {
             color: "white",
             borderBottom: "0px none",
-            textTransform: "none",
+            // textTransform: "none",
         },
     })
 
@@ -28,27 +37,31 @@ function OrderHistoryTable({ title, baseSymbol, quoteSymbol, data }: OrderHistor
 
     return (
         <>
-            <Text align="center" color={"gray.200"}>
-                {title}
-            </Text>
+            {title && (
+                <Text align="center" color={"gray.200"}>
+                    {title}
+                </Text>
+            )}
             <Table variant="simple" overflowY="scroll">
                 <Thead>
                     <Tr>
-                        <StyledTh>Size({baseSymbol})</StyledTh>
-                        <StyledTh>Price({quoteSymbol})</StyledTh>
-                        <StyledTh>Time</StyledTh>
+                        <StyledTh px={applyPXZero ? 0 : "24px"} w="35%">
+                            Size({baseSymbol})
+                        </StyledTh>
+                        <StyledTh w="35%">Price({quoteSymbol})</StyledTh>
+                        <StyledTh w="30%">Time</StyledTh>
                     </Tr>
                 </Thead>
                 <Tbody>
                     {data &&
                         data.length > 0 &&
                         data.map((value: OrderHistoryUnit, index: number) => (
-                            <Tr bg={index % 2 === 0 ? "rgba(98, 126, 234, 0.2)" : ""}>
-                                <StyledTd color={value.isLong ? "green.300" : "red.300"}>
+                            <Tr bg={applyStripe && index % 2 === 0 ? "rgba(98, 126, 234, 0.2)" : ""}>
+                                <StyledTd color={value.isLong ? "green.300" : "red.300"} px={applyPXZero ? 0 : "24px"}>
                                     {formattedNumberWithCommas(value.size)}
                                 </StyledTd>
                                 <StyledTd>${formattedNumberWithCommas(value.price)}</StyledTd>
-                                <StyledTd>{dateToTime(new Date(value.time))}</StyledTd>
+                                <StyledTd>{dateToTime(value.time)}</StyledTd>
                             </Tr>
                         ))}
                 </Tbody>

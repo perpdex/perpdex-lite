@@ -1,11 +1,14 @@
 import React, { useMemo, useState } from "react"
-import { VStack, Flex, Box, Text, Grid, GridItem, Table, Thead, Tr, Th, Tbody, Td } from "@chakra-ui/react"
+import { VStack, Flex, Box, Text } from "@chakra-ui/react"
 
-import FrameContainer from "component/FrameContainer"
+import FrameContainer from "component/frames/FrameContainer"
 import { PerpdexLongTokenContainer } from "../../container/connection/perpdexLongTokenContainer"
 import { useHistory, useParams } from "react-router-dom"
 import PositionTokenHandler from "./PositionTokenHandler"
 import Big from "big.js"
+import BorderFramePanel from "component/frames/BorderFramePanel"
+import PositionTokenInfo from "./PositionTokenInfo"
+import OrderHistoryTable from "component/tables/OrderHistoryTable"
 
 type RouterParams = {
     marketAddress: string
@@ -62,68 +65,22 @@ function PositionTokenDetail() {
                     />
                 </VStack>
                 <VStack flex="50" spacing={10}>
-                    <Grid
-                        templateColumns="repeat(2, 1fr)"
-                        borderColor="#728BEC"
-                        borderWidth={{ base: "0px", md: "1px" }}
-                        borderRadius="10px"
-                        p={10}
-                        gap={2}
-                    >
-                        <GridItem colSpan={2}>
-                            <Text fontSize="xl">Token Info</Text>
-                        </GridItem>
-                        <Text>Token Info Symbol</Text>
-                        <Text align="end">{longTokenState?.symbol}</Text>
-                        <Text>Name</Text>
-                        <Text align="end"> {longTokenState?.name}</Text>
-                        <Text>Input Token</Text>
-                        <Text align="end"> {longTokenState?.assetSymbol}</Text>
-                        <Text>Total Supply</Text> <Text align="end">{longTokenState?.totalSupply?.toString()}</Text>
-                        <Text>TODO:</Text>
-                        <Text align="end">TODO:</Text>
-                        <Text>TVL</Text>{" "}
-                        <Text align="end">
-                            {longTokenState?.totalAssets?.toString()} {longTokenState?.assetSymbol}
-                        </Text>
-                        <Text>TVL(USD)</Text>
-                        <Text align="end">$ {longTokenState?.totalAssets?.toString()}</Text>
-                        <Text>Address</Text>
-                        <Text align="end" wordBreak="break-all">
-                            {" "}
-                            {longTokenState?.address}
-                        </Text>
-                    </Grid>
-                    <Box
-                        w="100%"
-                        borderColor="#728BEC"
-                        borderWidth={{ base: "0px", md: "1px" }}
-                        borderRadius="10px"
-                        p={6}
-                        mx={{ base: "auto", md: "0" }}
-                    >
-                        <Text fontSize="xl">Order History</Text>
-                        <Table variant="simple" overflowY="scroll">
-                            <Thead>
-                                <Tr>
-                                    <Th border="0px" pl={0}>
-                                        Price(USD)
-                                    </Th>
-                                    <Th border="0px">Size</Th>
-                                    <Th border="0px">Time</Th>
-                                </Tr>
-                            </Thead>
-                            <Tbody>
-                                <Tr>
-                                    <Td border="0px" pl={0}>
-                                        392.21
-                                    </Td>
-                                    <Td border="0px">1.2</Td>
-                                    <Td border="0px">13:17:21</Td>
-                                </Tr>
-                            </Tbody>
-                        </Table>
-                    </Box>
+                    <PositionTokenInfo longTokenState={longTokenState} />
+                    <BorderFramePanel title="Order History">
+                        <OrderHistoryTable
+                            baseSymbol=""
+                            quoteSymbol=""
+                            data={[
+                                {
+                                    isLong: true,
+                                    price: Big(392.21),
+                                    size: Big(1.2),
+                                    time: new Date(),
+                                },
+                            ]}
+                            applyPXZero={true}
+                        />
+                    </BorderFramePanel>
                 </VStack>
             </Flex>
         </FrameContainer>
