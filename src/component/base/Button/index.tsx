@@ -11,6 +11,8 @@ type ButtonType =
     | "outline-green"
     | "base-pink"
     | "outline-pink"
+    | "outline-white"
+    | "rectangle-teal"
 
 interface ButtonState extends Partial<ButtonProps> {
     text: string
@@ -112,6 +114,20 @@ function Button({ text, customType, onClick, ...props }: ButtonState) {
                     leftIcon={<MinusIcon />}
                     {...props}
                 >
+                    {text}
+                </ChakuraButton>
+            )
+
+        case "outline-white":
+            return (
+                <ChakuraButton size="sm" onClick={onClick!} variant="outline" borderRadius="20px" {...props}>
+                    {text}
+                </ChakuraButton>
+            )
+
+        case "rectangle-teal":
+            return (
+                <ChakuraButton colorScheme="teal" variant="ghost" onClick={onClick!} {...props}>
                     {text}
                 </ChakuraButton>
             )

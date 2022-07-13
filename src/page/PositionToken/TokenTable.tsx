@@ -31,8 +31,6 @@ function TokenTable() {
 
     const longTokenInfos = getLongTokenInfos(longTokenStates, marketStates)
 
-    console.log("@@@@@@ longTokenStates", longTokenInfos)
-
     return (
         <Table variant="simple">
             <Thead>
