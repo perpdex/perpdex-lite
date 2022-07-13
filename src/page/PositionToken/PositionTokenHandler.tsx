@@ -1,7 +1,7 @@
-import React, { useState } from "react"
+import React, { useMemo, useState } from "react"
 import { VStack, Box, Text, HStack } from "@chakra-ui/react"
 
-import { CurrencyIcon } from "component/Icon"
+// import { CurrencyIcon } from "component/Icon"
 import DiscreteInputModifier from "component/base/DiscreteInputModifier"
 import { BIG_ZERO } from "constant"
 import SideSwitcher from "component/base/SideSwitcher"
@@ -11,7 +11,8 @@ import { formattedNumberWithCommas } from "util/format"
 
 interface PositionTokenHandlerState {
     isMint: boolean
-    currentSymbol?: string
+    tokenSymbol?: string
+    quoteSymbol?: string
     currentMaxValue?: Big
     doSwitchToMint: (val: boolean) => void
     handleProceed: (val: Big) => void
@@ -19,7 +20,8 @@ interface PositionTokenHandlerState {
 
 function PositionTokenHandler({
     isMint,
-    currentSymbol,
+    tokenSymbol,
+    quoteSymbol,
     currentMaxValue,
     doSwitchToMint,
     handleProceed,
@@ -30,6 +32,10 @@ function PositionTokenHandler({
         setInputVal(undefined)
         doSwitchToMint(val)
     }
+
+    const assetSymbol = useMemo(() => {
+        return quoteSymbol && tokenSymbol ? (isMint ? quoteSymbol : tokenSymbol) : ""
+    }, [isMint, quoteSymbol, tokenSymbol])
 
     return (
         <>
@@ -45,8 +51,8 @@ function PositionTokenHandler({
                 <HStack justifyContent={"center"}>
                     <VStack mr="10px">
                         <HStack>
-                            <CurrencyIcon symbol={currentSymbol || ""} boxSize={6} />
-                            <Text fontSize={"lg"}>{currentSymbol || ""}</Text>
+                            {/* <CurrencyIcon symbol={tokenSymbol} boxSize={6} /> */}
+                            <Text fontSize={"lg"}>{tokenSymbol}</Text>
                         </HStack>
                         <HStack>
                             <Text fontSize={"xs"}>Available:</Text>
@@ -57,7 +63,7 @@ function PositionTokenHandler({
                         <DiscreteInputModifier
                             uiType="white-base"
                             inputLabel="test"
-                            assetSymbol="usd"
+                            assetSymbol={assetSymbol}
                             value={inputVal}
                             maxValue={currentMaxValue || BIG_ZERO}
                             handleUpdate={val => setInputVal(val)}

@@ -55,7 +55,8 @@ function PositionTokenDetail() {
                     <PositionTokenHandler
                         isMint={isMint}
                         doSwitchToMint={doSwitchToMint}
-                        currentSymbol={isMint ? longTokenInfo?.assetSymbol : longTokenInfo?.symbol}
+                        tokenSymbol={longTokenInfo?.symbol}
+                        quoteSymbol={longTokenInfo?.assetSymbol}
                         currentMaxValue={isMint ? longTokenInfo?.maxMint : longTokenInfo?.maxRedeem}
                         handleProceed={handleProceed}
                     />

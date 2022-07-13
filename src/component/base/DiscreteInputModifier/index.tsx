@@ -115,7 +115,7 @@ function DiscreteInputModifier({
         <>
             <NumberInput value={inputValue} onInput={handleOnInput} w="100%">
                 <NumberInputField />
-                <InputRightElement w="54px">
+                <InputRightElement w={assetSymbol.length > 6 ? "90px" : "54px"}>
                     <Text
                         w="100%"
                         textAlign="center"
