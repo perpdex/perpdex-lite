@@ -14,7 +14,18 @@ interface TokenTableState {
 }
 
 function TokenTable({ data }: TokenTableState) {
-    const columns = ["Asset", "Name", "24H Vol", "Price", "Balance", "Daily Change", "Actions"]
+    // 24H VOL is not required because:
+    // - User is not interested in token volume
+    // - It is unclear whether it is the volume of tokens or the volume of the market
+    // - The volume of the market can be seen on another screen
+    const columns = [
+        "Asset",
+        "Name",
+        "Price",
+        "Balance",
+        // "Daily Change", // TODO: implement
+        "Actions",
+    ]
 
     return (
         <Table variant="simple">
@@ -38,10 +49,8 @@ function TokenTable({ data }: TokenTableState) {
                                 </HStack>
                             </StyledTd>
                             <StyledTd>{value.name}</StyledTd>
-                            <StyledTd>-</StyledTd>
                             <StyledTd>{value?.markPrice && formattedNumberWithCommas(value.markPrice)}</StyledTd>
                             <StyledTd>{value?.myAssets && formattedNumberWithCommas(value.myAssets)}</StyledTd>
-                            <StyledTd>-</StyledTd>
                             <StyledTd>
                                 <Link as={ReactLink} to={`/tokens/${value.address}`}>
                                     <Button customType="base-blue" text="Details" />
