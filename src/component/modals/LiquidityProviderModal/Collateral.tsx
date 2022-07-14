@@ -1,8 +1,15 @@
-import { FormControl, InputGroup, InputRightElement, NumberInput, NumberInputField, Text } from "@chakra-ui/react"
+import {
+    FormControl,
+    FormLabel,
+    InputGroup,
+    InputRightElement,
+    NumberInput,
+    NumberInputField,
+    Text,
+} from "@chakra-ui/react"
 import { useCallback, useEffect, useMemo, useState } from "react"
 
 import Big from "big.js"
-import SmallFormLabel from "component/base/SmallFormLabel"
 import { BIG_ZERO, INPUT_PRECISION, USDC_PRECISION } from "constant"
 import { formatInput } from "util/format"
 import { LpCollateralState, MarketState } from "constant/types"
@@ -72,27 +79,14 @@ function Collateral({ currentMarketState, collateralValues, setCollateralValues 
     return useMemo(
         () => (
             <FormControl id="margin">
-                <SmallFormLabel>COLLATERAL</SmallFormLabel>
-                <NumberInput value={baseValue} onInput={handleOnBaseInput}>
-                    <InputGroup>
-                        <NumberInputField />
-                        <InputRightElement w="54px">
-                            <Text
-                                w="100%"
-                                textAlign="center"
-                                fontWeight="bold"
-                                fontSize="xs"
-                                color="blue.500"
-                                textTransform="uppercase"
-                            >
-                                {currentMarketState.baseSymbol}
-                            </Text>
-                        </InputRightElement>
-                    </InputGroup>
-                </NumberInput>
+                <FormLabel>
+                    <Text fontSize="md" color="white">
+                        Collateral Amount
+                    </Text>
+                </FormLabel>
                 <NumberInput value={quoteValue} onInput={handleOnQuoteInput}>
-                    <InputGroup>
-                        <NumberInputField />
+                    <InputGroup border="1px solid #353E80" borderRadius="10px">
+                        <NumberInputField border="0px none" placeholder="Enter value" />
                         <InputRightElement w="54px">
                             <Text
                                 w="100%"
@@ -109,14 +103,7 @@ function Collateral({ currentMarketState, collateralValues, setCollateralValues 
                 </NumberInput>
             </FormControl>
         ),
-        [
-            baseValue,
-            currentMarketState.baseSymbol,
-            currentMarketState.quoteSymbol,
-            handleOnBaseInput,
-            handleOnQuoteInput,
-            quoteValue,
-        ],
+        [currentMarketState.quoteSymbol, handleOnQuoteInput, quoteValue],
     )
 }
 
