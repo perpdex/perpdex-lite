@@ -7,14 +7,13 @@ export const getMarketCandlesQuery = gql`
                 id
                 market
                 timeFormat
-                time
+                timestamp
                 openX96
                 highX96
                 lowX96
                 closeX96
                 baseAmount
                 quoteAmount
-                timestamp
             }
         }
     }
