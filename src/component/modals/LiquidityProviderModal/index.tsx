@@ -1,14 +1,12 @@
-import { Divider, VStack, Text } from "@chakra-ui/react"
+import { VStack } from "@chakra-ui/react"
 import Collateral from "./Collateral"
 import Slippage from "./Slippage"
 import { useCallback, useEffect, useState } from "react"
 import { Modal as ModalContainer } from "container/modal"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
-import { AddIcon } from "@chakra-ui/icons"
 import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
 import { LpCollateralState } from "constant/types"
 import { BIG_ZERO } from "constant"
-import { numberWithCommas } from "../../../util/format"
 import { Trade } from "../../../container/perpetual/trade"
 import Modal from "component/base/Modal"
 import Button from "component/base/Button"
@@ -51,30 +49,18 @@ function LiquidityProviderModal() {
             isOpen={lpModalIsOpen}
             onClose={toggleLpModal}
             size="md"
+            p={5}
             body={
-                <VStack spacing={5}>
-                    <Text align="center" fontSize="medium" fontWeight="bold" lineHeight="1.4">
-                        Mark Price: {numberWithCommas(currentMarketState.markPriceDisplay)}
-                        {currentMarketState.baseSymbolDisplay}/{currentMarketState.quoteSymbolDisplay}
-                    </Text>
+                <VStack spacing={10}>
                     <Collateral
                         currentMarketState={currentMarketState}
                         collateralValues={collateralValues}
                         setCollateralValues={setCollateralValues}
                     />
-                    <Divider />
                     <Slippage />
-                    <Divider />
                 </VStack>
             }
-            footer={
-                <Button
-                    text="Add Liquidity"
-                    customType="base-blue"
-                    onClick={handleAddLiquidity}
-                    leftIcon={<AddIcon />}
-                />
-            }
+            footer={<Button text="Confirm Transaction" customType="base-blue" onClick={handleAddLiquidity} />}
         />
     )
 }
