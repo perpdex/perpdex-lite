@@ -3,7 +3,7 @@ import { BigNumber } from "ethers"
 import { bigNum2Big, x96ToBig } from "./format"
 
 export function sortByTime(data: any, isDesc: boolean) {
-    return data.sort((v1: any, v2: any) => (isDesc ? v2.time - v1.time : v1.time - v2.time))
+    return data.sort((v1: any, v2: any) => (isDesc ? v2.timestamp - v1.timestamp : v1.timestamp - v2.timestamp))
 }
 
 export function cleanUpChartInputData(candlesData: any) {
@@ -23,7 +23,7 @@ export function cleanUpChartInputData(candlesData: any) {
 
     let i = sortedInputData.length
     while (i > 1 && i--) {
-        const diff = sortedInputData[i].time - sortedInputData[i - 1].time
+        const diff = sortedInputData[i].timestamp - sortedInputData[i - 1].timestamp
         if (diff === 0) {
             sortedInputData.splice(i, 1)
         }
