@@ -98,9 +98,11 @@ function usePerpdexExchangeContainer() {
             const positionValue = size.mul(markPrice)
             const entryPrice = takerOpenNotional.abs().div(size.abs())
             const unrealizedPnl = markPrice.div(entryPrice).sub(1).mul(takerOpenNotional.mul(-1))
+            const isLong = size.gt(0)
 
             return {
-                isLong: size.gt(0),
+                isLong: isLong,
+                isLongDisplay: currentMarketState.inverse ? !isLong : isLong,
                 positionQuantity: size,
                 positionValue,
                 entryPriceDisplay: currentMarketState.inverse ? Big(1).div(entryPrice) : entryPrice,

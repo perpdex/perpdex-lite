@@ -87,6 +87,7 @@ export interface LpCollateralState {
 
 export interface PositionState {
     isLong: boolean
+    isLongDisplay: boolean
     positionQuantity: Big
     positionValue: Big
     entryPriceDisplay: Big

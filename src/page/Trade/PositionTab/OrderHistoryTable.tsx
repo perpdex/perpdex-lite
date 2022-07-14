@@ -63,22 +63,26 @@ function OrderHistoryTable() {
             <Tbody>
                 {data &&
                     data.length > 0 &&
-                    data.map((value: OrderHistoryUnit, index: number) => (
-                        <Tr>
-                            <StyledTd>{formatTime(value.time, true)}</StyledTd>
-                            <StyledTd>{marketName}</StyledTd>
-                            <StyledTd>{value.isLong ? "Long" : "Short"}</StyledTd>
-                            <StyledTd>
-                                {formattedNumberWithCommas(value.size)} {currentMarketState.baseSymbol}
-                            </StyledTd>
-                            <StyledTd>
-                                {formattedNumberWithCommas(value.price)} {currentMarketState.quoteSymbol}
-                            </StyledTd>
-                            <StyledTd>
-                                {formattedNumberWithCommas(value.realizedPnl)} {currentMarketState.baseSymbol}
-                            </StyledTd>
-                        </Tr>
-                    ))}
+                    data.map((value: OrderHistoryUnit, index: number) => {
+                        const marketState = currentMarketState
+                        const isLongDisplay = marketState.inverse ? !value.isLong : value.isLong
+                        return (
+                            <Tr>
+                                <StyledTd>{formatTime(value.time, true)}</StyledTd>
+                                <StyledTd>{marketName}</StyledTd>
+                                <StyledTd>{isLongDisplay ? "Long" : "Short"}</StyledTd>
+                                <StyledTd>
+                                    {formattedNumberWithCommas(value.size)} {marketState.baseSymbol}
+                                </StyledTd>
+                                <StyledTd>
+                                    {formattedNumberWithCommas(value.price)} {marketState.quoteSymbol}
+                                </StyledTd>
+                                <StyledTd>
+                                    {formattedNumberWithCommas(value.realizedPnl)} {marketState.baseSymbol}
+                                </StyledTd>
+                            </Tr>
+                        )
+                    })}
             </Tbody>
         </Table>
     )
