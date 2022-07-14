@@ -19,7 +19,7 @@ function TradeInput() {
     const [isBuy, setIsBuy] = useState<boolean>(true)
     const { isLoading } = Transaction.useContainer()
     const [baseOrderValue, setBaseOrderValue] = useState<Big>(BIG_ZERO)
-    const [slippage, setSlippage] = useState<number>(0.5)
+    const [slippage, setSlippage] = useState<number>(2)
 
     // TODO: apply correct values
     const maxCollateral = useMemo(
