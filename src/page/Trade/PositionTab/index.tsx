@@ -40,7 +40,7 @@ function PositionTab() {
         <Tabs variant="unstyled" mb="30px">
             <TabList my={2}>
                 <StyledTab>Positions</StyledTab>
-                <StyledTab>Order History</StyledTab>
+                <StyledTab>Trade History</StyledTab>
             </TabList>
             <Divider borderColor="#627EEA" />
 

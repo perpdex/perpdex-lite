@@ -38,7 +38,7 @@ function OrderHistory() {
             }}
         >
             <OrderHistoryTable
-                title="Order History"
+                title="Trade History"
                 baseSymbol={currentMarketState.baseSymbolDisplay}
                 quoteSymbol={currentMarketState.quoteSymbolDisplay}
                 data={orderHistories}
