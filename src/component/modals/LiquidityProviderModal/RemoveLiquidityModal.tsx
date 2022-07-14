@@ -1,17 +1,14 @@
-import { Divider, VStack, Text, NumberInput, InputGroup, NumberInputField, FormControl } from "@chakra-ui/react"
-import Slippage from "./Slippage"
+import { VStack, Box } from "@chakra-ui/react"
 import React, { useCallback, useEffect, useState, useMemo } from "react"
 import { Modal as ModalContainer } from "container/modal"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
-import { MinusIcon } from "@chakra-ui/icons"
 import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
-import { formatInput, numberWithCommas } from "../../../util/format"
 import { Trade } from "../../../container/perpetual/trade"
 import Big from "big.js"
-import { INPUT_PRECISION } from "../../../constant"
-import SmallFormLabel from "../../base/SmallFormLabel"
 import Modal from "component/base/Modal"
 import Button from "component/base/Button"
+import Summary from "./Summary"
+import Withdraw from "./Withdraw"
 
 function RemoveLiquidityModal() {
     const {
@@ -47,17 +44,6 @@ function RemoveLiquidityModal() {
         removeLiquidity(liq, base.mul(1.0 - slippage / 100), quote.mul(1.0 - slippage / 100))
     }, [liquidity, currentMarketState?.poolInfo, removeLiquidity, slippage])
 
-    const handleOnInput = useCallback(
-        e => {
-            const value = e.target.value
-            if (value >= 0) {
-                const formattedValue = formatInput(value, INPUT_PRECISION)
-                setLiquidity(formattedValue)
-            }
-        },
-        [setLiquidity],
-    )
-
     // Reset values when market is updated
     useEffect(() => {
         if (currentMarketState.baseSymbol) {
@@ -67,36 +53,25 @@ function RemoveLiquidityModal() {
 
     return (
         <Modal
-            headerText="Remove Liquidity"
+            headerText="Close Liquidity Position"
             isOpen={removeLiquidityModalIsOpen}
             onClose={toggleRemoveLiquidityModal}
             size="md"
+            p={5}
             body={
-                <VStack spacing={5}>
-                    <Text align="center" fontSize="medium" fontWeight="bold" lineHeight="1.4">
-                        Mark Price: {numberWithCommas(currentMarketState.markPriceDisplay)}
-                        {currentMarketState.baseSymbolDisplay}/{currentMarketState.quoteSymbolDisplay}
-                    </Text>
-                    <FormControl id="margin">
-                        <SmallFormLabel>Liquidity</SmallFormLabel>
-                        <NumberInput value={liquidity} onInput={handleOnInput}>
-                            <InputGroup>
-                                <NumberInputField />
-                            </InputGroup>
-                        </NumberInput>
-                    </FormControl>
-                    <Text>Liquidity {numberWithCommas(currentMyMakerInfo?.liquidity)}</Text>
-                    <Divider />
-                    <Slippage />
-                    <Divider />
+                <VStack spacing={10}>
+                    <Withdraw />
+                    <Box border="1px solid #353E80" borderRadius="10px" p={6} w="100%">
+                        <Summary />
+                    </Box>
                 </VStack>
             }
             footer={
                 <Button
-                    text="Remove Liquidity"
+                    w="50%"
+                    text="Confirm"
                     customType="base-blue"
                     onClick={handleRemoveLiquidity}
-                    leftIcon={<MinusIcon />}
                     isDisabled={!isEnabled}
                 />
             }
