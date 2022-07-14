@@ -7,6 +7,7 @@ import { useHistory, useParams } from "react-router-dom"
 import PositionTokenHandler from "./PositionTokenHandler"
 import Big from "big.js"
 import PositionTokenInfo from "./PositionTokenInfo"
+import { PerpdexMarketContainer } from "../../container/connection/perpdexMarketContainer"
 
 type RouterParams = {
     marketAddress: string
@@ -19,6 +20,8 @@ function PositionTokenDetail() {
 
     const { longTokenStates, deposit, redeem } = PerpdexLongTokenContainer.useContainer()
     const longTokenState = longTokenStates[marketAddress]
+    const { marketStates } = PerpdexMarketContainer.useContainer()
+    const marketState = marketStates[marketAddress]
 
     console.log("longTokenState", longTokenState)
 
@@ -63,7 +66,7 @@ function PositionTokenDetail() {
                     />
                 </VStack>
                 <VStack flex="50" spacing={10}>
-                    <PositionTokenInfo longTokenState={longTokenState} />
+                    <PositionTokenInfo longTokenState={longTokenState} marketState={marketState} />
                     {/*This order history is not token order history.*/}
                     {/*I don't think it's necessary to implement this at this time*/}
                     {/*<BorderFramePanel title="Order History">*/}
