@@ -83,6 +83,31 @@ export const getPositionChangedsQuery = gql`
     }
 `
 
+export const getPositionChangedsByTraderQuery = gql`
+    query($market: String!, $trader: String!) {
+        positionChangeds(first: 100, filter: { market: { equalTo: $market }, trader: { equalTo: $trader } }) {
+            nodes {
+                id
+                exchange
+                trader
+                market
+                base
+                quote
+                realizedPnl
+                protocolFee
+                baseBalancePerShareX96
+                sharePriceAfterX96
+                liquidator
+                liquidationPenalty
+                liquidationReward
+                insuranceFundReward
+                blockNumberLogIndex
+                timestamp
+            }
+        }
+    }
+`
+
 export const positionChangeds = `
   query {
     positionChangeds(first: 100) {

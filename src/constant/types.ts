@@ -119,4 +119,6 @@ export interface OrderHistoryUnit {
     isLong: boolean
     price: Big
     time: number
+    realizedPnl: Big
+    market: string
 }

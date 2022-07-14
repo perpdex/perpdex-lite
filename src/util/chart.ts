@@ -41,6 +41,7 @@ export function cleanUpOrderHistories(queryResponse: any, inverse: boolean) {
 
         const isLong = base.gt(0)
         const size = bigNum2Big(base.abs())
+        const realizedPnl = bigNum2Big(history.realizedPnl)
 
         const price = x96ToBig(BigNumber.from(history.sharePriceAfterX96), inverse)
         const time = Number(history.timestamp)
@@ -49,6 +50,8 @@ export function cleanUpOrderHistories(queryResponse: any, inverse: boolean) {
             isLong,
             price,
             time,
+            market: history.market,
+            realizedPnl,
         } as OrderHistoryUnit
     })
 

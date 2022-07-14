@@ -1,6 +1,37 @@
 import { chakra, Table, Thead, Tr, Th, Tbody, Td } from "@chakra-ui/react"
+import { PerpdexMarketContainer } from "../../../container/connection/perpdexMarketContainer"
+import { useQuery } from "@apollo/client"
+import { getPositionChangedsByTraderQuery } from "../../../queries/trades"
+import React, { useMemo } from "react"
+import { cleanUpOrderHistories } from "../../../util/chart"
+import { Connection } from "../../../container/connection"
+import { OrderHistoryUnit } from "../../../constant/types"
+import { formattedNumberWithCommas } from "../../../util/format"
+import { formatTime, timezoneStr } from "../../../util/time"
+import { createPoolSummary } from "../../../util/market"
 
 function OrderHistoryTable() {
+    const { account } = Connection.useContainer()
+    const { currentMarket, currentMarketState } = PerpdexMarketContainer.useContainer()
+    const marketName = createPoolSummary(currentMarketState).poolName
+
+    const positionChangedsResult = useQuery(getPositionChangedsByTraderQuery, {
+        variables: {
+            market: currentMarket,
+            trader: account,
+        },
+    })
+
+    const data = useMemo(() => {
+        if (positionChangedsResult.loading || positionChangedsResult.error) return []
+        return cleanUpOrderHistories(positionChangedsResult.data, currentMarketState.inverse)
+    }, [
+        positionChangedsResult.data,
+        positionChangedsResult.loading,
+        positionChangedsResult.error,
+        currentMarketState.inverse,
+    ])
+
     const StyledTh = chakra(Th, {
         baseStyle: {
             color: "white",
@@ -20,23 +51,34 @@ function OrderHistoryTable() {
         <Table variant="simple">
             <Thead>
                 <Tr>
-                    <StyledTh>Time</StyledTh>
-                    <StyledTh>Asset</StyledTh>
+                    <StyledTh>Time({timezoneStr()})</StyledTh>
+                    <StyledTh>Market</StyledTh>
+                    <StyledTh>Side</StyledTh>
                     <StyledTh>Position Size</StyledTh>
-                    <StyledTh>Market Side</StyledTh>
+                    <StyledTh>Price</StyledTh>
                     <StyledTh>Realized PnL</StyledTh>
-                    <StyledTh>Trading Fee</StyledTh>
+                    {/*<StyledTh>Trading Fee</StyledTh>*/}
                 </Tr>
             </Thead>
             <Tbody>
-                <Tr>
-                    <StyledTd>aaaaaa</StyledTd>
-                    <StyledTd>aaaaa</StyledTd>
-                    <StyledTd>aaaaa</StyledTd>
-                    <StyledTd>aaaaa</StyledTd>
-                    <StyledTd>aaaa</StyledTd>
-                    <StyledTd>aaaaa</StyledTd>
-                </Tr>
+                {data &&
+                    data.length > 0 &&
+                    data.map((value: OrderHistoryUnit, index: number) => (
+                        <Tr>
+                            <StyledTd>{formatTime(value.time, true)}</StyledTd>
+                            <StyledTd>{marketName}</StyledTd>
+                            <StyledTd>{value.isLong ? "Long" : "Short"}</StyledTd>
+                            <StyledTd>
+                                {formattedNumberWithCommas(value.size)} {currentMarketState.baseSymbol}
+                            </StyledTd>
+                            <StyledTd>
+                                {formattedNumberWithCommas(value.price)} {currentMarketState.quoteSymbol}
+                            </StyledTd>
+                            <StyledTd>
+                                {formattedNumberWithCommas(value.realizedPnl)} {currentMarketState.baseSymbol}
+                            </StyledTd>
+                        </Tr>
+                    ))}
             </Tbody>
         </Table>
     )
