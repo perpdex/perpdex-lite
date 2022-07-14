@@ -36,7 +36,7 @@ function ClosePositionModal() {
             !closeValue ||
             !closeValue.gt(0) ||
             !currentMyTakerPositions ||
-            closeValue.gt(currentMyTakerPositions.positionQuantity)
+            closeValue.gt(currentMyTakerPositions.positionQuantity.abs())
         )
     }, [closeValue, currentMyTakerPositions])
 
@@ -74,7 +74,7 @@ function ClosePositionModal() {
                             assetSymbol={currentMarketState.baseSymbol}
                             discreteValues={[10, 25, 50, 75, 100]}
                             value={closeValue}
-                            maxValue={currentMyTakerPositions.positionQuantity}
+                            maxValue={currentMyTakerPositions.positionQuantity.abs()}
                             handleUpdate={handleUpdate}
                         />
                     )

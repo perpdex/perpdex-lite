@@ -1,10 +1,7 @@
 import { OrderHistoryUnit } from "constant/types"
 import { BigNumber } from "ethers"
 import { bigNum2Big, x96ToBig } from "./format"
-
-export function sortByTime(data: any, isDesc: boolean) {
-    return data.sort((v1: any, v2: any) => (isDesc ? v2.timestamp - v1.timestamp : v1.timestamp - v2.timestamp))
-}
+import _ from "lodash"
 
 export function cleanUpChartInputData(candlesData: any) {
     if (!candlesData) return
@@ -19,7 +16,7 @@ export function cleanUpChartInputData(candlesData: any) {
 
     if (!inputData || inputData.length === 0) return
 
-    const sortedInputData = sortByTime(inputData, false)
+    const sortedInputData = _.sortBy(inputData, (data: any) => data.time)
 
     let i = sortedInputData.length
     while (i > 1 && i--) {
@@ -44,16 +41,19 @@ export function cleanUpOrderHistories(queryResponse: any, inverse: boolean) {
 
         const isLong = base.gt(0)
         const size = bigNum2Big(base.abs())
+        const realizedPnl = bigNum2Big(history.realizedPnl)
 
         const price = x96ToBig(BigNumber.from(history.sharePriceAfterX96), inverse)
-        const time = new Date(Number(history.timestamp))
+        const time = Number(history.timestamp)
         return {
             size,
             isLong,
             price,
             time,
+            market: history.market,
+            realizedPnl,
         } as OrderHistoryUnit
     })
 
-    return sortByTime(histories, true)
+    return _.sortBy(histories, (data: any) => -data.time)
 }

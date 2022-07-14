@@ -1,3 +1,5 @@
+import moment from "moment"
+
 /*
  *  1616445764 (unix timestamp secs) => return "2021/3/23"
  */
@@ -6,23 +8,20 @@ export function getDate(ts: number) {
     return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`
 }
 
-export function dateToTime(date: Date) {
-    const hours = ("0" + date.getHours()).slice(-2)
-    const minutes = ("0" + date.getMinutes()).slice(-2)
-    const seconds = ("0" + date.getSeconds()).slice(-2)
-    return `${hours}:${minutes}:${seconds}`
+export function timezoneStr() {
+    return moment.unix(0).format("ZZ")
 }
 
-/*
- * [4, 0, 0, 0] => return "4D 0H 0M 0S"
- */
-export function formatTime(ts: number[]) {
-    if (ts.length !== 4) {
-        throw new Error("The format of timestamp is incorrect.")
+export function formatTime(unixtime: number, withoutTimezone: boolean = false) {
+    // Temporary processing until changing the timestamp of subquery to unix timestamp
+    if (unixtime > 4000000000) {
+        unixtime = unixtime / 1000
     }
-    return ["D", "H", "M", "S"].reduce((acc, unit, idx) => {
-        return `${acc} ${ts[idx]}${unit}`
-    }, "")
+    if (withoutTimezone) {
+        return moment.unix(unixtime).format("YYYY/MM/DD hh:mm:ss")
+    } else {
+        return moment.unix(unixtime).format()
+    }
 }
 
 export function getDuration(t: number) {

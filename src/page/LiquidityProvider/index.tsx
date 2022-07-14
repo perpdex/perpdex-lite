@@ -116,6 +116,7 @@ function LiquidityProvider() {
                         marketState={currentMarketState}
                         tvl={poolSummary.tvl}
                         volume24h={poolSummary.volume24h}
+                        fee24h={poolSummary.fee24h}
                     />
                 )}
                 <Center width="100%">

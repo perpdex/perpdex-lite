@@ -15,7 +15,7 @@ function Breadcrumb({ layers }: BreadCrumbState) {
     return (
         <ChakraBreadcrumb mb="4" spacing="8px" separator={<ChevronRightIcon color="gray.500" />}>
             {layers.map((layer: BreadcrumbUnit, index: number) => (
-                <BreadcrumbItem>
+                <BreadcrumbItem key={index}>
                     {layers.length - 1 !== index ? (
                         layer.to ? (
                             <BreadcrumbLink as={ReactLink} to={layer.to}>

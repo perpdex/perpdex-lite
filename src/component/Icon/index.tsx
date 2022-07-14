@@ -361,7 +361,7 @@ export const CurrencyIcon = (props: any) => {
         astr: ASTRIcon,
         sby: ASTRIcon,
     }
-    const SelectedIcon = icons[symbol.toLowerCase()]
+    const SelectedIcon = icons[symbol?.toLowerCase()]
 
     if (SelectedIcon) {
         return <SelectedIcon {...rest}></SelectedIcon>
