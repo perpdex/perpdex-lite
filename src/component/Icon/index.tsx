@@ -2,8 +2,8 @@ import React from "react"
 import { Icon } from "@chakra-ui/react"
 import { ASTRIcon } from "./astr"
 
-// 貼上 svg 然後把 svg tag 改成 Icon，然後
-// Icon 加上 {...props}
+// Paste the svg and change the svg tag to Icon, and then
+// Icon addition {.... .props}
 // fill="currentColor"
 
 const PerpCoin = (props: any) => {
