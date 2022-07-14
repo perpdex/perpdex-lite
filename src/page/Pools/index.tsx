@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from "react"
 import { Heading, Text, Box } from "@chakra-ui/react"
 
-import FrameContainer from "component/FrameContainer"
+import FrameContainer from "component/frames/FrameContainer"
 import PoolsTable, { PoolsTableUnit } from "./PoolsTable"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import { useHistory } from "react-router-dom"
@@ -27,7 +27,7 @@ function Pools() {
             <Heading size="lg" color="#627EEA">
                 Liquidity Pools
             </Heading>
-            <Text mt={2}>
+            <Text marginTop={3} marginBottom={6}>
                 Earn transaction fee on each perpetual future trade by providing liquidity on these pools.
                 <br />
                 You can use leverage on LP tokens as well to earn more by risking more.

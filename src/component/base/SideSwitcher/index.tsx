@@ -4,10 +4,12 @@ import Button from "../Button"
 
 interface SideSwitcherState {
     isBuy: boolean
+    longText: string
+    shortText: string
     doSwitchToBuy: (val: boolean) => void
 }
 
-function SideSwitcher({ isBuy, doSwitchToBuy }: SideSwitcherState) {
+function SideSwitcher({ isBuy, longText, shortText, doSwitchToBuy }: SideSwitcherState) {
     return (
         <FormControl id="margin">
             <Wrap justify="space-between">
@@ -16,7 +18,7 @@ function SideSwitcher({ isBuy, doSwitchToBuy }: SideSwitcherState) {
                         customType={isBuy ? "base-green" : "outline-green"}
                         onClick={() => doSwitchToBuy(true)}
                         width="100%"
-                        text="Buy/Long"
+                        text={longText}
                         isFullWidth
                     />
                 </WrapItem>
@@ -25,7 +27,7 @@ function SideSwitcher({ isBuy, doSwitchToBuy }: SideSwitcherState) {
                         customType={isBuy ? "outline-pink" : "base-pink"}
                         onClick={() => doSwitchToBuy(false)}
                         width="100%"
-                        text="Sell/Short"
+                        text={shortText}
                         isFullWidth
                     />
                 </WrapItem>

@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo } from "react"
-import { VStack, Box, Center, Flex } from "@chakra-ui/react"
+import { VStack, Center, Flex } from "@chakra-ui/react"
 
 import TitleBar from "./TitleBar"
 import YourLiquidity from "./YourLiquidity"
 import PoolInfo from "./PoolInfo"
-import FrameContainer from "component/FrameContainer"
+import FrameContainer from "component/frames/FrameContainer"
 import { Modal } from "container/modal"
 import { PerpdexExchangeContainer } from "container/connection/perpdexExchangeContainer"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
@@ -110,19 +110,14 @@ function LiquidityProvider() {
         <FrameContainer>
             <Breadcrumb layers={breadcrumbLayers} />
             <TitleBar title={poolSummary?.poolName || "-"} />
-            <Flex mt="6">
-                <Box borderStyle="solid" borderWidth="1px" borderRadius="12px" p="4" width={400}>
-                    <VStack spacing={6} p={0}>
-                        {/*<Mining />*/}
-                        {poolSummary && currentMarketState && markPrice && (
-                            <PoolInfo
-                                marketState={currentMarketState}
-                                tvl={poolSummary.tvl}
-                                volume24h={poolSummary.volume24h}
-                            />
-                        )}
-                    </VStack>
-                </Box>
+            <Flex my="6">
+                {poolSummary && currentMarketState && markPrice && (
+                    <PoolInfo
+                        marketState={currentMarketState}
+                        tvl={poolSummary.tvl}
+                        volume24h={poolSummary.volume24h}
+                    />
+                )}
                 <Center width="100%">
                     <VStack>
                         <Button text="Add Liquidity" customType="big-green-plus" width="15em" onClick={toggleLpModal} />
@@ -137,13 +132,7 @@ function LiquidityProvider() {
                     </VStack>
                 </Center>
             </Flex>
-            {haveLiquidity && (
-                <Box borderStyle="solid" borderWidth="1px" borderRadius="12px" p="4" mt="6">
-                    <VStack spacing={6} p={0}>
-                        <YourLiquidity marketInfo={currentMarketState} makerPositionInfo={makerPositionInfo} />
-                    </VStack>
-                </Box>
-            )}
+            {haveLiquidity && <YourLiquidity marketInfo={currentMarketState} makerPositionInfo={makerPositionInfo} />}
         </FrameContainer>
     )
 }

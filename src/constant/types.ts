@@ -1,5 +1,4 @@
 import Big from "big.js"
-import { UTCTimestamp } from "lightweight-charts"
 
 export interface PoolInfo {
     base: Big
@@ -108,11 +107,13 @@ export interface LongTokenState {
     maxMint: Big
     maxWithdraw: Big
     maxRedeem: Big
+    marketSymbol?: string
+    markPrice?: Big
 }
 
 export interface OrderHistoryUnit {
     size: Big
     isLong: boolean
     price: Big
-    time: UTCTimestamp
+    time: Date
 }

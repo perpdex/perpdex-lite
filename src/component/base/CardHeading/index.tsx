@@ -7,7 +7,7 @@ interface CardHeadingState extends Partial<HeadingProps> {
 
 function CardHeading({ text, ...props }: CardHeadingState) {
     return (
-        <Heading w="full" size="md" color="whiteAlpha.700" {...props}>
+        <Heading w="full" size="md" color="whiteAlpha.700" mb={6} {...props}>
             {text}
         </Heading>
     )

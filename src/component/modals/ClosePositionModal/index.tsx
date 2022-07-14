@@ -54,18 +54,26 @@ function ClosePositionModal() {
         }
     }, [closeValue, currentMyTakerPositions, trade])
 
+    const handleCloseModal = useCallback(() => {
+        setCloseValue(BIG_ZERO)
+        togglePositionCloseModal()
+    }, [togglePositionCloseModal])
+
     return useMemo(
         () => (
             <Modal
                 headerText="Close Position"
                 isOpen={positionCloseModalIsOpen}
-                onClose={togglePositionCloseModal}
+                onClose={handleCloseModal}
                 size="md"
                 body={
                     currentMyTakerPositions && (
                         <DiscreteInputModifier
+                            uiType="simple"
                             inputLabel={`Closed qty ${currentMarketState.baseSymbol}`}
                             assetSymbol={currentMarketState.baseSymbol}
+                            discreteValues={[10, 25, 50, 75, 100]}
+                            value={closeValue}
                             maxValue={currentMyTakerPositions.positionQuantity}
                             handleUpdate={handleUpdate}
                         />
@@ -84,13 +92,14 @@ function ClosePositionModal() {
         ),
         [
             positionCloseModalIsOpen,
-            togglePositionCloseModal,
+            handleCloseModal,
             currentMyTakerPositions,
+            currentMarketState.baseSymbol,
+            closeValue,
             handleUpdate,
             handleCloseMarket,
             isDisabled,
             isTxLoading,
-            currentMarketState?.baseSymbol,
         ],
     )
 }

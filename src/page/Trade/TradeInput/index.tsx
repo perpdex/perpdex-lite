@@ -66,7 +66,12 @@ function TradeInput() {
         <>
             <Box background="#181B41" borderRadius="10px" p={6}>
                 <VStack spacing={6}>
-                    <SideSwitcher isBuy={isBuy} doSwitchToBuy={doSwitchToBuy} />
+                    <SideSwitcher
+                        isBuy={isBuy}
+                        longText="Buy/Long"
+                        shortText="Sell/Short"
+                        doSwitchToBuy={doSwitchToBuy}
+                    />
                     <PositionInput
                         baseSymbol={currentMarketState.baseSymbolDisplay}
                         quoteSymbol={currentMarketState.quoteSymbolDisplay}

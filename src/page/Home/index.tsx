@@ -1,8 +1,8 @@
 import { VStack } from "@chakra-ui/react"
 
-import FrameContainer from "component/FrameContainer"
+import FrameContainer from "component/frames/FrameContainer"
 import AccountPanel from "../../component/AccountPanel"
-import AccountInfoTable from "component/AccountInfoTable"
+import AccountInfoTable from "component/tables/AccountInfoTable"
 import { PerpdexMarketContainer } from "../../container/connection/perpdexMarketContainer"
 import { PerpdexExchangeContainer } from "../../container/connection/perpdexExchangeContainer"
 import { User } from "../../container/connection/user"

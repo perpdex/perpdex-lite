@@ -1,8 +1,8 @@
 import { Box, ButtonGroup, HStack, Table, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react"
-import { CurrencyIcon } from "../Icon"
-import { AccountInfo, MarketState } from "../../constant/types"
-import { numberWithCommas } from "../../util/format"
-import Button from "../../component/base/Button"
+import { CurrencyIcon } from "../../Icon"
+import { AccountInfo, MarketState } from "../../../constant/types"
+import { numberWithCommas } from "../../../util/format"
+import Button from "../../base/Button"
 import Big from "big.js"
 
 interface Props {

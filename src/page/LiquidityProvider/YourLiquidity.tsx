@@ -15,8 +15,8 @@ import {
 } from "@chakra-ui/react"
 import { MarketState } from "../../constant/types"
 import { MakerPositionInfo } from "."
-import CardHeading from "component/base/CardHeading"
 import { numberWithCommas } from "../../util/format"
+import BorderFramePanel from "component/frames/BorderFramePanel"
 
 interface YourLiquidityState {
     marketInfo?: MarketState
@@ -27,8 +27,7 @@ function YourLiquidity({ marketInfo, makerPositionInfo }: YourLiquidityState) {
     const collateralSymbol = marketInfo && marketInfo.quoteSymbol
 
     return (
-        <>
-            <CardHeading text="Your Liquidity" />
+        <BorderFramePanel title="Your Liquidity">
             <SimpleGrid width="100%" columns={2} spacing={6}>
                 <Box>
                     <Text fontSize="xs" color="gray.500">
@@ -156,7 +155,7 @@ function YourLiquidity({ marketInfo, makerPositionInfo }: YourLiquidityState) {
                 </VStack>
             </Flex>
             <Divider orientation="horizontal" /> */}
-        </>
+        </BorderFramePanel>
     )
 }
 

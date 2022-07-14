@@ -1,5 +1,5 @@
 import { Box, SimpleGrid, Text } from "@chakra-ui/react"
-import CardHeading from "component/base/CardHeading"
+import BorderFramePanel from "component/frames/BorderFramePanel"
 import { MarketState } from "../../constant/types"
 import { numberWithCommas } from "../../util/format"
 
@@ -28,8 +28,7 @@ function PoolInfo({ marketState, tvl, volume24h }: Props) {
     )
 
     return (
-        <>
-            <CardHeading text="Pool Info" />
+        <BorderFramePanel title="Pool Info" w={560}>
             <SimpleGrid width="100%" columns={2}>
                 <DataRow text="TVL" value={tvl} />
                 {/* <DataRow text="Volume (24h)" value={volume24h} />
@@ -41,7 +40,7 @@ function PoolInfo({ marketState, tvl, volume24h }: Props) {
                     }`}
                 />
             </SimpleGrid>
-        </>
+        </BorderFramePanel>
     )
 }
 

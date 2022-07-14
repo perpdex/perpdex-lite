@@ -1,6 +1,6 @@
 import React, { useMemo } from "react"
-import { Box, Text } from "@chakra-ui/react"
-import OrderHistoryTable from "./OrderHistoryTable"
+import { Box } from "@chakra-ui/react"
+import OrderHistoryTable from "../../../component/tables/OrderHistoryTable"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import { getPositionChangedsQuery } from "queries/trades"
 import { cleanUpOrderHistories } from "util/chart"
@@ -37,10 +37,14 @@ function OrderHistory() {
                 },
             }}
         >
-            <Text align="center" color={"gray.200"}>
-                Order History
-            </Text>
-            <OrderHistoryTable data={orderHistories} />
+            <OrderHistoryTable
+                title="Order History"
+                baseSymbol={currentMarketState.baseSymbolDisplay}
+                quoteSymbol={currentMarketState.quoteSymbolDisplay}
+                data={orderHistories}
+                applyStripe={true}
+                applyPXZero={true}
+            />
         </Box>
     )
 }
