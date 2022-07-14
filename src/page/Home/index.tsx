@@ -1,4 +1,4 @@
-import { Box, VStack } from "@chakra-ui/react"
+import { VStack } from "@chakra-ui/react"
 
 import FrameContainer from "component/FrameContainer"
 import AccountPanel from "../../component/AccountPanel"
@@ -20,17 +20,15 @@ function Home() {
 
     return (
         <FrameContainer>
-            <Box>
-                <VStack w="100%">
-                    <AccountPanel myAccountInfo={currentMyAccountInfo} marketState={currentMarketState} />
-                    <AccountInfoTable
-                        accountAvailable={!!address}
-                        openAccountModal={openAccountModal}
-                        myAccountInfo={currentMyAccountInfo}
-                        marketState={currentMarketState}
-                    />
-                </VStack>
-            </Box>
+            <VStack w="100%">
+                <AccountPanel myAccountInfo={currentMyAccountInfo} marketState={currentMarketState} />
+                <AccountInfoTable
+                    accountAvailable={!!address}
+                    openAccountModal={openAccountModal}
+                    myAccountInfo={currentMyAccountInfo}
+                    marketState={currentMarketState}
+                />
+            </VStack>
         </FrameContainer>
     )
 }
