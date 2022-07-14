@@ -2,7 +2,11 @@ import { gql } from "@apollo/client"
 
 export const getCandlesQuery = gql`
     query($markets: [String!], $timeFormats: [Int!]) {
-        candles(first: 100, filter: { market: { in: $markets }, timeFormat: { in: $timeFormats } }) {
+        candles(
+            first: 100
+            filter: { market: { in: $markets }, timeFormat: { in: $timeFormats } }
+            orderBy: [MARKET_ASC, TIMESTAMP_ASC]
+        ) {
             nodes {
                 id
                 market
