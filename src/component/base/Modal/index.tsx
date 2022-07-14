@@ -6,10 +6,11 @@ import {
     ModalCloseButton,
     ModalBody,
     ModalFooter,
+    ModalContentProps,
 } from "@chakra-ui/react"
 import { ReactNode } from "react"
 
-export interface ModalState {
+export interface ModalState extends Partial<ModalContentProps> {
     headerText: string
     isOpen: boolean
     onClose: () => void
@@ -18,12 +19,12 @@ export interface ModalState {
     footer?: ReactNode
 }
 
-function Modal({ headerText, isOpen, onClose, size, body, footer }: ModalState) {
+function Modal({ headerText, isOpen, onClose, size, body, footer, ...props }: ModalState) {
     return (
         <ChakuraModal isCentered={true} size={size || "xs"} isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
-            <ModalContent bg="#050217" color="whiteAlpha.900">
-                <ModalHeader fontWeight="bold" fontSize="md">
+            <ModalContent bg="#050217" color="whiteAlpha.900" borderRadius="20px" {...props}>
+                <ModalHeader fontWeight="bold" fontSize="lg">
                     {headerText}
                 </ModalHeader>
                 <ModalCloseButton />
