@@ -87,9 +87,10 @@ function PositionTable({
                     <Th>
                         Mark Price ({marketState.baseSymbolDisplay}/{marketState.quoteSymbolDisplay})
                     </Th>
-                    <Th>
-                        Liq. price ({marketState.baseSymbolDisplay}/{marketState.quoteSymbolDisplay})
-                    </Th>
+                    {/*TODO: implement*/}
+                    {/*<Th>*/}
+                    {/*    Liq. price ({marketState.baseSymbolDisplay}/{marketState.quoteSymbolDisplay})*/}
+                    {/*</Th>*/}
                     <Th>Unrealzied PNL ({marketState.quoteSymbol})</Th>
                     <Th>Close Position</Th>
                 </Tr>
@@ -103,7 +104,7 @@ function PositionTable({
                     <Td>{positionValue}</Td>
                     <Td>{entryPriceDisplay.toFixed(7)}</Td>
                     <Td>{markPriceDisplay.toFixed(7)}</Td>
-                    <Td>{liqPriceDisplay.toFixed(7)}</Td>
+                    {/*<Td>{liqPriceDisplay.toFixed(7)}</Td>*/}
                     <Td>{unrealizedPnl}</Td>
                     <Td>
                         <Button customType="base-dark" text="Close Position" onClick={handleOnClick} />
