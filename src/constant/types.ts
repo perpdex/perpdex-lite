@@ -118,5 +118,5 @@ export interface OrderHistoryUnit {
     size: Big
     isLong: boolean
     price: Big
-    time: Date
+    time: number
 }
