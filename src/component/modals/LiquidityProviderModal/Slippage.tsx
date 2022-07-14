@@ -35,36 +35,28 @@ function Slippage() {
                         text="0.5%"
                         borderRadius="20px"
                         onClick={() => handleOnClick(0.5)}
-                    >
-                        0.5%
-                    </Button>
+                    />
                     <Button
                         size="sm"
                         customType={slippage === 1 ? "base-blue" : "base-dark"}
                         text="1%"
                         borderRadius="20px"
                         onClick={() => handleOnClick(1)}
-                    >
-                        1%
-                    </Button>
+                    />
                     <Button
                         size="sm"
                         customType={slippage === 1.5 ? "base-blue" : "base-dark"}
                         text="1.5%"
                         borderRadius="20px"
                         onClick={() => handleOnClick(1.5)}
-                    >
-                        1.5%
-                    </Button>
+                    />
                     <Button
                         size="sm"
                         customType={slippage === 2 ? "base-blue" : "base-dark"}
                         text="2%"
                         borderRadius="20px"
                         onClick={() => handleOnClick(2)}
-                    >
-                        2%
-                    </Button>
+                    />
                 </HStack>
             </Box>
         ),
