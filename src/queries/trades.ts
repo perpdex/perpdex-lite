@@ -1,8 +1,12 @@
 import { gql } from "@apollo/client"
 
-export const getMarketCandlesQuery = gql`
-    query($market: String!) {
-        candles(first: 100, filter: { market: { equalTo: $market } }) {
+export const getCandlesQuery = gql`
+    query($markets: [String!], $timeFormats: [Int!]) {
+        candles(
+            first: 100
+            filter: { market: { in: $markets }, timeFormat: { in: $timeFormats } }
+            orderBy: [MARKET_ASC, TIMESTAMP_ASC]
+        ) {
             nodes {
                 id
                 market
@@ -57,6 +61,31 @@ export const daySummaries = `
 export const getPositionChangedsQuery = gql`
     query($market: String!) {
         positionChangeds(first: 100, filter: { market: { equalTo: $market } }) {
+            nodes {
+                id
+                exchange
+                trader
+                market
+                base
+                quote
+                realizedPnl
+                protocolFee
+                baseBalancePerShareX96
+                sharePriceAfterX96
+                liquidator
+                liquidationPenalty
+                liquidationReward
+                insuranceFundReward
+                blockNumberLogIndex
+                timestamp
+            }
+        }
+    }
+`
+
+export const getPositionChangedsByTraderQuery = gql`
+    query($market: String!, $trader: String!) {
+        positionChangeds(first: 100, filter: { market: { equalTo: $market }, trader: { equalTo: $trader } }) {
             nodes {
                 id
                 exchange

@@ -6,7 +6,7 @@ import Button from "component/base/Button"
 
 export interface PositionTableState {
     marketState: MarketState
-    isLong: boolean
+    isLongDisplay: boolean
     positionQuantity: string
     positionValue: string
     entryPriceDisplay: Big
@@ -17,7 +17,7 @@ export interface PositionTableState {
 }
 
 function PositionTable({
-    isLong,
+    isLongDisplay,
     positionQuantity,
     positionValue,
     entryPriceDisplay,
@@ -79,17 +79,18 @@ function PositionTable({
             <Thead>
                 <Tr>
                     <Th>Market</Th>
-                    <Th>Qty ({marketState.baseSymbolDisplay})</Th>
-                    <Th>Value ({marketState.quoteSymbolDisplay})</Th>
+                    <Th>Qty ({marketState.baseSymbol})</Th>
+                    <Th>Value ({marketState.quoteSymbol})</Th>
                     <Th>
                         Entry Price ({marketState.baseSymbolDisplay}/{marketState.quoteSymbolDisplay})
                     </Th>
                     <Th>
                         Mark Price ({marketState.baseSymbolDisplay}/{marketState.quoteSymbolDisplay})
                     </Th>
-                    <Th>
-                        Liq. price ({marketState.baseSymbolDisplay}/{marketState.quoteSymbolDisplay})
-                    </Th>
+                    {/*TODO: implement*/}
+                    {/*<Th>*/}
+                    {/*    Liq. price ({marketState.baseSymbolDisplay}/{marketState.quoteSymbolDisplay})*/}
+                    {/*</Th>*/}
                     <Th>Unrealzied PNL ({marketState.quoteSymbol})</Th>
                     <Th>Close Position</Th>
                 </Tr>
@@ -98,12 +99,12 @@ function PositionTable({
                 <Tr>
                     <Td>{poolSummary.poolName}</Td>
                     <Td>
-                        <Text color={isLong ? "green.300" : "red.300"}>{positionQuantity}</Text>
+                        <Text color={isLongDisplay ? "green.300" : "red.300"}>{positionQuantity}</Text>
                     </Td>
                     <Td>{positionValue}</Td>
                     <Td>{entryPriceDisplay.toFixed(7)}</Td>
                     <Td>{markPriceDisplay.toFixed(7)}</Td>
-                    <Td>{liqPriceDisplay.toFixed(7)}</Td>
+                    {/*<Td>{liqPriceDisplay.toFixed(7)}</Td>*/}
                     <Td>{unrealizedPnl}</Td>
                     <Td>
                         <Button customType="base-dark" text="Close Position" onClick={handleOnClick} />

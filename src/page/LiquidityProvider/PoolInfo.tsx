@@ -7,9 +7,10 @@ interface Props {
     marketState: MarketState
     tvl: string
     volume24h: string
+    fee24h: string
 }
 
-function PoolInfo({ marketState, tvl, volume24h }: Props) {
+function PoolInfo({ marketState, tvl, volume24h, fee24h }: Props) {
     const DataRow = (data: { text: string; value: string }) => (
         <>
             <Box mb="2">
@@ -31,8 +32,8 @@ function PoolInfo({ marketState, tvl, volume24h }: Props) {
         <BorderFramePanel title="Pool Info" w={560}>
             <SimpleGrid width="100%" columns={2}>
                 <DataRow text="TVL" value={tvl} />
-                {/* <DataRow text="Volume (24h)" value={volume24h} />
-                <DataRow text="24h Fees" value={`- ${marketState.quoteSymbol}`} /> */}
+                <DataRow text="Volume (24h)" value={volume24h} />
+                <DataRow text="24h Fees" value={fee24h} />
                 <DataRow
                     text="Mark Price"
                     value={`${numberWithCommas(marketState.markPriceDisplay)} ${marketState.baseSymbolDisplay}/${

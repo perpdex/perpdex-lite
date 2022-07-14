@@ -6,9 +6,8 @@ import { PerpdexLongTokenContainer } from "../../container/connection/perpdexLon
 import { useHistory, useParams } from "react-router-dom"
 import PositionTokenHandler from "./PositionTokenHandler"
 import Big from "big.js"
-import BorderFramePanel from "component/frames/BorderFramePanel"
 import PositionTokenInfo from "./PositionTokenInfo"
-import OrderHistoryTable from "component/tables/OrderHistoryTable"
+import { PerpdexMarketContainer } from "../../container/connection/perpdexMarketContainer"
 
 type RouterParams = {
     marketAddress: string
@@ -21,8 +20,10 @@ function PositionTokenDetail() {
 
     const { longTokenStates, deposit, redeem } = PerpdexLongTokenContainer.useContainer()
     const longTokenState = longTokenStates[marketAddress]
+    const { marketStates } = PerpdexMarketContainer.useContainer()
+    const marketState = marketStates[marketAddress]
 
-    console.log("longTokenSate", longTokenState)
+    console.log("longTokenState", longTokenState)
 
     const longTokenInfo = useMemo(() => {
         if (longTokenState) {
@@ -65,22 +66,24 @@ function PositionTokenDetail() {
                     />
                 </VStack>
                 <VStack flex="50" spacing={10}>
-                    <PositionTokenInfo longTokenState={longTokenState} />
-                    <BorderFramePanel title="Order History">
-                        <OrderHistoryTable
-                            baseSymbol=""
-                            quoteSymbol=""
-                            data={[
-                                {
-                                    isLong: true,
-                                    price: Big(392.21),
-                                    size: Big(1.2),
-                                    time: new Date(),
-                                },
-                            ]}
-                            applyPXZero={true}
-                        />
-                    </BorderFramePanel>
+                    <PositionTokenInfo longTokenState={longTokenState} marketState={marketState} />
+                    {/*This order history is not token order history.*/}
+                    {/*I don't think it's necessary to implement this at this time*/}
+                    {/*<BorderFramePanel title="Order History">*/}
+                    {/*    <OrderHistoryTable*/}
+                    {/*        baseSymbol=""*/}
+                    {/*        quoteSymbol=""*/}
+                    {/*        data={[*/}
+                    {/*            {*/}
+                    {/*                isLong: true,*/}
+                    {/*                price: Big(392.21),*/}
+                    {/*                size: Big(1.2),*/}
+                    {/*                time: new Date(),*/}
+                    {/*            },*/}
+                    {/*        ]}*/}
+                    {/*        applyPXZero={true}*/}
+                    {/*    />*/}
+                    {/*</BorderFramePanel>*/}
                 </VStack>
             </Flex>
         </FrameContainer>

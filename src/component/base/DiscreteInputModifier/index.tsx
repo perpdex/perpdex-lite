@@ -79,14 +79,7 @@ function DiscreteInputModifier({
                         <InputGroup>
                             <NumberInputField />
                             <InputRightElement w="54px">
-                                <Text
-                                    w="100%"
-                                    textAlign="center"
-                                    fontWeight="bold"
-                                    fontSize="xs"
-                                    color="blue.500"
-                                    textTransform="uppercase"
-                                >
+                                <Text w="100%" textAlign="center" fontWeight="bold" fontSize="xs" color="blue.500">
                                     {assetSymbol}
                                 </Text>
                             </InputRightElement>

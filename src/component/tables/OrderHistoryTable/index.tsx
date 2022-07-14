@@ -2,7 +2,7 @@ import React from "react"
 import { Thead, Table, Tr, Th, Tbody, Td, chakra, Text } from "@chakra-ui/react"
 import { OrderHistoryUnit } from "constant/types"
 import { formattedNumberWithCommas } from "util/format"
-import { dateToTime } from "util/time"
+import { formatTime, timezoneStr } from "util/time"
 
 interface OrderHistoryTableState {
     title?: string
@@ -49,7 +49,7 @@ function OrderHistoryTable({
                             Size({baseSymbol})
                         </StyledTh>
                         <StyledTh w="35%">Price({quoteSymbol})</StyledTh>
-                        <StyledTh w="30%">Time</StyledTh>
+                        <StyledTh w="30%">Time({timezoneStr()})</StyledTh>
                     </Tr>
                 </Thead>
                 <Tbody>
@@ -61,7 +61,7 @@ function OrderHistoryTable({
                                     {formattedNumberWithCommas(value.size)}
                                 </StyledTd>
                                 <StyledTd>${formattedNumberWithCommas(value.price)}</StyledTd>
-                                <StyledTd>{dateToTime(value.time)}</StyledTd>
+                                <StyledTd>{formatTime(value.time, true)}</StyledTd>
                             </Tr>
                         ))}
                 </Tbody>

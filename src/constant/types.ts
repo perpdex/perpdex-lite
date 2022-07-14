@@ -11,6 +11,7 @@ export interface PoolSummary {
     tvl: string
     tvlUsd: string
     volume24h: string
+    fee24h: string
 }
 
 export interface MarketSummary {
@@ -39,6 +40,10 @@ export interface MarketState {
     indexPriceQuote: Big
     indexPriceBase: Big
     inverse: boolean
+    poolFeeRatio: Big
+    // thegraph
+    volume24h: Big
+    fee24h: Big
 }
 
 export interface MakerInfo {
@@ -82,6 +87,7 @@ export interface LpCollateralState {
 
 export interface PositionState {
     isLong: boolean
+    isLongDisplay: boolean
     positionQuantity: Big
     positionValue: Big
     entryPriceDisplay: Big
@@ -107,13 +113,13 @@ export interface LongTokenState {
     maxMint: Big
     maxWithdraw: Big
     maxRedeem: Big
-    marketSymbol?: string
-    markPrice?: Big
 }
 
 export interface OrderHistoryUnit {
     size: Big
     isLong: boolean
     price: Big
-    time: Date
+    time: number
+    realizedPnl: Big
+    market: string
 }

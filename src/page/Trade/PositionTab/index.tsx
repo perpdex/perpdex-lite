@@ -17,7 +17,7 @@ function PositionTab() {
         if (currentMyTakerPositions) {
             return {
                 marketState: currentMarketState,
-                isLong: currentMyTakerPositions.isLong,
+                isLongDisplay: currentMyTakerPositions.isLongDisplay,
                 positionQuantity: currentMyTakerPositions.positionQuantity.abs().toFixed(7),
                 positionValue: currentMyTakerPositions.positionValue.abs().toFixed(7),
                 entryPriceDisplay: currentMyTakerPositions.entryPriceDisplay,
@@ -40,7 +40,7 @@ function PositionTab() {
         <Tabs variant="unstyled" mb="30px">
             <TabList my={2}>
                 <StyledTab>Positions</StyledTab>
-                <StyledTab>Order History</StyledTab>
+                <StyledTab>Trade History</StyledTab>
             </TabList>
             <Divider borderColor="#627EEA" />
 
@@ -49,7 +49,7 @@ function PositionTab() {
                     {positionTableData && (
                         <PositionTable
                             marketState={positionTableData.marketState}
-                            isLong={positionTableData.isLong}
+                            isLongDisplay={positionTableData.isLongDisplay}
                             positionQuantity={positionTableData.positionQuantity}
                             positionValue={positionTableData.positionValue}
                             entryPriceDisplay={positionTableData.entryPriceDisplay}
