@@ -40,6 +40,7 @@ export interface MarketState {
     indexPriceQuote: Big
     indexPriceBase: Big
     inverse: boolean
+    poolFeeRatio: Big
     // thegraph
     volume24h: Big
     fee24h: Big

@@ -40,6 +40,7 @@ const nullMarketState: MarketState = {
     indexPriceQuote: Big(0),
     indexPriceBase: Big(0),
     inverse: false,
+    poolFeeRatio: Big(0),
     // thegraph
     volume24h: Big(0),
     fee24h: Big(0),
@@ -85,6 +86,7 @@ function usePerpdexMarketContainer() {
                         contract.getCumDeleveragedPerLiquidityX96(),
                         contract.priceFeedBase(),
                         contract.priceFeedQuote(),
+                        contract.poolFeeRatio(),
                     ]
                 }),
             )
@@ -92,7 +94,7 @@ function usePerpdexMarketContainer() {
             const multicallResult = await multicallNetworkProvider.all(multicallRequest)
 
             const multicallRequest2 = _.map(_.range(marketAddresses.length), idx => {
-                const exchangeAddress = multicallResult[8 * idx]
+                const exchangeAddress = multicallResult[9 * idx]
                 const exchangeContract = createExchangeContractMulticall(exchangeAddress)
                 return exchangeContract.settlementToken()
             })
@@ -119,7 +121,8 @@ function usePerpdexMarketContainer() {
                     cumDeleveragedPerLiquidityX96,
                     priceFeedBase,
                     priceFeedQuote,
-                ] = multicallResult.slice(8 * i, 8 * (i + 1))
+                    poolFeeRatio,
+                ] = multicallResult.slice(9 * i, 9 * (i + 1))
 
                 const address = marketAddresses[i]
                 const inverse = baseSymbol === "USD"
@@ -153,6 +156,9 @@ function usePerpdexMarketContainer() {
                     indexPriceQuote: Big(0),
                     indexPriceBase: Big(0),
                     inverse: inverse,
+                    volume24h: Big(0),
+                    fee24h: Big(0),
+                    poolFeeRatio: bigNum2Big(poolFeeRatio, 6),
                 }
             }
             setMarketStates(newMarketStates)
