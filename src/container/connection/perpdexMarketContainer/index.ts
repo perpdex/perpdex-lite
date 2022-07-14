@@ -268,7 +268,11 @@ function usePerpdexMarketContainer() {
                         // TODO: refactor (It is not good to update irrelevant data at the polling timing of contract)
                         const nodes = candleResult?.data?.nodes
                         if (nodes) {
-                            const node = _.find(nodes, node => node.market === marketAddress)
+                            // last of complete candle
+                            const node = _.takeRight(
+                                _.filter(nodes, node => node.market === marketAddress),
+                                2,
+                            )[0]
                             if (node) {
                                 draft[marketAddress].volume24h = Big(node.quoteAmount)
                                 draft[marketAddress].fee24 = draft[marketAddress].volume24h.mul(
