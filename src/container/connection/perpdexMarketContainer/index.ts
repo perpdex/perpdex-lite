@@ -17,6 +17,8 @@ import {
 } from "../contractFactory"
 import { useInterval } from "../../../hook/useInterval"
 import produce from "immer"
+import { useQuery } from "@apollo/client"
+import { getCandlesQuery } from "../../../queries/trades"
 
 const nullMarketState: MarketState = {
     address: constants.AddressZero,
@@ -60,6 +62,13 @@ function usePerpdexMarketContainer() {
     const currentMarketState: MarketState = useMemo(() => {
         return marketStates[currentMarket] || nullMarketState
     }, [marketStates, currentMarket])
+
+    const candleResult = useQuery(getCandlesQuery, {
+        variables: {
+            markets: _.keys(marketStates),
+            timeFormats: [24 * 60 * 60],
+        },
+    })
 
     useEffect(() => {
         ;(async () => {
@@ -255,6 +264,18 @@ function usePerpdexMarketContainer() {
                         draft[marketAddress].cumQuotePerLiquidity = x96ToBig(cumDeleveragedPerLiquidityX96[1])
                         draft[marketAddress].indexPriceQuote = indexPriceQuote
                         draft[marketAddress].indexPriceBase = indexPriceBase
+
+                        // TODO: refactor (It is not good to update irrelevant data at the polling timing of contract)
+                        const nodes = candleResult?.data?.nodes
+                        if (nodes) {
+                            const node = _.find(nodes, node => node.market === marketAddress)
+                            if (node) {
+                                draft[marketAddress].volume24h = Big(node.quoteAmount)
+                                draft[marketAddress].fee24 = draft[marketAddress].volume24h.mul(
+                                    draft[marketAddress].poolFeeRatio,
+                                )
+                            }
+                        }
                     }
                 }
             }),
