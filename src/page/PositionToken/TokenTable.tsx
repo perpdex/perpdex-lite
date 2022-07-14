@@ -6,11 +6,16 @@ import Button from "component/base/Button"
 import _ from "lodash"
 import { Link as ReactLink } from "react-router-dom"
 import { formattedNumberWithCommas } from "util/format"
-import { LongTokenState } from "constant/types"
+import { LongTokenState, MarketState } from "constant/types"
 import { StyledTd, StyledTh } from "component/tables"
 
+interface TableItem {
+    longTokenState: LongTokenState
+    marketState: MarketState
+}
+
 interface TokenTableState {
-    data: Partial<LongTokenState>[]
+    data: TableItem[]
 }
 
 function TokenTable({ data }: TokenTableState) {
@@ -22,7 +27,8 @@ function TokenTable({ data }: TokenTableState) {
         "Asset",
         "Name",
         "Price",
-        "Balance",
+        "TVL",
+        "My Balance",
         // "Daily Change", // TODO: implement
         "Actions",
     ]
@@ -39,20 +45,35 @@ function TokenTable({ data }: TokenTableState) {
                 </Tr>
             </Thead>
             <Tbody>
-                {_.map(data, value => {
+                {_.map(data, item => {
+                    const value = item.longTokenState
+                    const marketState = item.marketState
+
+                    const price =
+                        value.totalAssets && value.totalSupply && !value.totalSupply.eq(0)
+                            ? value.totalAssets.div(value.totalSupply)
+                            : void 0
+
                     return (
                         <Tr>
                             <StyledTd>
                                 <HStack>
-                                    <CurrencyIcon symbol={value?.marketSymbol} boxSize={8} />
+                                    <CurrencyIcon symbol={marketState?.baseSymbol} boxSize={8} />
                                     <Text>{value.symbol}</Text>
                                 </HStack>
                             </StyledTd>
                             <StyledTd>{value.name}</StyledTd>
-                            <StyledTd>{value?.markPrice && formattedNumberWithCommas(value.markPrice)}</StyledTd>
-                            <StyledTd>{value?.myAssets && formattedNumberWithCommas(value.myAssets)}</StyledTd>
                             <StyledTd>
-                                <Link as={ReactLink} to={`/tokens/${value.address}`}>
+                                {formattedNumberWithCommas(price)} {value.assetSymbol}
+                            </StyledTd>
+                            <StyledTd>
+                                {formattedNumberWithCommas(value.totalAssets)} {value.assetSymbol}
+                            </StyledTd>
+                            <StyledTd>
+                                {formattedNumberWithCommas(value.myAssets)} {value.assetSymbol}
+                            </StyledTd>
+                            <StyledTd>
+                                <Link as={ReactLink} to={`/tokens/${marketState?.address}`}>
                                     <Button customType="base-blue" text="Details" />
                                 </Link>
                             </StyledTd>

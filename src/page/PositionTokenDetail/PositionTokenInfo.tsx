@@ -3,6 +3,7 @@ import { Grid, GridItem, Text } from "@chakra-ui/react"
 
 import BorderFramePanel from "component/frames/BorderFramePanel"
 import { LongTokenState } from "constant/types"
+import { numberWithCommas } from "../../util/format"
 
 interface PositionTokenInfoState {
     longTokenState: LongTokenState
@@ -21,15 +22,16 @@ function PositionTokenInfo({ longTokenState }: PositionTokenInfoState) {
                 <Text align="end"> {longTokenState?.name}</Text>
                 <Text>Input Token</Text>
                 <Text align="end"> {longTokenState?.assetSymbol}</Text>
-                <Text>Total Supply</Text> <Text align="end">{longTokenState?.totalSupply?.toString()}</Text>
-                <Text>TODO:</Text>
-                <Text align="end">TODO:</Text>
+                <Text>Total Supply</Text>{" "}
+                <Text align="end">
+                    {longTokenState?.totalSupply?.toString()} {longTokenState?.symbol}
+                </Text>
                 <Text>TVL</Text>{" "}
                 <Text align="end">
-                    {longTokenState?.totalAssets?.toString()} {longTokenState?.assetSymbol}
+                    {numberWithCommas(longTokenState?.totalAssets)} {longTokenState?.assetSymbol}
                 </Text>
                 <Text>TVL(USD)</Text>
-                <Text align="end">$ {longTokenState?.totalAssets?.toString()}</Text>
+                <Text align="end">$ {numberWithCommas(longTokenState?.totalAssets)}</Text>
                 <Text>Address</Text>
                 <Text align="end" wordBreak="break-all">
                     {" "}
