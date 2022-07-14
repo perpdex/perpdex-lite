@@ -1,6 +1,6 @@
 import { Icon } from "@chakra-ui/react"
 export const ASTRIcon = (props: any) => (
-    <Icon viewBox="0 0 32 40" {...props}>
+    <Icon viewBox="0 0 32 32" {...props} mb={props.mb || "1"}>
         <path d="M32 0H0V40H32V0Z" fill="url(#pattern0)" />
         <defs>
             <pattern id="pattern0" patternContentUnits="objectBoundingBox" width={1} height={1}>
