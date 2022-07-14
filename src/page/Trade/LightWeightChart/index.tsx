@@ -1,6 +1,6 @@
 import React, { useMemo } from "react"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
-import { getMarketCandlesQuery } from "queries/trades"
+import { getCandlesQuery } from "queries/trades"
 import { cleanUpChartInputData } from "util/chart"
 import { useQuery } from "@apollo/client"
 import Chart from "@qognicafinance/react-lightweight-charts"
@@ -25,8 +25,11 @@ const chartOptions = {
 function LightWeightChart() {
     const { currentMarket } = PerpdexMarketContainer.useContainer()
 
-    const candleResult = useQuery(getMarketCandlesQuery, {
-        variables: { market: currentMarket },
+    const candleResult = useQuery(getCandlesQuery, {
+        variables: {
+            markets: [currentMarket],
+            timeFormats: [60 * 60],
+        },
     })
 
     const candlestickSeries = useMemo(() => {
