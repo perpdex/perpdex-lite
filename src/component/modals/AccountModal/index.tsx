@@ -66,6 +66,14 @@ function AccountModal() {
         isDeposit ? deposit(Big(amount)) : withdraw(Big(amount))
     }, [amount, isDeposit, deposit, withdraw])
 
+    const handleMax = useCallback(() => {
+        const value = currentMyAccountInfo?.collateralBalance
+        if (value) {
+            const formattedValue = value.toFixed(INPUT_PRECISION, Big.roundDown)
+            setAmount(formattedValue)
+        }
+    }, [setAmount, currentMyAccountInfo?.collateralBalance])
+
     return (
         <Modal
             headerText={isDeposit ? "Deposit" : "Withdraw"}
@@ -104,14 +112,23 @@ function AccountModal() {
                             <Box color="rgba(255, 255, 255, 0.6)">
                                 {numberWithCommas(currentMyAccountInfo?.settlementTokenBalance)} available
                             </Box>
-                            <Button size="xs" customType="base-blue" text="MAX" borderRadius="5px" />
+                            {/*TODO: In the case of native token,*/}
+                            {/*it is difficult to calculate max considering gas cost,*/}
+                            {/*so it is not implemented*/}
+                            {/*<Button size="xs" customType="base-blue" text="MAX" borderRadius="5px" />*/}
                         </HStack>
                     ) : (
                         <HStack justifyContent="space-between">
                             <Box color="rgba(255, 255, 255, 0.6)">
                                 {numberWithCommas(currentMyAccountInfo?.collateralBalance)} available to withdraw
                             </Box>
-                            <Button size="xs" customType="base-blue" text="MAX" borderRadius="5px" />
+                            <Button
+                                size="xs"
+                                customType="base-blue"
+                                text="MAX"
+                                borderRadius="5px"
+                                onClick={handleMax}
+                            />
                         </HStack>
                     )}
                 </Stack>
