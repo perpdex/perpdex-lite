@@ -21,7 +21,7 @@ function AccountPanel(props: Props) {
 
     return (
         <Box
-            w={{ base: "100%", lg: "90%" }}
+            w={{ base: "50%", md: "60%", lg: "80%" }}
             bgGradient="linear(180deg, rgba(98, 126, 234, 0.5) 0%, rgba(249, 0, 119, 0.5) 100%);"
             borderRadius={20}
             p={59}
