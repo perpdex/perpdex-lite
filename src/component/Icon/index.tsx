@@ -359,6 +359,7 @@ export const CurrencyIcon = (props: any) => {
         matic: MATICIcon,
         link: LINKIcon,
         astr: ASTRIcon,
+        sby: ASTRIcon,
     }
     const SelectedIcon = icons[symbol.toLowerCase()]
 
