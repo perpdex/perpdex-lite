@@ -1,13 +1,14 @@
 import { OrderHistoryUnit } from "constant/types"
 import { BigNumber } from "ethers"
 import { bigNum2Big, x96ToBig } from "./format"
+import { normalizeToUnixtime } from "./time"
 import _ from "lodash"
 
 export function cleanUpChartInputData(candlesData: any) {
     if (!candlesData) return
 
     const inputData = candlesData.candles.nodes.map((d: any) => ({
-        time: Number(d.timestamp),
+        time: normalizeToUnixtime(Number(d.timestamp)),
         open: x96ToBig(BigNumber.from(d.openX96)).toNumber(),
         high: x96ToBig(BigNumber.from(d.highX96)).toNumber(),
         low: x96ToBig(BigNumber.from(d.lowX96)).toNumber(),
@@ -16,16 +17,7 @@ export function cleanUpChartInputData(candlesData: any) {
 
     if (!inputData || inputData.length === 0) return
 
-    const sortedInputData = _.sortBy(inputData, (data: any) => data.time)
-
-    let i = sortedInputData.length
-    while (i > 1 && i--) {
-        const diff = sortedInputData[i].timestamp - sortedInputData[i - 1].timestamp
-        if (diff === 0) {
-            sortedInputData.splice(i, 1)
-        }
-    }
-    return sortedInputData
+    return _.sortBy(inputData, (data: any) => data.time)
 }
 
 export function cleanUpOrderHistories(queryResponse: any, inverse: boolean) {
@@ -44,7 +36,7 @@ export function cleanUpOrderHistories(queryResponse: any, inverse: boolean) {
         const realizedPnl = bigNum2Big(history.realizedPnl)
 
         const price = x96ToBig(BigNumber.from(history.sharePriceAfterX96), inverse)
-        const time = Number(history.timestamp)
+        const time = normalizeToUnixtime(Number(history.timestamp))
         return {
             size,
             isLong,
