@@ -32,6 +32,7 @@ export function cleanUpOrderHistories(queryResponse: any, inverse: boolean) {
         // const quote = BigNumber.from(history.quote)
 
         const isLong = base.gt(0)
+        const isLongDisplay = inverse ? !isLong : isLong
         const size = bigNum2Big(base.abs())
         const realizedPnl = bigNum2Big(history.realizedPnl)
 
@@ -40,6 +41,7 @@ export function cleanUpOrderHistories(queryResponse: any, inverse: boolean) {
         return {
             size,
             isLong,
+            isLongDisplay,
             price,
             time,
             market: history.market,

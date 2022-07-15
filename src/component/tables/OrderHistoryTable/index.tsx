@@ -57,7 +57,10 @@ function OrderHistoryTable({
                         data.length > 0 &&
                         data.map((value: OrderHistoryUnit, index: number) => (
                             <Tr bg={applyStripe && index % 2 === 0 ? "rgba(98, 126, 234, 0.2)" : ""}>
-                                <StyledTd color={value.isLong ? "green.300" : "red.300"} px={applyPXZero ? 0 : "24px"}>
+                                <StyledTd
+                                    color={value.isLongDisplay ? "green.300" : "red.300"}
+                                    px={applyPXZero ? 0 : "24px"}
+                                >
                                     {formattedNumberWithCommas(value.size)}
                                 </StyledTd>
                                 <StyledTd>${formattedNumberWithCommas(value.price)}</StyledTd>
