@@ -8,6 +8,7 @@ import PositionTokenHandler from "./PositionTokenHandler"
 import Big from "big.js"
 import PositionTokenInfo from "./PositionTokenInfo"
 import { PerpdexMarketContainer } from "../../container/connection/perpdexMarketContainer"
+import { PerpdexExchangeContainer } from "../../container/connection/perpdexExchangeContainer"
 
 type RouterParams = {
     marketAddress: string
@@ -22,18 +23,24 @@ function PositionTokenDetail() {
     const longTokenState = longTokenStates[marketAddress]
     const { marketStates } = PerpdexMarketContainer.useContainer()
     const marketState = marketStates[marketAddress]
+    const { exchangeStates } = PerpdexExchangeContainer.useContainer()
+    const myAccountInfo = exchangeStates[marketState?.exchangeAddress]?.myAccountInfo
 
     console.log("longTokenState", longTokenState)
 
     const longTokenInfo = useMemo(() => {
-        if (longTokenState) {
+        if (longTokenState && myAccountInfo) {
             const { assetSymbol, symbol, maxMint, maxRedeem } = longTokenState
+
+            const balance = myAccountInfo.settlementTokenBalance.mul(0.9)
+            const maxMintRegardingBalance = maxMint.lt(balance) ? maxMint : balance
 
             return {
                 address: marketAddress,
                 assetSymbol,
                 symbol,
                 maxMint,
+                maxMintRegardingBalance,
                 maxRedeem,
             }
         }
@@ -61,7 +68,7 @@ function PositionTokenDetail() {
                         doSwitchToMint={doSwitchToMint}
                         tokenSymbol={longTokenInfo?.symbol}
                         quoteSymbol={longTokenInfo?.assetSymbol}
-                        currentMaxValue={isMint ? longTokenInfo?.maxMint : longTokenInfo?.maxRedeem}
+                        currentMaxValue={isMint ? longTokenInfo?.maxMintRegardingBalance : longTokenInfo?.maxRedeem}
                         handleProceed={handleProceed}
                     />
                 </VStack>
