@@ -71,7 +71,8 @@ export interface AccountInfo {
     settlementTokenBalance: Big
     collateralBalance: Big
     totalAccountValue: Big
-    mmRatio: Big
+    leverage: Big
+    marginRatio: Big
 }
 
 export interface ExchangeState {

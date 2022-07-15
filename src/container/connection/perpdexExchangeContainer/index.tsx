@@ -68,9 +68,9 @@ function usePerpdexExchangeContainer() {
     const currentExchange: string = useMemo(() => {
         return currentMarketState?.exchangeAddress
     }, [currentMarketState?.exchangeAddress])
-    // const currentExchangeState: ExchangeState = useMemo(() => {
-    //     return exchangeStates[currentExchange] || nullExchangeState
-    // }, [exchangeStates, currentExchange])
+    const currentExchangeState: ExchangeState | undefined = useMemo(() => {
+        return exchangeStates[currentExchange]
+    }, [exchangeStates, currentExchange])
     const contractExecuter: ContractExecutor = useMemo(() => {
         return createExchangeExecutor(currentExchange, signer)
     }, [currentExchange, signer])
@@ -180,7 +180,7 @@ function usePerpdexExchangeContainer() {
                 mmRatio,
                 settlementTokenBalance,
                 accountInfo,
-                totalAccountValue,
+                totalAccountValueBigNum,
                 totalPositionNotionalBigNum,
             ] = multicallResult.slice(resultIdx, resultIdx + 6)
             resultIdx += 6
@@ -203,6 +203,7 @@ function usePerpdexExchangeContainer() {
                 }
             })
 
+            const totalAccountValue = bigNum2Big(totalAccountValueBigNum)
             const totalPositionNotional = bigNum2Big(totalPositionNotionalBigNum)
 
             newExchangeStates[exchange.address] = {
@@ -216,10 +217,9 @@ function usePerpdexExchangeContainer() {
                         settlementTokenMetadataLocal[idx].decimals,
                     ),
                     collateralBalance: bigNum2Big(accountInfo.collateralBalance),
-                    totalAccountValue: bigNum2Big(totalAccountValue),
-                    mmRatio: totalPositionNotional.eq(0)
-                        ? Big(0)
-                        : bigNum2Big(totalAccountValue).div(totalPositionNotional),
+                    totalAccountValue: totalAccountValue,
+                    leverage: totalAccountValue.eq(0) ? Big(0) : totalPositionNotional.div(totalAccountValue),
+                    marginRatio: totalPositionNotional.eq(0) ? Big(0) : totalAccountValue.div(totalPositionNotional),
                 },
             }
         })
@@ -391,6 +391,7 @@ function usePerpdexExchangeContainer() {
         // core functions
         exchangeStates,
         // utils (my account of current market)
+        currentExchangeState,
         currentMyAccountInfo,
         currentMyMakerInfo,
         currentMyTakerInfo,
