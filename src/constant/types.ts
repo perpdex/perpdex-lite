@@ -118,6 +118,7 @@ export interface LongTokenState {
 export interface OrderHistoryUnit {
     size: Big
     isLong: boolean
+    isLongDisplay: boolean
     price: Big
     time: number
     realizedPnl: Big
