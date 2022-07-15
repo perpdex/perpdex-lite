@@ -21,7 +21,7 @@ function PositionTokenInfo({ longTokenState, marketState }: Props) {
                 <GridItem colSpan={2}>
                     <Text fontSize="xl">Token Info</Text>
                 </GridItem>
-                <Text>Token Info Symbol</Text>
+                <Text>Symbol</Text>
                 <Text align="end">{longTokenState?.symbol}</Text>
                 <Text>Name</Text>
                 <Text align="end"> {longTokenState?.name}</Text>
