@@ -7,6 +7,7 @@ import TradeInput from "./TradeInput"
 import PositionTab from "./PositionTab"
 import LightWeightChart from "./LightWeightChart"
 import OrderHistory from "./OrderHistory"
+import AccountSummary from "./AccountSummary"
 
 function Trade() {
     return (
@@ -45,6 +46,7 @@ function Trade() {
                         />
                         <VStack spacing={10} p={0}>
                             <TradeInput />
+                            <AccountSummary />
                         </VStack>
                     </HStack>
                 </Box>
