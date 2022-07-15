@@ -12,11 +12,16 @@ export function timezoneStr() {
     return moment.unix(0).format("ZZ")
 }
 
-export function formatTime(unixtime: number, withoutTimezone: boolean = false) {
+export function normalizeToUnixtime(time: number) {
     // Temporary processing until changing the timestamp of subquery to unix timestamp
-    if (unixtime > 4000000000) {
-        unixtime = unixtime / 1000
+    if (time > 4000000000) {
+        time = time / 1000
     }
+    return time
+}
+
+export function formatTime(unixtime: number, withoutTimezone: boolean = false) {
+    unixtime = normalizeToUnixtime(unixtime)
     if (withoutTimezone) {
         return moment.unix(unixtime).format("YYYY/MM/DD hh:mm:ss")
     } else {
