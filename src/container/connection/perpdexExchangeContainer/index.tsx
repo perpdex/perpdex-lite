@@ -347,37 +347,47 @@ function usePerpdexExchangeContainer() {
     }, [maxTrade])
 
     const addLiquidity = useCallback(
-        (base: Big, quote: Big, minBase: Big, minQuote: Big) => {
-            if (contractExecuter && account && currentMarketState) {
+        (baseAmount: Big, quote: Big, slippage: number) => {
+            if (contractExecuter && account && currentMarketState && !currentMarketState.baseBalancePerShare.eq(0)) {
+                const baseShare = baseAmount.div(currentMarketState.baseBalancePerShare)
+                const minBaseShare = baseShare.mul(1.0 - slippage / 100)
+                const minQuote = quote.mul(1.0 - slippage / 100)
+
                 execute(
                     contractExecuter.addLiquidity(
                         currentMarket,
-                        big2BigNum(base.div(currentMarketState.baseBalancePerShare)),
+                        big2BigNum(baseShare),
                         big2BigNum(quote),
-                        big2BigNum(minBase),
+                        big2BigNum(minBaseShare),
                         big2BigNum(minQuote),
                     ),
                 )
             }
         },
-        [account, contractExecuter, execute, currentMarketState],
+        [account, contractExecuter, execute, currentMarketState, currentMarketState.baseBalancePerShare],
     )
 
     const removeLiquidity = useCallback(
-        (liquidity: Big, minBase: Big, minQuote: Big) => {
-            if (contractExecuter && account && currentMarket) {
+        (liquidity: Big, slippage: number) => {
+            if (contractExecuter && account && currentMarket && currentMarketState.poolInfo) {
+                const poolInfo = currentMarketState.poolInfo
+                const baseShare = liquidity.mul(poolInfo.base).div(poolInfo.totalLiquidity)
+                const quote = liquidity.mul(poolInfo.quote).div(poolInfo.totalLiquidity)
+                const minBaseShare = baseShare.mul(1.0 - slippage / 100)
+                const minQuote = quote.mul(1.0 - slippage / 100)
+
                 execute(
                     contractExecuter.removeLiquidity(
                         account,
                         currentMarket,
                         big2BigNum(liquidity),
-                        big2BigNum(minBase),
+                        big2BigNum(minBaseShare),
                         big2BigNum(minQuote),
                     ),
                 )
             }
         },
-        [account, contractExecuter, execute, currentMarket],
+        [account, contractExecuter, execute, currentMarket, currentMarketState.poolInfo],
     )
 
     useInterval(async () => {

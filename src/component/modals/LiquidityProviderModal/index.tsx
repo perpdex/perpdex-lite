@@ -34,7 +34,7 @@ function LiquidityProviderModal() {
         const base = collateralValues.base
         const quote = collateralValues.quote
 
-        addLiquidity(base, quote, base.mul(1.0 - slippage / 100), quote.mul(1.0 - slippage / 100))
+        addLiquidity(base, quote, slippage)
         console.log("slippage", slippage)
     }, [collateralValues.base, collateralValues.quote, addLiquidity, slippage])
 
