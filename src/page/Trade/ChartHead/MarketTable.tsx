@@ -19,11 +19,12 @@ function MarketTable({ data, handleOnClick }: Props) {
                 </Tr>
             </Thead>
             <Tbody>
-                {data.map((row: MarketState) => {
+                {data.map((row: MarketState, index: number) => {
                     return (
                         <Tr
                             _hover={{ backgroundColor: "black.alpha800", opacity: "0.7", cursor: "pointer" }}
                             onClick={() => handleOnClick(row.address)}
+                            key={index}
                         >
                             <Td borderBottom={0} verticalAlign="middle" padding={1}>
                                 <CurrencyIcon symbol={"TODO: row.quoteSymbolDisplay"} boxSize={6} mr={1} />
