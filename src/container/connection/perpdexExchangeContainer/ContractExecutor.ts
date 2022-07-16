@@ -90,7 +90,7 @@ export class ContractExecutor implements PerpdexExchangeActions {
         return this.contract[funcName](...args, {
             ...overrides,
             // NOTE: hard code the gasLimit, until estimateGas function can always return a reasonable number.
-            gasLimit: BigNumber.from(3_800_000),
+            // gasLimit: BigNumber.from(3_800_000),
             value: etherValue ? etherValue : BIG_NUMBER_ZERO,
             // NOTE: Instead of using a lower customized gas price, we use the default gas price which is provided by the metamask.
             // gasPrice: utils.parseUnits("2", "gwei"),
