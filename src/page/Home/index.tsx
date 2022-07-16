@@ -20,7 +20,7 @@ function Home() {
 
     return (
         <FrameContainer>
-            <VStack w="100%">
+            <VStack w="100%" alignItems="normal">
                 <AccountPanel myAccountInfo={currentMyAccountInfo} marketState={currentMarketState} />
                 <AccountInfoTable
                     accountAvailable={!!address}
