@@ -94,6 +94,7 @@ function TradeInput() {
                 isLoading={isLoading}
                 isDisabled={isSubmitDisabled}
                 customType="base-blue"
+                alignSelf="center"
             />
         </>
     )
