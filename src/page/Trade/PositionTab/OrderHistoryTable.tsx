@@ -73,7 +73,7 @@ function OrderHistoryTable() {
                                     {formattedNumberWithCommas(value.size)} {marketState.baseSymbol}
                                 </StyledTd>
                                 <StyledTd>
-                                    {formattedNumberWithCommas(value.price)} {marketState.quoteSymbol}
+                                    {formattedNumberWithCommas(value.priceDisplay)} {marketState.priceUnitDisplay}
                                 </StyledTd>
                                 <StyledTd>
                                     {formattedNumberWithCommas(value.realizedPnl)} {marketState.baseSymbol}

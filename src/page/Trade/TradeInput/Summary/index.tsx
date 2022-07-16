@@ -12,10 +12,11 @@ interface Props {
 function Summary(props: Props) {
     const { error, baseAmount, quoteAmount } = props
     const {
-        currentMarketState: { markPrice },
+        currentMarketState: { markPrice, inverse },
     } = PerpdexMarketContainer.useContainer()
 
     const execPrice = baseAmount.eq(0) ? void 0 : quoteAmount.div(baseAmount)
+    const execPriceDisplay = inverse ? (execPrice && !execPrice.eq(0) ? Big(1).div(execPrice) : void 0) : execPrice
     const priceImpact = execPrice && markPrice && !markPrice.eq(0) ? execPrice.div(markPrice).sub(1).abs() : void 0
 
     return (
@@ -23,7 +24,7 @@ function Summary(props: Props) {
             <Heading w="full" size="md">
                 Transaction estimation
             </Heading>
-            <TxInfoTable execPrice={execPrice} priceImpact={priceImpact} error={error} />
+            <TxInfoTable execPriceDisplay={execPriceDisplay} priceImpact={priceImpact} error={error} />
         </>
     )
 }
