@@ -30,7 +30,7 @@ function PoolsTable({ data, handleOnClick }: PoolsTableState) {
                         <Tr>
                             <Td borderBottom={0}>
                                 <HStack>
-                                    <CurrencyIcon symbol={row.baseSymbolDisplay} boxSize={8} />
+                                    <CurrencyIcon symbol={"TODO: poolSummary.baseSymbolDisplay"} boxSize={8} />
                                     <Text>{poolSummary.poolName}</Text>
                                 </HStack>
                             </Td>

@@ -81,12 +81,8 @@ function PositionTable({
                     <Th>Market</Th>
                     <Th>Qty ({marketState.baseSymbol})</Th>
                     <Th>Value ({marketState.quoteSymbol})</Th>
-                    <Th>
-                        Entry Price ({marketState.baseSymbolDisplay}/{marketState.quoteSymbolDisplay})
-                    </Th>
-                    <Th>
-                        Mark Price ({marketState.baseSymbolDisplay}/{marketState.quoteSymbolDisplay})
-                    </Th>
+                    <Th>Entry Price ({marketState.priceUnitDisplay})</Th>
+                    <Th>Mark Price ({marketState.priceUnitDisplay})</Th>
                     {/*TODO: implement*/}
                     {/*<Th>*/}
                     {/*    Liq. price ({marketState.baseSymbolDisplay}/{marketState.quoteSymbolDisplay})*/}

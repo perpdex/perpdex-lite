@@ -25,8 +25,7 @@ const nullMarketState: MarketState = {
     exchangeAddress: constants.AddressZero,
     baseSymbol: "",
     quoteSymbol: "",
-    baseSymbolDisplay: "",
-    quoteSymbolDisplay: "",
+    priceUnitDisplay: "",
     poolInfo: {
         base: Big(0),
         quote: Big(0),
@@ -148,8 +147,7 @@ function usePerpdexMarketContainer() {
                     exchangeAddress,
                     baseSymbol,
                     quoteSymbol,
-                    baseSymbolDisplay: inverse ? quoteSymbol : baseSymbol,
-                    quoteSymbolDisplay: inverse ? baseSymbol : quoteSymbol,
+                    priceUnitDisplay: inverse ? `${quoteSymbol}/${baseSymbol}` : `${baseSymbol}/${quoteSymbol}`,
                     poolInfo: {
                         base: bigNum2Big(poolInfo.base),
                         quote: bigNum2Big(poolInfo.quote),

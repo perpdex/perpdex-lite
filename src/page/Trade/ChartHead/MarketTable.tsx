@@ -25,8 +25,8 @@ function MarketTable({ data, handleOnClick }: MarketTableState) {
                             onClick={() => handleOnClick(row.address)}
                         >
                             <Td borderBottom={0} verticalAlign="middle" padding={1}>
-                                <CurrencyIcon symbol={row.quoteSymbolDisplay} boxSize={6} mr={1} />
-                                <CurrencyIcon symbol={row.baseSymbolDisplay} boxSize={6} mr={1} />
+                                <CurrencyIcon symbol={"TODO: row.quoteSymbolDisplay"} boxSize={6} mr={1} />
+                                <CurrencyIcon symbol={"TODO: row.baseSymbolDisplay"} boxSize={6} mr={1} />
                                 <span style={{ verticalAlign: "middle" }}>{row.marketName}</span>
                             </Td>
                             <Td borderBottom={0} padding={1}>
