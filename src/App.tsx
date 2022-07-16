@@ -20,7 +20,14 @@ export const App = () => {
     return (
         <Container maxW="container.2xl" pb={20} px={0}>
             <Header />
-            <Divider borderColor="#627EEA" />
+            <Divider
+                borderColor="#627EEA"
+                sx={{
+                    "@media screen and (max-width: 61em)": {
+                        display: "none",
+                    },
+                }}
+            />
             <Box>
                 <Switch>
                     <Route exact path="/" component={Home} />
