@@ -8,12 +8,11 @@ import { Connection } from "../../../container/connection"
 import { OrderHistoryUnit } from "../../../constant/types"
 import { formattedNumberWithCommas } from "../../../util/format"
 import { formatTime, timezoneStr } from "../../../util/time"
-import { createPoolSummary } from "../../../util/market"
 
 function OrderHistoryTable() {
     const { account } = Connection.useContainer()
     const { currentMarket, currentMarketState } = PerpdexMarketContainer.useContainer()
-    const marketName = createPoolSummary(currentMarketState).poolName
+    const marketName = currentMarketState.name
 
     const positionChangedsResult = useQuery(getPositionChangedsByTraderQuery, {
         variables: {
@@ -65,12 +64,11 @@ function OrderHistoryTable() {
                     data.length > 0 &&
                     data.map((value: OrderHistoryUnit, index: number) => {
                         const marketState = currentMarketState
-                        const isLongDisplay = marketState.inverse ? !value.isLong : value.isLong
                         return (
                             <Tr>
                                 <StyledTd>{formatTime(value.time, true)}</StyledTd>
                                 <StyledTd>{marketName}</StyledTd>
-                                <StyledTd>{isLongDisplay ? "Long" : "Short"}</StyledTd>
+                                <StyledTd>{value.isLongDisplay ? "Long" : "Short"}</StyledTd>
                                 <StyledTd>
                                     {formattedNumberWithCommas(value.size)} {marketState.baseSymbol}
                                 </StyledTd>

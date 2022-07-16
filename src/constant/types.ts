@@ -7,7 +7,6 @@ export interface PoolInfo {
 }
 
 export interface PoolSummary {
-    poolName: string
     tvl: string
     tvlUsd: string
     volume24h: string
@@ -27,8 +26,8 @@ export interface MarketState {
     exchangeAddress: string
     baseSymbol: string
     quoteSymbol: string
-    baseSymbolDisplay: string
-    quoteSymbolDisplay: string
+    priceUnitDisplay: string
+    name: string
     poolInfo: PoolInfo
     markPrice: Big
     markPriceDisplay: Big

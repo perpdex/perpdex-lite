@@ -285,7 +285,8 @@ function usePerpdexExchangeContainer() {
 
     const previewTrade = useCallback(
         async (isLong: boolean, amount: Big, slippage: number) => {
-            if (!perpdexExchange || !account || !currentMarketState?.markPrice) return "not prepared"
+            if (!perpdexExchange || !account || !currentMarketState?.markPrice || currentMarketState?.markPrice.eq(0))
+                return "not prepared"
 
             const { isBaseToQuote, isExactInput, oppositeAmountBound } = calcTrade(
                 isLong,

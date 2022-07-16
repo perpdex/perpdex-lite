@@ -2,16 +2,17 @@ import React, { useCallback, useMemo } from "react"
 import { Heading, Text, Box } from "@chakra-ui/react"
 
 import FrameContainer from "component/frames/FrameContainer"
-import PoolsTable, { PoolsTableUnit } from "./PoolsTable"
+import PoolsTable from "./PoolsTable"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import { useHistory } from "react-router-dom"
 import _ from "lodash"
+import { MarketState } from "../../constant/types"
 
 function Pools() {
     const { marketStates } = PerpdexMarketContainer.useContainer()
     const history = useHistory()
 
-    const poolsInfo: PoolsTableUnit[] = useMemo(() => {
+    const poolsInfo: MarketState[] = useMemo(() => {
         return _.values(marketStates)
     }, [marketStates])
 

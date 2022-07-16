@@ -1,5 +1,4 @@
 import { Table, Thead, Tbody, Tr, Th, Td, Text } from "@chakra-ui/react"
-import { createPoolSummary } from "../../../util/market"
 import { MarketState } from "../../../constant/types"
 import Big from "big.js"
 import Button from "component/base/Button"
@@ -42,8 +41,6 @@ function PositionTable({
     //     },
     // })
 
-    const poolSummary = createPoolSummary(marketState)
-
     return (
         // <Table variant="simple">
         //     <Thead>
@@ -81,12 +78,8 @@ function PositionTable({
                     <Th>Market</Th>
                     <Th>Qty ({marketState.baseSymbol})</Th>
                     <Th>Value ({marketState.quoteSymbol})</Th>
-                    <Th>
-                        Entry Price ({marketState.baseSymbolDisplay}/{marketState.quoteSymbolDisplay})
-                    </Th>
-                    <Th>
-                        Mark Price ({marketState.baseSymbolDisplay}/{marketState.quoteSymbolDisplay})
-                    </Th>
+                    <Th>Entry Price ({marketState.priceUnitDisplay})</Th>
+                    <Th>Mark Price ({marketState.priceUnitDisplay})</Th>
                     {/*TODO: implement*/}
                     {/*<Th>*/}
                     {/*    Liq. price ({marketState.baseSymbolDisplay}/{marketState.quoteSymbolDisplay})*/}
@@ -97,7 +90,7 @@ function PositionTable({
             </Thead>
             <Tbody>
                 <Tr>
-                    <Td>{poolSummary.poolName}</Td>
+                    <Td>{marketState.name}</Td>
                     <Td>
                         <Text color={isLongDisplay ? "green.300" : "red.300"}>{positionQuantity}</Text>
                     </Td>
