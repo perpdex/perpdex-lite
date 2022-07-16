@@ -5,6 +5,7 @@ import { PerpdexMarketContainer } from "container/connection/perpdexMarketContai
 import { getPositionChangedsQuery } from "queries/trades"
 import { cleanUpOrderHistories } from "util/chart"
 import { useQuery } from "@apollo/client"
+import _ from "lodash"
 
 function OrderHistory() {
     const { currentMarket, currentMarketState } = PerpdexMarketContainer.useContainer()
@@ -15,7 +16,7 @@ function OrderHistory() {
 
     const orderHistories = useMemo(() => {
         if (positionChangedsResult.loading || positionChangedsResult.error) return []
-        return cleanUpOrderHistories(positionChangedsResult.data, currentMarketState.inverse)
+        return _.take(cleanUpOrderHistories(positionChangedsResult.data, currentMarketState.inverse), 7)
     }, [
         positionChangedsResult.data,
         positionChangedsResult.loading,
