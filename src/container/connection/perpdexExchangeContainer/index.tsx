@@ -1,4 +1,4 @@
-import { BIG_NUMBER_ZERO } from "../../../constant"
+import { BIG_NUMBER_ZERO, BIG_BASE_SHARE_DUST, BIG_LIQUIDITY_DUST } from "../../../constant"
 import { big2BigNum, bigNum2Big, bigNum2FixedStr, x96ToBig } from "util/format"
 import { useCallback, useEffect, useMemo, useState } from "react"
 
@@ -34,16 +34,33 @@ const createExchangeExecutor = (address: string, signer: any) => {
     return new ContractExecutor(createExchangeContract(address, signer), signer)
 }
 
-function calcTrade(isLong: boolean, amount: Big, marketState: MarketState, slippage: number) {
+function calcTrade(
+    isLong: boolean,
+    amount: Big,
+    marketState: MarketState,
+    slippage: number,
+    currentTakerBaseShare: Big,
+) {
     const _slippage = slippage / 100
     const { markPrice, baseBalancePerShare } = marketState
-    const share = amount.div(baseBalancePerShare)
 
     let oppositeAmountBound
     if (isLong) {
         oppositeAmountBound = amount.mul(markPrice).mul(1 + _slippage)
     } else {
         oppositeAmountBound = amount.mul(markPrice).mul(1 - _slippage)
+    }
+
+    let share = amount.div(baseBalancePerShare)
+    const shareDust = BIG_BASE_SHARE_DUST.div(baseBalancePerShare)
+    if (
+        currentTakerBaseShare.lt(0) === isLong &&
+        currentTakerBaseShare
+            .add(share.mul(isLong ? 1 : -1))
+            .abs()
+            .lte(shareDust)
+    ) {
+        share = currentTakerBaseShare.abs()
     }
 
     console.log("@@@@", isLong, amount.toString(), oppositeAmountBound.toString())
@@ -266,6 +283,7 @@ function usePerpdexExchangeContainer() {
                 baseAmount,
                 currentMarketState,
                 slippage,
+                currentMyTakerInfo?.baseBalanceShare || Big(0),
             )
 
             if (contractExecuter && account && currentMarket) {
@@ -281,7 +299,7 @@ function usePerpdexExchangeContainer() {
                 )
             }
         },
-        [currentMarketState, contractExecuter, account, currentMarket, execute],
+        [currentMarketState, contractExecuter, account, currentMarket, execute, currentMyTakerInfo?.baseBalanceShare],
     )
 
     const previewTrade = useCallback(
@@ -294,6 +312,7 @@ function usePerpdexExchangeContainer() {
                 baseAmount,
                 currentMarketState,
                 slippage,
+                currentMyTakerInfo?.baseBalanceShare || Big(0),
             )
 
             console.log(baseAmount, bigNum2FixedStr(oppositeAmountBound, 18))
@@ -314,7 +333,7 @@ function usePerpdexExchangeContainer() {
                 return getErrorMessageFromReason(getReason(err))
             }
         },
-        [account, perpdexExchange, currentMarket, currentMarketState?.markPrice],
+        [account, perpdexExchange, currentMarket, currentMarketState?.markPrice, currentMyTakerInfo?.baseBalanceShare],
     )
 
     const maxTrade = useCallback(
@@ -370,6 +389,10 @@ function usePerpdexExchangeContainer() {
     const removeLiquidity = useCallback(
         (liquidity: Big, slippage: number) => {
             if (contractExecuter && account && currentMarket && currentMarketState.poolInfo) {
+                if (currentMyMakerInfo?.liquidity.sub(liquidity).abs().lte(BIG_LIQUIDITY_DUST)) {
+                    liquidity = currentMyMakerInfo?.liquidity
+                }
+
                 const poolInfo = currentMarketState.poolInfo
                 const baseShare = liquidity.mul(poolInfo.base).div(poolInfo.totalLiquidity)
                 const quote = liquidity.mul(poolInfo.quote).div(poolInfo.totalLiquidity)
