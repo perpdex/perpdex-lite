@@ -12,7 +12,7 @@ function Header() {
                     <Logo></Logo>
                 </Link>
             </Center>
-            <Center marginLeft="18px">
+            <Center marginLeft="18px" marginRight="18px">
                 <Link to="/">
                     <Heading size="md">PerpDEX</Heading>
                 </Link>
