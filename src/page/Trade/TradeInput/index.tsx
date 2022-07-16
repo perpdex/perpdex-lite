@@ -43,13 +43,11 @@ function TradeInput() {
     const handleBasePositionInput = useCallback((value: Big | null) => {
         if (value !== null) {
             setBaseOrderValue(value)
-            updatePreview()
         }
     }, [])
 
     const doSwitchToBuy = (val: boolean) => {
         setIsBuy(val)
-        updatePreview()
     }
 
     useEffect(() => {
@@ -78,7 +76,11 @@ function TradeInput() {
                 oppositeAmount: bigNum2Big(results),
             })
         }
-    }, [setPreviewResult, preview, isBuy, baseOrderValue, slippage])
+    }, [setPreviewResult, preview?.trade, isBuy, baseOrderValue, slippage])
+
+    useEffect(() => {
+        updatePreview()
+    }, [updatePreview])
 
     const handleSubmit = useCallback(async () => {
         if (baseOrderValue) {
@@ -97,8 +99,8 @@ function TradeInput() {
                         doSwitchToBuy={doSwitchToBuy}
                     />
                     <PositionInput
-                        baseSymbol={currentMarketState.baseSymbolDisplay}
-                        quoteSymbol={currentMarketState.quoteSymbolDisplay}
+                        baseSymbol={currentMarketState.baseSymbol}
+                        quoteSymbol={currentMarketState.quoteSymbol}
                         baseOrderValue={baseOrderValue}
                         markPrice={currentMarketState.markPrice}
                         maxCollateral={maxCollateral}
