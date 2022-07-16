@@ -9,7 +9,7 @@ function Summary() {
 
     return (
         <>
-            <Heading w="full" size="md" mb={8}>
+            <Heading w="full" size="md">
                 Account Summary
             </Heading>
             <AccountInfoTable

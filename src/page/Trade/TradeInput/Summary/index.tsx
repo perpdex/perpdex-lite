@@ -20,7 +20,7 @@ function Summary(props: Props) {
 
     return (
         <>
-            <Heading w="full" size="md" mb={4}>
+            <Heading w="full" size="md">
                 Transaction estimation
             </Heading>
             <TxInfoTable execPrice={execPrice} priceImpact={priceImpact} error={error} />
