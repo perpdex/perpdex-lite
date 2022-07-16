@@ -11,10 +11,11 @@ import AccountSummary from "./AccountSummary"
 
 function Trade() {
     const [height, setHeight] = useState<number | undefined>(0)
+    const divRef = React.useRef<HTMLDivElement>(null)
 
     useEffect(() => {
-        if (document.getElementById("transaction")?.offsetHeight) {
-            setHeight(document.getElementById("transaction")?.offsetHeight)
+        if (divRef.current) {
+            setHeight(divRef.current.offsetHeight)
         }
     }, [])
 
@@ -39,8 +40,8 @@ function Trade() {
                     />
                     <PositionTab />
                 </Box>
-                <Box id="transaction" w="100%">
-                    <HStack spacing={8} justifyContent={{ base: "flex-start", lg: "center" }}>
+                <Box ref={divRef} w="100%">
+                    <HStack spacing={8} justifyContent="flex-start">
                         <Divider
                             orientation="vertical"
                             border="1px"
