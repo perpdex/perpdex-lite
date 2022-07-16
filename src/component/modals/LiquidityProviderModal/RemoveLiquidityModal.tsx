@@ -40,11 +40,7 @@ function RemoveLiquidityModal() {
 
     const handleRemoveLiquidity = useCallback(() => {
         const liq = Big(liquidity)
-        const poolInfo = currentMarketState.poolInfo
-        const base = liq.mul(poolInfo.base).div(poolInfo.totalLiquidity)
-        const quote = liq.mul(poolInfo.quote).div(poolInfo.totalLiquidity)
-
-        removeLiquidity(liq, base.mul(1.0 - slippage / 100), quote.mul(1.0 - slippage / 100))
+        removeLiquidity(liq, slippage)
     }, [liquidity, currentMarketState?.poolInfo, removeLiquidity, slippage])
 
     const handleOnInput = useCallback(
@@ -75,7 +71,7 @@ function RemoveLiquidityModal() {
                 <VStack spacing={5}>
                     <Text align="center" fontSize="medium" fontWeight="bold" lineHeight="1.4">
                         Mark Price: {numberWithCommas(currentMarketState.markPriceDisplay)}
-                        {currentMarketState.baseSymbolDisplay}/{currentMarketState.quoteSymbolDisplay}
+                        {currentMarketState.priceUnitDisplay}
                     </Text>
                     <FormControl id="margin">
                         <SmallFormLabel>Liquidity</SmallFormLabel>

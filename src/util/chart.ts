@@ -3,6 +3,7 @@ import { BigNumber } from "ethers"
 import { bigNum2Big, x96ToBig } from "./format"
 import { normalizeToUnixtime } from "./time"
 import _ from "lodash"
+import Big from "big.js"
 
 export function cleanUpChartInputData(candlesData: any) {
     if (!candlesData) return
@@ -36,13 +37,16 @@ export function cleanUpOrderHistories(queryResponse: any, inverse: boolean) {
         const size = bigNum2Big(base.abs())
         const realizedPnl = bigNum2Big(history.realizedPnl)
 
-        const price = x96ToBig(BigNumber.from(history.sharePriceAfterX96), inverse)
+        const sharePrice = x96ToBig(BigNumber.from(history.sharePriceAfterX96))
+        const baseBalancePerShare = x96ToBig(BigNumber.from(history.baseBalancePerShareX96))
+        const price = sharePrice.div(baseBalancePerShare)
+        const priceDisplay = inverse ? Big(1).div(price) : price
         const time = normalizeToUnixtime(Number(history.timestamp))
         return {
             size,
             isLong,
             isLongDisplay,
-            price,
+            priceDisplay,
             time,
             market: history.market,
             realizedPnl,

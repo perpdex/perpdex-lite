@@ -1,4 +1,4 @@
-import { BIG_NUMBER_ZERO } from "../../../constant"
+import { BIG_NUMBER_ZERO, BIG_BASE_SHARE_DUST, BIG_LIQUIDITY_DUST } from "../../../constant"
 import { big2BigNum, bigNum2Big, bigNum2FixedStr, x96ToBig } from "util/format"
 import { useCallback, useEffect, useMemo, useState } from "react"
 
@@ -19,6 +19,7 @@ import {
     createExchangeContract,
     createExchangeContractMulticall,
 } from "../contractFactory"
+import { getErrorMessageFromReason, getReason } from "../../../util/error"
 
 interface settlementTokenMetadataUnit {
     decimals: number
@@ -33,21 +34,39 @@ const createExchangeExecutor = (address: string, signer: any) => {
     return new ContractExecutor(createExchangeContract(address, signer), signer)
 }
 
-function calcTrade(isLong: boolean, amount: Big, marketState: MarketState, slippage: number) {
+function calcTrade(
+    isLong: boolean,
+    amount: Big,
+    marketState: MarketState,
+    slippage: number,
+    currentTakerBaseShare: Big,
+) {
     const _slippage = slippage / 100
     const { markPrice, baseBalancePerShare } = marketState
-    const share = amount.div(baseBalancePerShare)
 
     let oppositeAmountBound
     if (isLong) {
-        oppositeAmountBound = share.mul(markPrice).mul(1 + _slippage)
+        oppositeAmountBound = amount.mul(markPrice).mul(1 + _slippage)
     } else {
-        oppositeAmountBound = share.mul(markPrice).mul(1 - _slippage)
+        oppositeAmountBound = amount.mul(markPrice).mul(1 - _slippage)
+    }
+
+    let share = amount.div(baseBalancePerShare)
+    const shareDust = BIG_BASE_SHARE_DUST.div(baseBalancePerShare)
+    if (
+        currentTakerBaseShare.lt(0) === isLong &&
+        currentTakerBaseShare
+            .add(share.mul(isLong ? 1 : -1))
+            .abs()
+            .lte(shareDust)
+    ) {
+        share = currentTakerBaseShare.abs()
     }
 
     console.log("@@@@", isLong, amount.toString(), oppositeAmountBound.toString())
 
     return {
+        baseShare: share,
         isBaseToQuote: !isLong,
         isExactInput: !isLong,
         oppositeAmountBound: big2BigNum(oppositeAmountBound),
@@ -89,10 +108,10 @@ function usePerpdexExchangeContainer() {
 
     const currentMyTakerPositions: PositionState | undefined = useMemo(() => {
         if (currentMarketState && currentMyTakerInfo) {
-            const { markPrice } = currentMarketState
+            const { markPrice, baseBalancePerShare } = currentMarketState
 
             const takerOpenNotional = currentMyTakerInfo.quoteBalance
-            const size = currentMyTakerInfo.baseBalanceShare.mul(currentMarketState.baseBalancePerShare)
+            const size = currentMyTakerInfo.baseBalanceShare.mul(baseBalancePerShare)
             if (size.eq(0)) return
 
             const positionValue = size.mul(markPrice)
@@ -257,13 +276,14 @@ function usePerpdexExchangeContainer() {
     )
 
     const trade = useCallback(
-        (isLong: boolean, amount: Big, slippage: number) => {
+        (isLong: boolean, baseAmount: Big, slippage: number) => {
             if (!currentMarketState || !currentMarketState.markPrice) return
-            const { isBaseToQuote, isExactInput, oppositeAmountBound } = calcTrade(
+            const { baseShare, isBaseToQuote, isExactInput, oppositeAmountBound } = calcTrade(
                 isLong,
-                amount,
+                baseAmount,
                 currentMarketState,
                 slippage,
+                currentMyTakerInfo?.baseBalanceShare || Big(0),
             )
 
             if (contractExecuter && account && currentMarket) {
@@ -273,44 +293,47 @@ function usePerpdexExchangeContainer() {
                         currentMarket,
                         isBaseToQuote,
                         isExactInput,
-                        big2BigNum(amount),
+                        big2BigNum(baseShare),
                         oppositeAmountBound,
                     ),
                 )
             }
         },
-        [currentMarketState, contractExecuter, account, currentMarket, execute],
+        [currentMarketState, contractExecuter, account, currentMarket, execute, currentMyTakerInfo?.baseBalanceShare],
     )
 
     const previewTrade = useCallback(
-        async (isLong: boolean, amount: Big, slippage: number) => {
-            if (perpdexExchange && account && currentMarketState && currentMarketState.markPrice) {
-                const { isBaseToQuote, isExactInput, oppositeAmountBound } = calcTrade(
-                    isLong,
-                    amount,
-                    currentMarketState,
-                    slippage,
-                )
+        async (isLong: boolean, baseAmount: Big, slippage: number) => {
+            if (!perpdexExchange || !account || !currentMarketState?.markPrice || currentMarketState?.markPrice.eq(0))
+                return "not prepared"
 
-                console.log(amount, bigNum2FixedStr(oppositeAmountBound, 18))
+            const { baseShare, isBaseToQuote, isExactInput, oppositeAmountBound } = calcTrade(
+                isLong,
+                baseAmount,
+                currentMarketState,
+                slippage,
+                currentMyTakerInfo?.baseBalanceShare || Big(0),
+            )
 
-                try {
-                    const results = await perpdexExchange.callStatic.trade({
-                        trader: account,
-                        market: currentMarket,
-                        isBaseToQuote,
-                        isExactInput,
-                        amount: big2BigNum(amount),
-                        oppositeAmountBound,
-                        deadline: BigNumber.from(2).pow(96),
-                    })
-                    return results
-                } catch (err) {
-                    console.error("Error previewTrade", err)
-                }
+            console.log(baseAmount, bigNum2FixedStr(oppositeAmountBound, 18))
+
+            try {
+                const results = await perpdexExchange.callStatic.trade({
+                    trader: account,
+                    market: currentMarket,
+                    isBaseToQuote,
+                    isExactInput,
+                    amount: big2BigNum(baseShare),
+                    oppositeAmountBound,
+                    deadline: BigNumber.from(2).pow(96),
+                })
+                return results
+            } catch (err) {
+                console.error("Error previewTrade", err)
+                return getErrorMessageFromReason(getReason(err))
             }
         },
-        [account, perpdexExchange, currentMarketState, currentMarket],
+        [account, perpdexExchange, currentMarket, currentMarketState?.markPrice, currentMyTakerInfo?.baseBalanceShare],
     )
 
     const maxTrade = useCallback(
@@ -343,37 +366,51 @@ function usePerpdexExchangeContainer() {
     }, [maxTrade])
 
     const addLiquidity = useCallback(
-        (base: Big, quote: Big, minBase: Big, minQuote: Big) => {
-            if (contractExecuter && account && currentMarketState) {
+        (baseAmount: Big, quote: Big, slippage: number) => {
+            if (contractExecuter && account && currentMarketState && !currentMarketState.baseBalancePerShare.eq(0)) {
+                const baseShare = baseAmount.div(currentMarketState.baseBalancePerShare)
+                const minBaseShare = baseShare.mul(1.0 - slippage / 100)
+                const minQuote = quote.mul(1.0 - slippage / 100)
+
                 execute(
                     contractExecuter.addLiquidity(
                         currentMarket,
-                        big2BigNum(base.div(currentMarketState.baseBalancePerShare)),
+                        big2BigNum(baseShare),
                         big2BigNum(quote),
-                        big2BigNum(minBase),
+                        big2BigNum(minBaseShare),
                         big2BigNum(minQuote),
                     ),
                 )
             }
         },
-        [account, contractExecuter, execute, currentMarketState],
+        [account, contractExecuter, execute, currentMarketState, currentMarketState.baseBalancePerShare],
     )
 
     const removeLiquidity = useCallback(
-        (liquidity: Big, minBase: Big, minQuote: Big) => {
-            if (contractExecuter && account && currentMarket) {
+        (liquidity: Big, slippage: number) => {
+            if (contractExecuter && account && currentMarket && currentMarketState.poolInfo) {
+                if (currentMyMakerInfo?.liquidity.sub(liquidity).abs().lte(BIG_LIQUIDITY_DUST)) {
+                    liquidity = currentMyMakerInfo?.liquidity
+                }
+
+                const poolInfo = currentMarketState.poolInfo
+                const baseShare = liquidity.mul(poolInfo.base).div(poolInfo.totalLiquidity)
+                const quote = liquidity.mul(poolInfo.quote).div(poolInfo.totalLiquidity)
+                const minBaseShare = baseShare.mul(1.0 - slippage / 100)
+                const minQuote = quote.mul(1.0 - slippage / 100)
+
                 execute(
                     contractExecuter.removeLiquidity(
                         account,
                         currentMarket,
                         big2BigNum(liquidity),
-                        big2BigNum(minBase),
+                        big2BigNum(minBaseShare),
                         big2BigNum(minQuote),
                     ),
                 )
             }
         },
-        [account, contractExecuter, execute, currentMarket],
+        [account, contractExecuter, execute, currentMarket, currentMarketState.poolInfo],
     )
 
     useInterval(async () => {

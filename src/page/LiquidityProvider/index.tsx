@@ -63,7 +63,7 @@ function LiquidityProvider() {
 
         const liquidity = currentMyMakerInfo.liquidity
 
-        const baseAmount = liquidity.mul(poolInfo.base).div(poolInfo.totalLiquidity)
+        const baseShare = liquidity.mul(poolInfo.base).div(poolInfo.totalLiquidity)
         const quoteAmount = liquidity.mul(poolInfo.quote).div(poolInfo.totalLiquidity)
         const baseDeleveraged = liquidity.mul(
             currentMarketState.cumBasePerLiquidity.sub(currentMyMakerInfo.cumBaseSharePerLiquidity),
@@ -72,9 +72,9 @@ function LiquidityProvider() {
             currentMarketState.cumQuotePerLiquidity.sub(currentMyMakerInfo.cumQuotePerLiquidity),
         )
 
-        const unrealizedPnl = baseAmount
+        const unrealizedPnl = baseShare
             .add(baseDeleveraged)
-            .div(currentMarketState.baseBalancePerShare)
+            .mul(currentMarketState.baseBalancePerShare)
             .mul(markPrice)
             .add(quoteAmount.add(quoteDeleveraged))
 
@@ -85,9 +85,9 @@ function LiquidityProvider() {
             unrealizedPnl,
             liquidityValue,
             liquidity,
-            baseAmount,
+            baseAmount: baseShare.mul(currentMarketState.baseBalancePerShare),
             quoteAmount,
-            baseDeleveraged,
+            baseDeleveraged: baseDeleveraged.mul(currentMarketState.baseBalancePerShare),
             quoteDeleveraged,
         }
     }, [currentMarketState, currentMyMakerInfo, markPrice, poolInfo])
@@ -99,7 +99,7 @@ function LiquidityProvider() {
     const breadcrumbLayers: BreadcrumbUnit[] = [
         { name: "Home", to: "/" },
         { name: "Pools", to: "/pools" },
-        { name: poolSummary?.poolName || "-" },
+        { name: currentMarketState?.name || "-" },
     ]
 
     const haveLiquidity = useMemo(() => {
@@ -109,7 +109,7 @@ function LiquidityProvider() {
     return (
         <FrameContainer>
             <Breadcrumb layers={breadcrumbLayers} />
-            <TitleBar title={poolSummary?.poolName || "-"} />
+            <TitleBar title={currentMarketState?.name || "-"} />
             <Flex my="6">
                 {poolSummary && currentMarketState && markPrice && (
                     <PoolInfo

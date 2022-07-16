@@ -48,3 +48,19 @@ export class AmmError extends Error {
         this.name = `AmmError:${ammName}:${funcName}`
     }
 }
+
+export function getReason(exception: any) {
+    const message = exception?.data?.message || exception?.message || ""
+    return message.replace(/.*revert /, "")
+}
+
+export function getErrorMessageFromReason(reason: string) {
+    return (
+        {
+            "PM_S: too large amount": "Too large amount",
+            "TL_VS: too large opposite amount": "Too large slippage",
+        }[reason] ||
+        reason ||
+        "Unknown error"
+    )
+}
