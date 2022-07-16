@@ -28,12 +28,12 @@ function MarketSelector() {
                                 value={marketAddress}
                                 selected={marketAddress === currentMarket}
                             >
-                                {poolSummary[marketAddress].poolName}
+                                {marketState.name}
                             </option>
                         ))}
                     </Select>
                 </HStack>
-                {currentMarket && <Text>{poolSummary[currentMarket].poolName}</Text>}
+                {currentMarket && <Text>{marketStates[currentMarket].name}</Text>}
             </VStack>
         </FormControl>
     )

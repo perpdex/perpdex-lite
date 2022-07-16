@@ -99,7 +99,7 @@ function LiquidityProvider() {
     const breadcrumbLayers: BreadcrumbUnit[] = [
         { name: "Home", to: "/" },
         { name: "Pools", to: "/pools" },
-        { name: poolSummary?.poolName || "-" },
+        { name: currentMarketState?.name || "-" },
     ]
 
     const haveLiquidity = useMemo(() => {
@@ -109,7 +109,7 @@ function LiquidityProvider() {
     return (
         <FrameContainer>
             <Breadcrumb layers={breadcrumbLayers} />
-            <TitleBar title={poolSummary?.poolName || "-"} />
+            <TitleBar title={currentMarketState?.name || "-"} />
             <Flex my="6">
                 {poolSummary && currentMarketState && markPrice && (
                     <PoolInfo

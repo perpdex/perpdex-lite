@@ -93,7 +93,7 @@ function PositionTable({
             </Thead>
             <Tbody>
                 <Tr>
-                    <Td>{poolSummary.poolName}</Td>
+                    <Td>{marketState.name}</Td>
                     <Td>
                         <Text color={isLongDisplay ? "green.300" : "red.300"}>{positionQuantity}</Text>
                     </Td>
