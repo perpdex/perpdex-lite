@@ -40,7 +40,7 @@ function OrderHistory() {
             <OrderHistoryTable
                 title="Trade History"
                 baseSymbol={currentMarketState.baseSymbol}
-                quoteSymbol={currentMarketState.quoteSymbol}
+                priceUnitDisplay={currentMarketState.priceUnitDisplay}
                 data={orderHistories}
                 applyStripe={true}
                 applyPXZero={true}

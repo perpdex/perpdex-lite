@@ -3,13 +3,13 @@ import Big from "big.js"
 import { numberWithCommas } from "../../../../util/format"
 
 interface Props {
-    execPrice?: Big
+    execPriceDisplay?: Big
     priceImpact?: Big
     error?: string
 }
 
 function TxInfoTable(props: Props) {
-    const { execPrice, priceImpact, error } = props
+    const { execPriceDisplay, priceImpact, error } = props
 
     return (
         <Table size="sm" borderRadius="12px" overflow="hidden" w="100%" variant="simple">
@@ -19,7 +19,7 @@ function TxInfoTable(props: Props) {
                         Exec Price
                     </Td>
                     <Td isNumeric borderBottom={0}>
-                        {error ? "-" : numberWithCommas(execPrice)}
+                        {error ? "-" : numberWithCommas(execPriceDisplay)}
                     </Td>
                 </Tr>
                 <Tr>

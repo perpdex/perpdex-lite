@@ -7,7 +7,7 @@ import { formatTime, timezoneStr } from "util/time"
 interface OrderHistoryTableState {
     title?: string
     baseSymbol: string
-    quoteSymbol: string
+    priceUnitDisplay: string
     data: OrderHistoryUnit[] | undefined
     applyStripe?: boolean
     applyPXZero?: boolean
@@ -16,7 +16,7 @@ interface OrderHistoryTableState {
 function OrderHistoryTable({
     title,
     baseSymbol,
-    quoteSymbol,
+    priceUnitDisplay,
     data,
     applyStripe = false,
     applyPXZero = false,
@@ -48,7 +48,7 @@ function OrderHistoryTable({
                         <StyledTh px={applyPXZero ? 0 : "24px"} w="35%">
                             Size({baseSymbol})
                         </StyledTh>
-                        <StyledTh w="35%">Price({quoteSymbol})</StyledTh>
+                        <StyledTh w="35%">Price({priceUnitDisplay})</StyledTh>
                         <StyledTh w="30%">Time({timezoneStr()})</StyledTh>
                     </Tr>
                 </Thead>
@@ -63,7 +63,7 @@ function OrderHistoryTable({
                                 >
                                     {formattedNumberWithCommas(value.size)}
                                 </StyledTd>
-                                <StyledTd>${formattedNumberWithCommas(value.price)}</StyledTd>
+                                <StyledTd>${formattedNumberWithCommas(value.priceDisplay)}</StyledTd>
                                 <StyledTd>{formatTime(value.time, true)}</StyledTd>
                             </Tr>
                         ))}

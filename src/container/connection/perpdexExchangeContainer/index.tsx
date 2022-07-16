@@ -41,14 +41,15 @@ function calcTrade(isLong: boolean, amount: Big, marketState: MarketState, slipp
 
     let oppositeAmountBound
     if (isLong) {
-        oppositeAmountBound = share.mul(markPrice).mul(1 + _slippage)
+        oppositeAmountBound = amount.mul(markPrice).mul(1 + _slippage)
     } else {
-        oppositeAmountBound = share.mul(markPrice).mul(1 - _slippage)
+        oppositeAmountBound = amount.mul(markPrice).mul(1 - _slippage)
     }
 
     console.log("@@@@", isLong, amount.toString(), oppositeAmountBound.toString())
 
     return {
+        baseShare: share,
         isBaseToQuote: !isLong,
         isExactInput: !isLong,
         oppositeAmountBound: big2BigNum(oppositeAmountBound),
@@ -90,10 +91,10 @@ function usePerpdexExchangeContainer() {
 
     const currentMyTakerPositions: PositionState | undefined = useMemo(() => {
         if (currentMarketState && currentMyTakerInfo) {
-            const { markPrice } = currentMarketState
+            const { markPrice, baseBalancePerShare } = currentMarketState
 
             const takerOpenNotional = currentMyTakerInfo.quoteBalance
-            const size = currentMyTakerInfo.baseBalanceShare.mul(currentMarketState.baseBalancePerShare)
+            const size = currentMyTakerInfo.baseBalanceShare.mul(baseBalancePerShare)
             if (size.eq(0)) return
 
             const positionValue = size.mul(markPrice)
@@ -258,11 +259,11 @@ function usePerpdexExchangeContainer() {
     )
 
     const trade = useCallback(
-        (isLong: boolean, amount: Big, slippage: number) => {
+        (isLong: boolean, baseAmount: Big, slippage: number) => {
             if (!currentMarketState || !currentMarketState.markPrice) return
-            const { isBaseToQuote, isExactInput, oppositeAmountBound } = calcTrade(
+            const { baseShare, isBaseToQuote, isExactInput, oppositeAmountBound } = calcTrade(
                 isLong,
-                amount,
+                baseAmount,
                 currentMarketState,
                 slippage,
             )
@@ -274,7 +275,7 @@ function usePerpdexExchangeContainer() {
                         currentMarket,
                         isBaseToQuote,
                         isExactInput,
-                        big2BigNum(amount),
+                        big2BigNum(baseShare),
                         oppositeAmountBound,
                     ),
                 )
@@ -284,18 +285,18 @@ function usePerpdexExchangeContainer() {
     )
 
     const previewTrade = useCallback(
-        async (isLong: boolean, amount: Big, slippage: number) => {
+        async (isLong: boolean, baseAmount: Big, slippage: number) => {
             if (!perpdexExchange || !account || !currentMarketState?.markPrice || currentMarketState?.markPrice.eq(0))
                 return "not prepared"
 
-            const { isBaseToQuote, isExactInput, oppositeAmountBound } = calcTrade(
+            const { baseShare, isBaseToQuote, isExactInput, oppositeAmountBound } = calcTrade(
                 isLong,
-                amount,
+                baseAmount,
                 currentMarketState,
                 slippage,
             )
 
-            console.log(amount, bigNum2FixedStr(oppositeAmountBound, 18))
+            console.log(baseAmount, bigNum2FixedStr(oppositeAmountBound, 18))
 
             try {
                 const results = await perpdexExchange.callStatic.trade({
@@ -303,7 +304,7 @@ function usePerpdexExchangeContainer() {
                     market: currentMarket,
                     isBaseToQuote,
                     isExactInput,
-                    amount: big2BigNum(amount),
+                    amount: big2BigNum(baseShare),
                     oppositeAmountBound,
                     deadline: BigNumber.from(2).pow(96),
                 })
