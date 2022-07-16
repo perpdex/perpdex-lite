@@ -22,7 +22,7 @@ interface PreviewResult {
 function TradeInput() {
     const { currentMarketState } = PerpdexMarketContainer.useContainer()
     const { trade, preview, currentMyAccountInfo } = PerpdexExchangeContainer.useContainer()
-    const [isBuy, setIsBuy] = useState<boolean>(true)
+    const [isBuyDisplay, setIsBuyDisplay] = useState<boolean>(true)
     const { isLoading } = Transaction.useContainer()
     const [baseOrderValue, setBaseOrderValue] = useState<Big>(BIG_ZERO)
     const [slippage, setSlippage] = useState<number>(2)
@@ -30,6 +30,10 @@ function TradeInput() {
         error: "",
         oppositeAmount: Big(0),
     })
+
+    const isBuy = useMemo(() => {
+        return currentMarketState?.inverse ? !isBuyDisplay : isBuyDisplay
+    }, [isBuyDisplay, currentMarketState?.inverse])
 
     // TODO: apply correct values
     const maxCollateral = useMemo(
@@ -45,10 +49,6 @@ function TradeInput() {
             setBaseOrderValue(value)
         }
     }, [])
-
-    const doSwitchToBuy = (val: boolean) => {
-        setIsBuy(val)
-    }
 
     useEffect(() => {
         if (currentMarketState.baseSymbol) {
@@ -93,10 +93,10 @@ function TradeInput() {
             <Box background="#181B41" borderRadius="10px" p={6}>
                 <VStack spacing={6}>
                     <SideSwitcher
-                        isBuy={isBuy}
+                        isBuy={isBuyDisplay}
                         longText="Buy/Long"
                         shortText="Sell/Short"
-                        doSwitchToBuy={doSwitchToBuy}
+                        doSwitchToBuy={setIsBuyDisplay}
                     />
                     <PositionInput
                         baseSymbol={currentMarketState.baseSymbol}
