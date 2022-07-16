@@ -27,7 +27,7 @@ function TxInfoTable(props: Props) {
                         Price Impact
                     </Td>
                     <Td isNumeric borderBottom={0}>
-                        {error ? "-" : numberWithCommas(priceImpact)}
+                        {error ? "-" : numberWithCommas(priceImpact?.mul(100)) + "%"}
                     </Td>
                 </Tr>
                 <Tr>
