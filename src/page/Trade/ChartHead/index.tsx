@@ -1,26 +1,16 @@
-import React, { useMemo } from "react"
+import React from "react"
 import { HStack, Box, Text, Center, VStack, Divider } from "@chakra-ui/react"
-
 import { Popover, PopoverTrigger, PopoverContent, PopoverBody } from "@chakra-ui/react"
-
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
-import { createMarketSummary } from "util/market"
 import { TriangleDownIcon } from "@chakra-ui/icons"
 import MarketTable from "./MarketTable"
-import { MarketState } from "constant/types"
+import { numberWithCommas } from "../../../util/format"
+import _ from "lodash"
 
 function ChartHead() {
     const { currentMarketState, setCurrentMarket, marketStates } = PerpdexMarketContainer.useContainer()
 
-    const currentMarketSummary = useMemo(() => createMarketSummary(currentMarketState), [currentMarketState])
-
     // const BaseSymbolIcon = getCurrencyIcon(currentMarketSummary.baseSymbolDisplay)
-
-    const marketSummary = useMemo(() => {
-        const poolsArray: MarketState[] = Object.keys(marketStates).map((key: string) => marketStates[key])
-
-        return poolsArray.map((pool: MarketState) => createMarketSummary(pool))
-    }, [marketStates])
 
     return (
         <>
@@ -38,7 +28,7 @@ function ChartHead() {
                                         {currentMarketState && (
                                             <>
                                                 {/* {BaseSymbolIcon && <BaseSymbolIcon width={8} height={8} />} */}
-                                                <Text>{currentMarketSummary.marketName}</Text>
+                                                <Text>{currentMarketState.name}</Text>
                                                 <Box px="2">
                                                     <TriangleDownIcon w={3} h={3} />
                                                 </Box>
@@ -50,7 +40,7 @@ function ChartHead() {
                             <PopoverContent transform="translate3d(0px, -12px, 0px) !important" bg="blackAlpha.700">
                                 <PopoverBody>
                                     <MarketTable
-                                        data={marketSummary}
+                                        data={_.values(marketStates)}
                                         handleOnClick={(address: string) => {
                                             onClose()
                                             setCurrentMarket(address)
@@ -68,15 +58,21 @@ function ChartHead() {
                     <HStack justifyContent="space-between" alignItems="center">
                         <VStack align="start">
                             <Text color={"gray.200"}>Mark Price</Text>
-                            <Text>{currentMarketSummary.markPrice}</Text>
+                            <Text>
+                                {numberWithCommas(currentMarketState.markPriceDisplay)}{" "}
+                                {currentMarketState.priceUnitDisplay}
+                            </Text>
                         </VStack>
-                        <VStack align="start">
-                            <Text color={"gray.200"}>Funding Rate</Text>
-                            <Text color={"#66BB74"}>0.0234</Text>
-                        </VStack>
+                        {/*TODO: implement*/}
+                        {/*<VStack align="start">*/}
+                        {/*    <Text color={"gray.200"}>Funding Rate</Text>*/}
+                        {/*    <Text color={"#66BB74"}>0.0234</Text>*/}
+                        {/*</VStack>*/}
                         <VStack align="start">
                             <Text color={"gray.200"}>24h Volume</Text>
-                            <Text>$193,465.239</Text>
+                            <Text>
+                                {numberWithCommas(currentMarketState.volume24h)} {currentMarketState.quoteSymbol}
+                            </Text>
                         </VStack>
                     </HStack>
                 </Box>
