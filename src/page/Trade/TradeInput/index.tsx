@@ -12,6 +12,12 @@ import Button from "component/base/Button"
 import Summary from "./Summary"
 import Slippage from "./Slippage"
 import { bigNum2Big } from "util/format"
+import _ from "lodash"
+
+interface PreviewResult {
+    error: string
+    oppositeAmount: Big
+}
 
 function TradeInput() {
     const { currentMarketState } = PerpdexMarketContainer.useContainer()
@@ -20,6 +26,10 @@ function TradeInput() {
     const { isLoading } = Transaction.useContainer()
     const [baseOrderValue, setBaseOrderValue] = useState<Big>(BIG_ZERO)
     const [slippage, setSlippage] = useState<number>(2)
+    const [previewResult, setPreviewResult] = useState<PreviewResult>({
+        error: "",
+        oppositeAmount: Big(0),
+    })
 
     // TODO: apply correct values
     const maxCollateral = useMemo(
@@ -47,17 +57,33 @@ function TradeInput() {
     }, [currentMarketState.baseSymbol])
 
     const isSubmitDisabled = useMemo(() => {
-        return baseOrderValue.eq(0) || isLoading
-    }, [baseOrderValue, isLoading])
+        return baseOrderValue.eq(0) || isLoading || !!previewResult.error
+    }, [baseOrderValue, isLoading, previewResult?.error])
+
+    const updatePreview = useCallback(async () => {
+        console.log("updatePreview")
+        const results = await preview.trade(isBuy, baseOrderValue, slippage)
+        console.log(results)
+        if (!results) return
+        if (_.isString(results)) {
+            setPreviewResult({
+                error: results,
+                oppositeAmount: Big(0),
+            })
+        } else {
+            setPreviewResult({
+                error: "",
+                oppositeAmount: bigNum2Big(results),
+            })
+        }
+    }, [setPreviewResult, preview?.trade, isBuy, baseOrderValue, slippage])
+
+    useEffect(() => {
+        updatePreview()
+    }, [updatePreview])
 
     const handleSubmit = useCallback(async () => {
         if (baseOrderValue) {
-            const results = await preview.trade(isBuy, baseOrderValue, slippage)
-
-            if (results) {
-                console.log("oppositeAmount", bigNum2Big(results).toString())
-            }
-
             await trade(isBuy, baseOrderValue, slippage)
         }
     }, [baseOrderValue, isBuy, preview, slippage, trade])
@@ -73,20 +99,20 @@ function TradeInput() {
                         doSwitchToBuy={doSwitchToBuy}
                     />
                     <PositionInput
-                        baseSymbol={currentMarketState.baseSymbolDisplay}
-                        quoteSymbol={currentMarketState.quoteSymbolDisplay}
+                        baseSymbol={currentMarketState.baseSymbol}
+                        quoteSymbol={currentMarketState.quoteSymbol}
                         baseOrderValue={baseOrderValue}
                         markPrice={currentMarketState.markPrice}
                         maxCollateral={maxCollateral}
                         handleBasePositionInput={handleBasePositionInput}
                     />
+                    <Slippage slippage={slippage} setSlippage={setSlippage} />
+                    <Summary
+                        error={previewResult.error}
+                        baseAmount={baseOrderValue}
+                        quoteAmount={previewResult.oppositeAmount}
+                    />
                 </VStack>
-            </Box>
-            <Box background="#181B41" borderRadius="10px" p={6} w="100%">
-                <Summary />
-            </Box>
-            <Box background="#181B41" borderRadius="10px" p={6} w="100%">
-                <Slippage slippage={slippage} setSlippage={setSlippage} />
             </Box>
             <Button
                 text="Confirm Transaction"
