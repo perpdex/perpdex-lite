@@ -3,17 +3,27 @@ import TxInfoTable from "./TxInfoTable"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import Big from "big.js"
 
-function Summary() {
+interface Props {
+    error: string
+    baseAmount: Big
+    quoteAmount: Big
+}
+
+function Summary(props: Props) {
+    const { error, baseAmount, quoteAmount } = props
     const {
         currentMarketState: { markPrice },
     } = PerpdexMarketContainer.useContainer()
 
+    const execPrice = baseAmount.eq(0) ? void 0 : quoteAmount.div(baseAmount)
+    const priceImpact = execPrice && markPrice && !markPrice.eq(0) ? execPrice.div(markPrice).sub(1).abs() : void 0
+
     return (
         <>
-            <Heading w="full" size="md" mb={8}>
-                Transaction Summary
+            <Heading w="full" size="md" mb={4}>
+                Transaction estimation
             </Heading>
-            <TxInfoTable markPrice={markPrice} priceImpact="" estimateGasFee={Big(0)} fundingRatio="" />
+            <TxInfoTable execPrice={execPrice} priceImpact={priceImpact} error={error} />
         </>
     )
 }

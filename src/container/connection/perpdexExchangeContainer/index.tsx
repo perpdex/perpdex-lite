@@ -19,6 +19,7 @@ import {
     createExchangeContract,
     createExchangeContractMulticall,
 } from "../contractFactory"
+import { getErrorMessageFromReason, getReason } from "../../../util/error"
 
 interface settlementTokenMetadataUnit {
     decimals: number
@@ -284,33 +285,34 @@ function usePerpdexExchangeContainer() {
 
     const previewTrade = useCallback(
         async (isLong: boolean, amount: Big, slippage: number) => {
-            if (perpdexExchange && account && currentMarketState && currentMarketState.markPrice) {
-                const { isBaseToQuote, isExactInput, oppositeAmountBound } = calcTrade(
-                    isLong,
-                    amount,
-                    currentMarketState,
-                    slippage,
-                )
+            if (!perpdexExchange || !account || !currentMarketState?.markPrice) return "not prepared"
 
-                console.log(amount, bigNum2FixedStr(oppositeAmountBound, 18))
+            const { isBaseToQuote, isExactInput, oppositeAmountBound } = calcTrade(
+                isLong,
+                amount,
+                currentMarketState,
+                slippage,
+            )
 
-                try {
-                    const results = await perpdexExchange.callStatic.trade({
-                        trader: account,
-                        market: currentMarket,
-                        isBaseToQuote,
-                        isExactInput,
-                        amount: big2BigNum(amount),
-                        oppositeAmountBound,
-                        deadline: BigNumber.from(2).pow(96),
-                    })
-                    return results
-                } catch (err) {
-                    console.error("Error previewTrade", err)
-                }
+            console.log(amount, bigNum2FixedStr(oppositeAmountBound, 18))
+
+            try {
+                const results = await perpdexExchange.callStatic.trade({
+                    trader: account,
+                    market: currentMarket,
+                    isBaseToQuote,
+                    isExactInput,
+                    amount: big2BigNum(amount),
+                    oppositeAmountBound,
+                    deadline: BigNumber.from(2).pow(96),
+                })
+                return results
+            } catch (err) {
+                console.error("Error previewTrade", err)
+                return getErrorMessageFromReason(getReason(err))
             }
         },
-        [account, perpdexExchange, currentMarketState, currentMarket],
+        [account, perpdexExchange, currentMarket, currentMarketState?.markPrice],
     )
 
     const maxTrade = useCallback(
