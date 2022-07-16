@@ -40,11 +40,7 @@ function RemoveLiquidityModal() {
 
     const handleRemoveLiquidity = useCallback(() => {
         const liq = Big(liquidity)
-        const poolInfo = currentMarketState.poolInfo
-        const base = liq.mul(poolInfo.base).div(poolInfo.totalLiquidity)
-        const quote = liq.mul(poolInfo.quote).div(poolInfo.totalLiquidity)
-
-        removeLiquidity(liq, base.mul(1.0 - slippage / 100), quote.mul(1.0 - slippage / 100))
+        removeLiquidity(liq, slippage)
     }, [liquidity, currentMarketState?.poolInfo, removeLiquidity, slippage])
 
     const handleOnInput = useCallback(
