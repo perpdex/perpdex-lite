@@ -1,5 +1,4 @@
 import { Table, Thead, Tbody, Tr, Th, Td, Text } from "@chakra-ui/react"
-import { createPoolSummary } from "../../../util/market"
 import { MarketState } from "../../../constant/types"
 import Big from "big.js"
 import Button from "component/base/Button"
@@ -41,8 +40,6 @@ function PositionTable({
     //         borderBottom: "0px none",
     //     },
     // })
-
-    const poolSummary = createPoolSummary(marketState)
 
     return (
         // <Table variant="simple">
