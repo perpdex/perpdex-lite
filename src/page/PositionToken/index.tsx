@@ -27,7 +27,7 @@ function PositionToken() {
                 <br />
                 These tokens have the qualities such as liquidation free, and 100% capital efficient.
             </Text>
-            <Box mt={6} border={{ base: "0px none", md: "1px solid #627EEA" }} borderRadius="20px" w="100%">
+            <Box mt={6} border="1px solid #627EEA" borderRadius="20px" w="100%">
                 <TokenTable data={data} />
             </Box>
         </FrameContainer>
