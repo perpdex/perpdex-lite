@@ -13,4 +13,6 @@ export const BIG_ZERO = new Big(0)
 
 export const BIG_NUMBER_ZERO = BigNumber.from("0")
 
-export const BIG_BASE_SHARE_DUST = Big("0.0001")
+export const BIG_BASE_SHARE_DUST = Big("0.001")
+
+export const BIG_LIQUIDITY_DUST = Big("0.001")

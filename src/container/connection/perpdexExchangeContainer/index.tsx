@@ -1,4 +1,4 @@
-import { BIG_NUMBER_ZERO, BIG_BASE_SHARE_DUST } from "../../../constant"
+import { BIG_NUMBER_ZERO, BIG_BASE_SHARE_DUST, BIG_LIQUIDITY_DUST } from "../../../constant"
 import { big2BigNum, bigNum2Big, bigNum2FixedStr, x96ToBig } from "util/format"
 import { useCallback, useEffect, useMemo, useState } from "react"
 
@@ -389,6 +389,10 @@ function usePerpdexExchangeContainer() {
     const removeLiquidity = useCallback(
         (liquidity: Big, slippage: number) => {
             if (contractExecuter && account && currentMarket && currentMarketState.poolInfo) {
+                if (currentMyMakerInfo?.liquidity.sub(liquidity).abs().lte(BIG_LIQUIDITY_DUST)) {
+                    liquidity = currentMyMakerInfo?.liquidity
+                }
+
                 const poolInfo = currentMarketState.poolInfo
                 const baseShare = liquidity.mul(poolInfo.base).div(poolInfo.totalLiquidity)
                 const quote = liquidity.mul(poolInfo.quote).div(poolInfo.totalLiquidity)
