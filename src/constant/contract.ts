@@ -1,6 +1,7 @@
 import _ from "lodash"
 import perpdexDeployment from "../deployments/perpdexContract.json"
 import perpdexStablecoin from "../deployments/perpdexStablecoin.json"
+import { FILTER_MARKETS } from "./stage"
 
 interface Contract {
     address: string
@@ -62,6 +63,12 @@ export const contractConfigs: { [key: string]: ContractConfig } = {
     },
 }
 
+const isMarketEnabled = (market: string) => {
+    if (!FILTER_MARKETS) return true
+
+    return _.includes(["USD"], market)
+}
+
 _.each(contractConfigs, (value: ContractConfig, key: string) => {
     const deployment: any = perpdexDeployment
     const stablecoinDeployment: any = perpdexStablecoin
@@ -73,6 +80,7 @@ _.each(contractConfigs, (value: ContractConfig, key: string) => {
 
     _.each(stablecoinContracts, (config, contractName) => {
         if (contractName.startsWith("PerpdexLongToken")) {
+            if (!isMarketEnabled(contractName.replace("PerpdexLongToken", ""))) return
             longTokens[contractName] = {
                 address: config.address,
             }
@@ -81,6 +89,7 @@ _.each(contractConfigs, (value: ContractConfig, key: string) => {
 
     _.each(contracts, (config, contractName) => {
         if (contractName.startsWith("PerpdexMarket")) {
+            if (!isMarketEnabled(contractName.replace("PerpdexMarket", ""))) return
             markets.push({
                 address: config.address,
                 longToken: longTokens[contractName.replace("PerpdexMarket", "PerpdexLongToken")],
