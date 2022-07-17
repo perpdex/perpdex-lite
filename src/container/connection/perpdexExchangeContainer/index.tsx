@@ -413,6 +413,16 @@ function usePerpdexExchangeContainer() {
         [account, contractExecuter, execute, currentMarket, currentMarketState.poolInfo],
     )
 
+    const setCollateralBalance = useCallback(
+        async (collateralBalance: Big) => {
+            if (account && signer && currentExchange) {
+                const contract = createExchangeContract(currentExchange, signer)
+                await contract.setCollateralBalance(account, big2BigNum(collateralBalance))
+            }
+        },
+        [account, signer, currentExchange],
+    )
+
     useInterval(async () => {
         if (!isVisible) return
 
@@ -442,5 +452,6 @@ function usePerpdexExchangeContainer() {
             trade: previewTrade,
             maxTrade: maxTrade,
         },
+        setCollateralBalance,
     }
 }

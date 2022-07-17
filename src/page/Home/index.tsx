@@ -1,5 +1,5 @@
 import { VStack } from "@chakra-ui/react"
-
+import { IS_MAINNET } from "../../constant"
 import FrameContainer from "component/frames/FrameContainer"
 import AccountPanel from "../../component/AccountPanel"
 import AccountInfoTable from "component/tables/AccountInfoTable"
@@ -7,6 +7,7 @@ import { PerpdexMarketContainer } from "../../container/connection/perpdexMarket
 import { PerpdexExchangeContainer } from "../../container/connection/perpdexExchangeContainer"
 import { User } from "../../container/connection/user"
 import { AccountPerpdex } from "../../container/perpetual/account"
+import Debug from "./Debug"
 
 function Home() {
     const {
@@ -28,6 +29,7 @@ function Home() {
                     myAccountInfo={currentMyAccountInfo}
                     marketState={currentMarketState}
                 />
+                {IS_MAINNET ? void 0 : <Debug />}
             </VStack>
         </FrameContainer>
     )

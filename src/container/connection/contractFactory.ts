@@ -1,9 +1,9 @@
-import { PerpdexExchange__factory, PerpdexMarket__factory, PerpdexLongToken__factory } from "types/newContracts"
+import { DebugPerpdexExchange__factory, PerpdexMarket__factory, PerpdexLongToken__factory } from "types/newContracts"
 import { Contract as MulticallContract } from "ethers-multicall"
 import { abis } from "../../constant/contract"
 
 export const createExchangeContract = (address: string, signer: any) => {
-    return PerpdexExchange__factory.connect(address, signer)
+    return DebugPerpdexExchange__factory.connect(address, signer)
 }
 
 export const createMarketContract = (address: string, signer: any) => {
