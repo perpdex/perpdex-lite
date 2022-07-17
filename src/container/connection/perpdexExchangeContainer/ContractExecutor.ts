@@ -5,7 +5,7 @@ import { PerpdexExchange } from "types/newContracts"
 import { PerpdexExchangeActions } from "./type"
 
 function getDeadline(): Number {
-    return Math.floor(Date.now() / 1000) + 120
+    return Math.floor(Date.now() / 1000) + 5 * 60
 }
 
 export class ContractExecutor implements PerpdexExchangeActions {
