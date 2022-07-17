@@ -63,7 +63,7 @@ function OrderHistoryTable({
                                 >
                                     {formattedNumberWithCommas(value.size)}
                                 </StyledTd>
-                                <StyledTd>${formattedNumberWithCommas(value.priceDisplay)}</StyledTd>
+                                <StyledTd>{formattedNumberWithCommas(value.priceDisplay)}</StyledTd>
                                 <StyledTd>{formatTime(value.time, true)}</StyledTd>
                             </Tr>
                         ))}
