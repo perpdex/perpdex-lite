@@ -26,7 +26,9 @@ function Trade() {
                     <Flex direction={{ base: "column", lg: "row" }} alignItems="flex-start">
                         <VStack alignItems="stretch">
                             <ChartHead />
-                            <LightWeightChart />
+                            <Box width={600} height={400}>
+                                <LightWeightChart />
+                            </Box>
                         </VStack>
                         <OrderHistory />
                     </Flex>
