@@ -59,6 +59,7 @@ export function getErrorMessageFromReason(reason: string) {
         {
             "PM_S: too large amount": "Too large amount",
             "TL_VS: too large opposite amount": "Too large slippage",
+            "TL_VS: too small opposite amount": "Too large slippage",
         }[reason] ||
         reason ||
         "Unknown error"
