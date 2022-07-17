@@ -1,12 +1,13 @@
 import { Table, Thead, Tbody, Tr, Td, Text, HStack, VStack } from "@chakra-ui/react"
-import { MarketState } from "../../constant/types"
+import { MakerInfo, MarketState } from "../../constant/types"
 import { CurrencyIcon } from "../../component/Icon"
-import { createPoolSummary } from "../../util/market"
+import { createMakerPositionInfo, createPoolSummary } from "../../util/market"
 import Button from "component/base/Button"
 import { StyledAnnotation, StyledTh } from "component/tables"
+import { numberWithCommas } from "../../util/format"
 
 export interface PoolsTableState {
-    data: MarketState[]
+    data: [MarketState, MakerInfo][]
     handleOnClick: (address: string) => void
 }
 
@@ -16,13 +17,15 @@ function PoolsTable({ data, handleOnClick }: PoolsTableState) {
             <Thead height={68}>
                 <Tr>
                     <StyledTh>Pool Name</StyledTh>
-                    <StyledTh>Liquidity</StyledTh>
+                    <StyledTh>TVL</StyledTh>
+                    <StyledTh>My Liquidity</StyledTh>
                     <StyledTh></StyledTh>
                 </Tr>
             </Thead>
             <Tbody>
-                {data.map((row: MarketState) => {
+                {data.map(([row, makerInfo]) => {
                     const poolSummary = createPoolSummary(row)
+                    const makerPositionInfo = createMakerPositionInfo(row, makerInfo)
 
                     return (
                         <Tr>
@@ -38,6 +41,18 @@ function PoolsTable({ data, handleOnClick }: PoolsTableState) {
                                         <Text>{poolSummary.tvl}</Text>
                                         <StyledAnnotation fontSize="sm" color="gray.400">
                                             {poolSummary.tvlUsd}
+                                        </StyledAnnotation>
+                                    </VStack>
+                                </HStack>
+                            </Td>
+                            <Td borderBottom={0}>
+                                <HStack>
+                                    <VStack alignItems="start">
+                                        <Text>
+                                            {numberWithCommas(makerPositionInfo?.liquidityValue)} {row.quoteSymbol}
+                                        </Text>
+                                        <StyledAnnotation fontSize="sm" color="gray.400">
+                                            ${numberWithCommas(makerPositionInfo?.liquidityValueUsd)}
                                         </StyledAnnotation>
                                     </VStack>
                                 </HStack>
