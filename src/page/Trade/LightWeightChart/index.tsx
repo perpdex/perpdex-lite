@@ -4,6 +4,7 @@ import { getCandlesQuery } from "queries/trades"
 import { cleanUpChartInputData } from "util/chart"
 import { useQuery } from "@apollo/client"
 import Chart from "@qognicafinance/react-lightweight-charts"
+import moment from "moment"
 
 const chartOptions = {
     width: 600,
@@ -19,6 +20,11 @@ const chartOptions = {
     timeScale: {
         timeVisible: true,
         secondsVisible: false,
+    },
+    localization: {
+        timeFormatter: (time: number) => {
+            return moment.unix(time).format()
+        },
     },
 }
 
