@@ -51,7 +51,15 @@ function ChartHead() {
                         </>
                     )}
                 </Popover>
-                <Center h="100px" mx={10}>
+                <Center
+                    h="100px"
+                    mx={10}
+                    sx={{
+                        "@media screen and (max-width: 61em)": {
+                            display: "none",
+                        },
+                    }}
+                >
                     <Divider orientation="vertical" borderColor="rgba(98, 126, 234, 0.6)" />
                 </Center>
                 <Box w="100%" alignSelf="center">

@@ -33,7 +33,7 @@ function Pools() {
                 <br />
                 You can use leverage on LP tokens as well to earn more by risking more.
             </Text>
-            <Box mt={6} border={{ base: "0px none", md: "1px solid #627EEA" }} borderRadius="20px" w="100%">
+            <Box mt={6} border="1px solid #627EEA" borderRadius="20px" w="100%">
                 <PoolsTable data={poolsInfo} handleOnClick={handleOnClick} />
             </Box>
         </FrameContainer>

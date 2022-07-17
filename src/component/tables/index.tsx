@@ -3,7 +3,7 @@ import { chakra, Th, Td, Text } from "@chakra-ui/react"
 export const StyledTh = chakra(Th, {
     baseStyle: {
         color: "white",
-        borderBottom: { base: "0px none", md: "1px solid #627EEA" },
+        borderBottom: "0px none",
         fontSize: "lg",
     },
 })

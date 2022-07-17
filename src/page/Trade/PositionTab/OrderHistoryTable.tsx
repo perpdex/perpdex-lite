@@ -65,7 +65,7 @@ function OrderHistoryTable() {
                     data.map((value: OrderHistoryUnit, index: number) => {
                         const marketState = currentMarketState
                         return (
-                            <Tr>
+                            <Tr key={index}>
                                 <StyledTd>{formatTime(value.time, true)}</StyledTd>
                                 <StyledTd>{marketName}</StyledTd>
                                 <StyledTd>{value.isLongDisplay ? "Long" : "Short"}</StyledTd>

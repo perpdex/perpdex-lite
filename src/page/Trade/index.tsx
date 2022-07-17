@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { VStack, Flex, Box, HStack, Divider } from "@chakra-ui/react"
 
 import ChartHead from "./ChartHead"
@@ -10,11 +10,20 @@ import OrderHistory from "./OrderHistory"
 import AccountSummary from "./AccountSummary"
 
 function Trade() {
+    const [height, setHeight] = useState<number | undefined>(0)
+    const divRef = React.useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        if (divRef.current) {
+            setHeight(divRef.current.offsetHeight)
+        }
+    }, [])
+
     return (
         <FrameContainer removeMarginTop>
             <Flex direction={{ base: "column", lg: "row" }}>
                 <Box flex="1">
-                    <Flex direction={{ base: "column", lg: "row" }} alignItems={{ base: "center", lg: "flex-start" }}>
+                    <Flex direction={{ base: "column", lg: "row" }} alignItems="flex-start">
                         <VStack alignItems="stretch">
                             <ChartHead />
                             <LightWeightChart />
@@ -31,20 +40,20 @@ function Trade() {
                     />
                     <PositionTab />
                 </Box>
-                <Box w="100%">
-                    <HStack spacing={8} justifyContent="center">
+                <Box ref={divRef} w="100%">
+                    <HStack spacing={8} justifyContent="flex-start">
                         <Divider
                             orientation="vertical"
                             border="1px"
                             borderColor="rgba(98, 126, 234, 0.6)"
-                            h="1000px"
+                            h={height}
                             sx={{
                                 "@media screen and (max-width: 61em)": {
                                     display: "none",
                                 },
                             }}
                         />
-                        <VStack spacing={10} p={0}>
+                        <VStack spacing={10} p={0} pt={5} alignItems="flex-start">
                             <TradeInput />
                             <AccountSummary />
                         </VStack>

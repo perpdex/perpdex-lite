@@ -21,7 +21,7 @@ function AccountInfoTable(props: Props) {
     const collateralBalanceUsd = collateralBalance.mul(marketState.indexPriceQuote)
 
     return (
-        <Box alignSelf={{ base: "", lg: "normal" }}>
+        <Box>
             <Table variant="simple">
                 <Thead>
                     <Tr>

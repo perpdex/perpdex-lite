@@ -45,8 +45,8 @@ function Slider({ currentValue, maxValue, handleUpdate }: SliderState) {
                 <SliderTrack>
                     <SliderFilledTrack bg="#F90077" />
                 </SliderTrack>
-                {markedValues.map(val => (
-                    <SliderMark value={val} {...labelStyles}>
+                {markedValues.map((val: number, index: number) => (
+                    <SliderMark value={val} key={index} {...labelStyles}>
                         {val}x
                     </SliderMark>
                 ))}

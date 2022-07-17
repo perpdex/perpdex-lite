@@ -56,7 +56,7 @@ function OrderHistoryTable({
                     {data &&
                         data.length > 0 &&
                         data.map((value: OrderHistoryUnit, index: number) => (
-                            <Tr bg={applyStripe && index % 2 === 0 ? "rgba(98, 126, 234, 0.2)" : ""}>
+                            <Tr key={index} bg={applyStripe && index % 2 === 0 ? "rgba(98, 126, 234, 0.2)" : ""}>
                                 <StyledTd
                                     color={value.isLongDisplay ? "green.300" : "red.300"}
                                     px={applyPXZero ? 0 : "24px"}

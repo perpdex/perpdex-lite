@@ -57,8 +57,8 @@ function DiscreteLeverageInputModifier({ maxValue, handleUpdate }: DiscreteInput
                     }}
                 />
                 <ButtonGroup>
-                    {buttonStates.map((states: ButtonState) => (
-                        <SideButton text={states.text} value={states.value} />
+                    {buttonStates.map((states: ButtonState, index: number) => (
+                        <SideButton key={index} text={states.text} value={states.value} />
                     ))}
                 </ButtonGroup>
             </ButtonGroup>
