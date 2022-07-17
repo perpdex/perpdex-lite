@@ -31,8 +31,6 @@ export class ContractExecutor implements PerpdexExchangeActions {
         amount: BigNumber,
         oppositeAmountBound: BigNumber,
     ): Promise<ContractTransaction> {
-        const deadline = BigNumber.from(2).pow(96)
-
         return this.execute("trade", [
             {
                 trader,
@@ -41,7 +39,7 @@ export class ContractExecutor implements PerpdexExchangeActions {
                 isExactInput,
                 amount,
                 oppositeAmountBound,
-                deadline,
+                deadline: getDeadline(),
             },
         ])
     }
