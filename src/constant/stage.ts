@@ -18,3 +18,5 @@ export function getStage(): Stage {
 }
 
 export const IS_MAINNET = getStage() === Stage.Production
+
+export const FILTER_MARKETS = !!Number(process.env.REACT_APP_FILTER_MARKETS)
