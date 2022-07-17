@@ -11,23 +11,14 @@ import { PerpdexMarketContainer } from "container/connection/perpdexMarketContai
 import Big from "big.js"
 import { useHistory, useParams } from "react-router-dom"
 import Breadcrumb, { BreadcrumbUnit } from "component/base/Breadcrumb"
-import { PoolSummary } from "constant/types"
-import { createPoolSummary } from "util/market"
+import { PoolSummary, MakerPositionInfo } from "constant/types"
+import { createMakerPositionInfo, createPoolSummary } from "util/market"
 import Button from "component/base/Button"
-
-export interface MakerPositionInfo {
-    unrealizedPnl: Big
-    liquidityValue: Big
-    liquidity: Big
-    baseAmount: Big
-    quoteAmount: Big
-    baseDeleveraged: Big
-    quoteDeleveraged: Big
-}
 
 const initMakerPositionInfo: MakerPositionInfo = {
     unrealizedPnl: Big(0),
     liquidityValue: Big(0),
+    liquidityValueUsd: Big(0),
     liquidity: Big(0),
     baseAmount: Big(0),
     quoteAmount: Big(0),
@@ -56,40 +47,8 @@ function LiquidityProvider() {
     const markPrice = currentMarketState.markPrice
     const poolInfo = currentMarketState.poolInfo
 
-    // TODO: move calculation logic to common place
     const makerPositionInfo = useMemo<MakerPositionInfo>(() => {
-        if (!currentMyMakerInfo || !poolInfo || !markPrice || !currentMarketState) return initMakerPositionInfo
-        if (poolInfo.totalLiquidity.eq(0)) return initMakerPositionInfo
-
-        const liquidity = currentMyMakerInfo.liquidity
-
-        const baseShare = liquidity.mul(poolInfo.base).div(poolInfo.totalLiquidity)
-        const quoteAmount = liquidity.mul(poolInfo.quote).div(poolInfo.totalLiquidity)
-        const baseDeleveraged = liquidity.mul(
-            currentMarketState.cumBasePerLiquidity.sub(currentMyMakerInfo.cumBaseSharePerLiquidity),
-        )
-        const quoteDeleveraged = liquidity.mul(
-            currentMarketState.cumQuotePerLiquidity.sub(currentMyMakerInfo.cumQuotePerLiquidity),
-        )
-
-        const unrealizedPnl = baseShare
-            .add(baseDeleveraged)
-            .mul(currentMarketState.baseBalancePerShare)
-            .mul(markPrice)
-            .add(quoteAmount.add(quoteDeleveraged))
-
-        console.log("markPrice", markPrice.toString())
-        const liquidityValue = quoteAmount.mul(2)
-
-        return {
-            unrealizedPnl,
-            liquidityValue,
-            liquidity,
-            baseAmount: baseShare.mul(currentMarketState.baseBalancePerShare),
-            quoteAmount,
-            baseDeleveraged: baseDeleveraged.mul(currentMarketState.baseBalancePerShare),
-            quoteDeleveraged,
-        }
+        return createMakerPositionInfo(currentMarketState, currentMyMakerInfo) || initMakerPositionInfo
     }, [currentMarketState, currentMyMakerInfo, markPrice, poolInfo])
 
     const poolSummary: PoolSummary | undefined = useMemo(() => {

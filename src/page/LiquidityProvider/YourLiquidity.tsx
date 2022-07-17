@@ -13,8 +13,7 @@ import {
     // Flex,
     // HStack,
 } from "@chakra-ui/react"
-import { MarketState } from "../../constant/types"
-import { MakerPositionInfo } from "."
+import { MarketState, MakerPositionInfo } from "../../constant/types"
 import { numberWithCommas } from "../../util/format"
 import BorderFramePanel from "component/frames/BorderFramePanel"
 

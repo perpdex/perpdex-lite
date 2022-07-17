@@ -6,14 +6,18 @@ import PoolsTable from "./PoolsTable"
 import { PerpdexMarketContainer } from "container/connection/perpdexMarketContainer"
 import { useHistory } from "react-router-dom"
 import _ from "lodash"
-import { MarketState } from "../../constant/types"
+import { MakerInfo, MarketState } from "../../constant/types"
+import { PerpdexExchangeContainer } from "../../container/connection/perpdexExchangeContainer"
 
 function Pools() {
     const { marketStates } = PerpdexMarketContainer.useContainer()
+    const { currentMyAccountInfo } = PerpdexExchangeContainer.useContainer()
     const history = useHistory()
 
-    const poolsInfo: MarketState[] = useMemo(() => {
-        return _.values(marketStates)
+    const poolsInfo: [MarketState, MakerInfo][] = useMemo(() => {
+        return _.map(marketStates, (marketState, marketAddress) => {
+            return [marketState, currentMyAccountInfo?.makerInfos[marketAddress]]
+        })
     }, [marketStates])
 
     const handleOnClick = useCallback(

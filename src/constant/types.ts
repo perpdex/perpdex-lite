@@ -124,3 +124,14 @@ export interface OrderHistoryUnit {
     realizedPnl: Big
     market: string
 }
+
+export interface MakerPositionInfo {
+    unrealizedPnl: Big
+    liquidityValue: Big
+    liquidityValueUsd: Big
+    liquidity: Big
+    baseAmount: Big
+    quoteAmount: Big
+    baseDeleveraged: Big
+    quoteDeleveraged: Big
+}
