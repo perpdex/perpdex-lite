@@ -5,15 +5,19 @@ import { normalizeToUnixtime } from "./time"
 import _ from "lodash"
 import Big from "big.js"
 
-export function cleanUpChartInputData(candlesData: any) {
+export function cleanUpChartInputData(candlesData: any, inverse: boolean) {
     if (!candlesData) return
+
+    const x96ToNumber = (x96: string) => {
+        return x96ToBig(BigNumber.from(x96), inverse).toNumber()
+    }
 
     const inputData = candlesData.candles.nodes.map((d: any) => ({
         time: normalizeToUnixtime(Number(d.timestamp)),
-        open: x96ToBig(BigNumber.from(d.openX96)).toNumber(),
-        high: x96ToBig(BigNumber.from(d.highX96)).toNumber(),
-        low: x96ToBig(BigNumber.from(d.lowX96)).toNumber(),
-        close: x96ToBig(BigNumber.from(d.closeX96)).toNumber(),
+        open: x96ToNumber(d.openX96),
+        high: x96ToNumber(d.highX96),
+        low: x96ToNumber(d.lowX96),
+        close: x96ToNumber(d.closeX96),
     }))
 
     if (!inputData || inputData.length === 0) return

@@ -23,7 +23,7 @@ const chartOptions = {
 }
 
 function LightWeightChart() {
-    const { currentMarket } = PerpdexMarketContainer.useContainer()
+    const { currentMarket, currentMarketState } = PerpdexMarketContainer.useContainer()
 
     const candleResult = useQuery(getCandlesQuery, {
         variables: {
@@ -35,7 +35,7 @@ function LightWeightChart() {
     const candlestickSeries = useMemo(() => {
         if (candleResult.loading || candleResult.error) return [{ data: [] }]
         const candlesData = candleResult.data
-        const chartInputData = cleanUpChartInputData(candlesData)
+        const chartInputData = cleanUpChartInputData(candlesData, currentMarketState.inverse)
 
         return [
             {
