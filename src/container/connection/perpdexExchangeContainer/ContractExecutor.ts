@@ -5,7 +5,7 @@ import { PerpdexExchange } from "types/newContracts"
 import { PerpdexExchangeActions } from "./type"
 
 function getDeadline(): Number {
-    return Math.floor(Date.now() / 1000) + 120
+    return Math.floor(Date.now() / 1000) + 5 * 60
 }
 
 export class ContractExecutor implements PerpdexExchangeActions {
@@ -31,8 +31,6 @@ export class ContractExecutor implements PerpdexExchangeActions {
         amount: BigNumber,
         oppositeAmountBound: BigNumber,
     ): Promise<ContractTransaction> {
-        const deadline = BigNumber.from(2).pow(96)
-
         return this.execute("trade", [
             {
                 trader,
@@ -41,7 +39,7 @@ export class ContractExecutor implements PerpdexExchangeActions {
                 isExactInput,
                 amount,
                 oppositeAmountBound,
-                deadline,
+                deadline: getDeadline(),
             },
         ])
     }

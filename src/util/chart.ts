@@ -46,13 +46,14 @@ export function cleanUpOrderHistories(queryResponse: any, inverse: boolean) {
 
         const isLong = base.gt(0)
         const isLongDisplay = inverse ? !isLong : isLong
-        const size = bigNum2Big(base.abs())
         const realizedPnl = bigNum2Big(history.realizedPnl)
 
         const sharePrice = x96ToBig(BigNumber.from(history.sharePriceAfterX96))
         const baseBalancePerShare = x96ToBig(BigNumber.from(history.baseBalancePerShareX96))
         const price = sharePrice.div(baseBalancePerShare)
         const priceDisplay = inverse ? Big(1).div(price) : price
+
+        const size = bigNum2Big(base.abs()).mul(baseBalancePerShare)
         const time = normalizeToUnixtime(Number(history.timestamp))
         return {
             size,
