@@ -20,6 +20,14 @@ export function cleanUpChartInputData(candlesData: any, inverse: boolean) {
         close: x96ToNumber(d.closeX96),
     }))
 
+    // Make it easy to understand
+    for (let i = 1; i < inputData.length; i++) {
+        const prevClose = inputData[i - 1].close
+        inputData[i].open = prevClose
+        inputData[i].high = Math.max(inputData[i].high, prevClose)
+        inputData[i].low = Math.min(inputData[i].low, prevClose)
+    }
+
     if (!inputData || inputData.length === 0) return
 
     return _.sortBy(inputData, (data: any) => data.time)
